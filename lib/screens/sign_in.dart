@@ -1,3 +1,4 @@
+import 'package:e_nusantara/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'sign_up.dart';
 
@@ -90,7 +91,10 @@ class _SignInPageState extends State<SignInPage> {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomeWidget()));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDDA86B),
                   padding:
