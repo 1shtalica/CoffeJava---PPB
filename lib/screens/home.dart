@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/products.dart';
+import '../services/products_services.dart';
+import './detail_product.dart'; 
 
 class HomeWidget extends StatelessWidget {
   @override
@@ -59,7 +62,7 @@ class HomeWidget extends StatelessWidget {
               ],
             ),
             const Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'New',
                 style: TextStyle(
@@ -69,7 +72,7 @@ class HomeWidget extends StatelessWidget {
               ),
             ),
             const Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 "You've never seen it before!",
                 style: TextStyle(
@@ -78,30 +81,63 @@ class HomeWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // List produk baru
             Container(
               height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 10, // Jumlah produk
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/image/${index + 1}.png', 
-                          width: 100,
-                          height: 100,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'New Product $index',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  );
+              child: FutureBuilder<List<Product>>(
+                future: fetchProducts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text("Terjadi kesalahan: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text("Tidak ada produk ditemukan"));
+                  } else {
+                    List<Product> products = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProductDetailPage(product: products[index]),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Image.network(
+                                  products[index].images.isNotEmpty
+                                      ? products[index].images[0]
+                                      : '',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  products[index].title,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  'Harga: \$${products[index].price}',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
