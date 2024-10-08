@@ -89,8 +89,8 @@ class HomeWidget extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Image.network(
-                          'https://example.com/product.jpg',
+                        Image.asset(
+                          'assets/image/${index + 1}.png', 
                           width: 100,
                           height: 100,
                         ),
