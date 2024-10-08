@@ -1,16 +1,11 @@
-# e_nusantara
+# CoffeJava---PPB
 
-A new Flutter project.
+Repository untuk tugas besar mata kuliah Pemrograman Perangkat Bergerak kelompok CoffeJava
 
-## Getting Started
+# Directory Project
 
-This project is a starting point for a Flutter application.
+https://drive.google.com/drive/folders/1iZKl4EPxxHDexRMGpii9NIkMIb0srZt9?usp=sharing
 
-A few resources to get you started if this is your first Flutter project:
+# Figma
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+https://www.figma.com/design/4FsVZWNYvHXViz395gl38D/E-Commerce-App-Design-(Community)?node-id=0-1&t=NGgFJ1BPnphadYah-1
