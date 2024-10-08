@@ -1,3 +1,4 @@
+import 'package:e_nusantara/pages/home.dart';
 import 'package:e_nusantara/pages/register.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: false,
       ),
-      home: const RegisterWidget(),
+      home: HomeWidget(),
       debugShowCheckedModeBanner: false,
     );
   }
