@@ -1,3 +1,5 @@
+import 'package:e_nusantara/screens/home.dart';
+import 'package:e_nusantara/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'Screens/sign_in.dart';
 
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'E-Nusantara',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: false,
