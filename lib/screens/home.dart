@@ -1,4 +1,6 @@
+import 'package:e_nusantara/screens/categories.dart';
 import 'package:flutter/material.dart';
+import 'categories.dart';
 
 class HomeWidget extends StatelessWidget {
   @override
@@ -42,7 +44,15 @@ class HomeWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CategoriesPage() // Hapus 'const'
+                                ),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
@@ -90,7 +100,7 @@ class HomeWidget extends StatelessWidget {
                     child: Column(
                       children: [
                         Image.asset(
-                          'assets/image/${index + 1}.png', 
+                          'assets/image/${index + 1}.png',
                           width: 100,
                           height: 100,
                         ),
