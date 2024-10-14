@@ -78,12 +78,11 @@ class HomeWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // List produk baru
             Container(
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 10, // Jumlah produk
+                itemCount: 10,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
