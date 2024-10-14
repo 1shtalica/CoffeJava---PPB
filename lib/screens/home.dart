@@ -1,4 +1,7 @@
+import 'package:e_nusantara/screens/categories.dart';
 import 'package:flutter/material.dart';
+import 'product_details.dart';
+import 'categories.dart';
 
 class HomeWidget extends StatelessWidget {
   @override
@@ -42,7 +45,13 @@ class HomeWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CategoriesPage()),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
@@ -86,24 +95,39 @@ class HomeWidget extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Image.network(
-                          'https://example.com/product.jpg',
-                          width: 100,
-                          height: 100,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'New Product $index',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
+                    child: GestureDetector(
+                      onTap: () {
+                        print('Tapped on New Product $index');
+                        // Navigasi ke halaman detail produk
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => product_details(
+                              // Memanggil halaman product_details
+                              image: 'assets/image/${index + 1}.png',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/image/${index + 1}.png',
+                            width: 100,
+                            height: 100,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'New Product $index',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
