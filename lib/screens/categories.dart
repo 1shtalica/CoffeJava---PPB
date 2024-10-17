@@ -288,25 +288,29 @@ class _CategoriesPageState extends State<CategoriesPage> {
 Widget _buildItemCard(Map<String, String> item) {
   return Container(
     width: 150,
-    margin: const EdgeInsets.all(10),
+    margin: const EdgeInsets.all(15),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       color: Colors.white,
       boxShadow: const [
         BoxShadow(
-          color: Colors.black38,
-          blurRadius: 10,
-          spreadRadius: 2,
-        )
+            color: Colors.black38,
+            blurRadius: 7,
+            spreadRadius: 2,
+            offset: Offset(4, 4))
       ],
     ),
     child: Column(
       children: [
-        Image.asset(
-          item['image']!,
-          fit: BoxFit.cover,
-          height: 100,
-          width: 150,
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+          child: Image.asset(
+            item['image']!,
+            fit: BoxFit.cover,
+            height: 100,
+            width: 150,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
