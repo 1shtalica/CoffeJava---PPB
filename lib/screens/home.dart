@@ -1,10 +1,33 @@
+import 'package:e_nusantara/screens/bag.dart';
+import 'package:e_nusantara/screens/categories.dart';
+import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/profile.dart';
+import 'package:e_nusantara/screens/shop.dart';
+import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
+import 'product_details.dart';
+import 'categories.dart';
 
-class HomeWidget extends StatelessWidget {
+class HomeWidget extends StatefulWidget {
+  const HomeWidget({super.key});
+
+  @override
+  State<HomeWidget> createState() => _HomeWidget();
+}
+
+class _HomeWidget extends State<HomeWidget> {
+  int selectedIndex = 0;
+
+  void onItem(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
+    final List<Widget> widgetOptions = [
+      SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -42,7 +65,13 @@ class HomeWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CategoriesPage()),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
@@ -59,7 +88,7 @@ class HomeWidget extends StatelessWidget {
               ],
             ),
             const Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'New',
                 style: TextStyle(
@@ -69,7 +98,7 @@ class HomeWidget extends StatelessWidget {
               ),
             ),
             const Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 "You've never seen it before!",
                 style: TextStyle(
@@ -78,38 +107,42 @@ class HomeWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // List produk baru
-            Container(
+            SizedBox(
               height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 10, // Jumlah produk
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/image/${index + 1}.png', 
-                          width: 100,
-                          height: 100,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'New Product $index',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              child: SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: ListView.builder(
+                  itemCount: 10,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                      child: CardList(
+                        image: 'assets/image/${index + 1}.png',
+                        index: index,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+            )
           ],
         ),
       ),
+      const ShopWidget(),
+      const BagWidget(),
+      const FavoriteScreen(),
+      const ProfileWidget()
+      // Tambahkan screen lainnya jika diperlukan
+    ];
+
+    return Scaffold(
+      body: widgetOptions[selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        currentIndex: selectedIndex,
+        onTap: onItem,
         iconSize: 30,
         items: const [
           BottomNavigationBarItem(
