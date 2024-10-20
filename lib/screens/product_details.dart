@@ -1,3 +1,4 @@
+import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,8 @@ import 'package:top_snackbar_flutter/safe_area_values.dart';
 import 'package:top_snackbar_flutter/tap_bounce_container.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../widget/tabBar.dart';
+import './ratingDetails.dart';
+import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 
 import '../provider/SizeChartProvider.dart';
 
@@ -21,6 +24,18 @@ class product_details extends StatefulWidget {
 
 class _ProductDetailsState extends State<product_details> {
   int selectedSizeIndex = -1;
+  late List<String> sampleImages;
+  @override
+  void initState() {
+    super.initState();
+    print(widget.image);
+    sampleImages = [
+      widget.image,
+      'assets/image/example1.jpg',
+      'assets/image/example2.jpg',
+      'assets/image/example3.jpg',
+    ];
+  }
 
   void handleSizeSelected(int index) {
     setState(() {
@@ -94,7 +109,6 @@ class _ProductDetailsState extends State<product_details> {
     double totalRating =
         _ratings.fold(0, (sum, rating) => sum + rating["rating"]);
 
-    // Calculate average rating
     double averageRating = ratingLength > 0 ? totalRating / ratingLength : 0;
 
     return Scaffold(
@@ -138,9 +152,13 @@ class _ProductDetailsState extends State<product_details> {
             centerTitle: false,
             expandedHeight: 500,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image(
-                image: AssetImage(widget.image),
-                fit: BoxFit.cover,
+              background: FanCarouselImageSlider.sliderType1(
+                imagesLink: sampleImages,
+                isAssets: true,
+                autoPlay: false,
+                sliderHeight: 450,
+                showIndicator: true,
+                initalPageIndex: 0,
               ),
             ),
           ),
@@ -239,6 +257,36 @@ class _ProductDetailsState extends State<product_details> {
             ),
           ),
           SliverToBoxAdapter(
+              child: GestureDetector(
+            onTap: () {
+              print("test");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RatingDetails(
+                    ratings: _ratings,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(color: Colors.transparent),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 24.0, left: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("More Review"),
+                      Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )),
+          SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -255,7 +303,35 @@ class _ProductDetailsState extends State<product_details> {
                     trailing: Icon(Icons.arrow_forward_ios),
                   ),
                   const Divider(color: Colors.black45),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
+                  Text(
+                    "you may like other similar products",
+                    style: TextStyle(),
+                    
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                      height: 200,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: 10,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              child: CardList(
+                                image: 'assets/image/${index + 1}.png',
+                                index: index,
+                              ),
+                            );
+                          },
+                        ),
+                      ))
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:e_nusantara/screens/categories.dart';
+import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'product_details.dart';
 import 'categories.dart';
@@ -88,46 +89,25 @@ class HomeWidget extends StatelessWidget {
               ),
             ),
             Container(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        print('Tapped on New Product $index');
-                        // Navigasi ke halaman detail produk
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => product_details(
-                              // Memanggil halaman product_details
-                              image: 'assets/image/${index + 1}.png',
-                            ),
-                          ),
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/image/${index + 1}.png',
-                            width: 100,
-                            height: 100,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'New Product $index',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
+                height: 200,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: 10,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return  Padding(
+                        padding:
+                            EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                        child: CardList(
+                          image: 'assets/image/${index + 1}.png',
+                          index: index,
+                        ),
+                      );
+                    },
+                  ),
+                ))
           ],
         ),
       ),

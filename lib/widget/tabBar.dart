@@ -4,26 +4,26 @@ class Tabbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Jumlah tab
+      length: 2, 
       child: Column(
         children: [
-          // TabBar
+        
           TabBar(
             tabs: [
               Tab(
                   text:
-                      'Product Information'), // Ganti dengan nama tab yang sesuai
+                      'Product Information'),
               Tab(text: 'About The Product'),
             ],
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Color(0xFFD08835), // Warna indikator
+            indicatorColor: Color(0xFFD08835), 
           ),
           SizedBox(
-            height: 200, // Tinggi yang diinginkan untuk TabBarView
+            height: 200, 
             child: TabBarView(
               children: [
-                // Konten untuk Tab 1
+                
                 Padding(
                     padding: EdgeInsets.all(10),
                     child: SingleChildScrollView(
@@ -64,7 +64,7 @@ class Tabbar extends StatelessWidget {
                         ],
                       ),
                     )),
-                // Konten untuk Tab 2
+                
                 Padding(
                     padding: EdgeInsets.all(10),
                     child: SingleChildScrollView(
