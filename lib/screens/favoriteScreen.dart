@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:filter_list/filter_list.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -8,6 +10,103 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreen extends State<FavoriteScreen> {
+  List<FavoriteItem> favoritesItem = [
+    const FavoriteItem(
+      imageUrl: 'assets/image/3.png',
+      title: 'Shirt',
+      brand: 'LIME',
+      color: 'Blue',
+      price: 32,
+      size: 'L',
+      rating: 4.5,
+      isSoldOut: false,
+    ),
+    const FavoriteItem(
+      imageUrl: 'assets/image/2.png',
+      title: 'Longsleeve Violeta',
+      brand: 'Mango',
+      color: 'Orange',
+      price: 90,
+      size: 'S',
+      rating: 3.0,
+      isSoldOut: false,
+    ),
+    const FavoriteItem(
+      imageUrl: 'assets/image/3.png',
+      title: 'Shirt',
+      brand: 'Olivier',
+      color: 'Gray',
+      price: 100000,
+      size: 'L',
+      rating: 4.0,
+      isSoldOut: true,
+    ),
+    const FavoriteItem(
+      imageUrl: 'assets/image/4.png',
+      title: 'Shirt',
+      brand: 'Olivier',
+      color: 'Gray',
+      price: 65,
+      size: 'L',
+      rating: 4.0,
+      isSoldOut: false,
+    ),
+    const FavoriteItem(
+      imageUrl: 'assets/image/5.png',
+      title: 'Shirt',
+      brand: 'Olivier',
+      color: 'Gray',
+      price: 100,
+      size: 'L',
+      rating: 4.0,
+      isSoldOut: true,
+    ),
+    const FavoriteItem(
+      imageUrl: 'assets/image/3.png',
+      title: 'Shirt',
+      brand: 'Olivier',
+      color: 'Gray',
+      price: 80,
+      size: 'L',
+      rating: 4.0,
+      isSoldOut: false,
+    )
+  ];
+
+  List<FavoriteItem> filteredItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredItems = favoritesItem;
+  }
+
+  void openFilterDelegate() async {
+    final List<String> options =
+        favoritesItem.map((item) => item.title).toSet().toList();
+
+    await FilterListDialog.display<String>(
+      context,
+      listData: options,
+      selectedListData: [],
+      choiceChipLabel: (item) => item,
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (item, query) {
+        return item.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        if (list != null) {
+          setState(() {
+            filteredItems = favoritesItem
+                .where((item) => list.contains(item.title))
+                .toList();
+          });
+        }
+        Navigator.pop(context);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,34 +120,34 @@ class _FavoriteScreen extends State<FavoriteScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: openFilterDelegate,
             icon: const Icon(
               Icons.search,
               color: Colors.black,
             ),
-          )
+          ),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                   ElevatedButton(onPressed: () {}, child: const Text('Summer')),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(
                       onPressed: () {}, child: const Text('T-Shirts')),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(onPressed: () {}, child: const Text('Shirts')),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(onPressed: () {}, child: const Text('Spring')),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(
                       onPressed: () {}, child: const Text('T-Shirts')),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   ElevatedButton(onPressed: () {}, child: const Text('Shirts')),
                 ],
               ),
@@ -66,11 +165,11 @@ class _FavoriteScreen extends State<FavoriteScreen> {
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.sort, size: 24),
-                    const SizedBox(width: 5),
-                    const Text(
+                    SizedBox(width: 5),
+                    Text(
                       'Price: lowest to high',
                       style: TextStyle(fontSize: 16),
                     )
@@ -87,71 +186,20 @@ class _FavoriteScreen extends State<FavoriteScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: const [
-                FavoriteItem(
-                  imageUrl: 'assets/image/3.png',
-                  title: 'Shirt',
-                  brand: 'LIME',
-                  color: 'Blue',
-                  price: 32,
-                  size: 'L',
-                  rating: 4.5,
-                  isSoldOut: false,
-                ),
-                FavoriteItem(
-                  imageUrl: 'assets/image/2.png',
-                  title: 'Longsleeve Violeta',
-                  brand: 'Mango',
-                  color: 'Orange',
-                  price: 90,
-                  size: 'S',
-                  rating: 3.0,
-                  isSoldOut: false,
-                ),
-                FavoriteItem(
-                  imageUrl: 'assets/image/3.png',
-                  title: 'Shirt',
-                  brand: 'Olivier',
-                  color: 'Gray',
-                  price: 89,
-                  size: 'L',
-                  rating: 4.0,
-                  isSoldOut: true,
-                ),
-                FavoriteItem(
-                  imageUrl: 'assets/image/4.png',
-                  title: 'Shirt',
-                  brand: 'Olivier',
-                  color: 'Gray',
-                  price: 65,
-                  size: 'L',
-                  rating: 4.0,
-                  isSoldOut: false,
-                ),
-                FavoriteItem(
-                  imageUrl: 'assets/image/5.png',
-                  title: 'Shirt',
-                  brand: 'Olivier',
-                  color: 'Gray',
-                  price: 100,
-                  size: 'L',
-                  rating: 4.0,
-                  isSoldOut: true,
-                ),
-                FavoriteItem(
-                  imageUrl: 'assets/image/3.png',
-                  title: 'Shirt',
-                  brand: 'Olivier',
-                  color: 'Gray',
-                  price: 80,
-                  size: 'L',
-                  rating: 4.0,
-                  isSoldOut: false,
-                ),
-              ],
-            ),
-          ),
+              child: ListView(
+            children: filteredItems
+                .map((item) => FavoriteItem(
+                      imageUrl: item.imageUrl,
+                      title: item.title,
+                      brand: item.brand,
+                      color: item.color,
+                      price: item.price,
+                      size: item.size,
+                      rating: item.rating,
+                      isSoldOut: item.isSoldOut,
+                    ))
+                .toList(),
+          )),
         ],
       ),
     );
@@ -182,6 +230,7 @@ class FavoriteItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //  bool isLoved = false;
     return Card(
       child: ListTile(
         leading: Image.asset(imageUrl),
@@ -193,7 +242,8 @@ class FavoriteItem extends StatelessWidget {
             Text('Color: $color'),
             Text('Size: $size'),
             Text('Rating: $rating'),
-            Text('Price: \$${price.toString()}'),
+            Text(
+                'Price: ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(price)}'),
             if (isSoldOut)
               const Text(
                 'Sold Out',
@@ -201,6 +251,12 @@ class FavoriteItem extends StatelessWidget {
               ),
           ],
         ),
+        trailing: IconButton(
+            icon: const Icon(
+              Icons.favorite,
+              color: Colors.red,
+            ),
+            onPressed: () {}),
       ),
     );
   }
