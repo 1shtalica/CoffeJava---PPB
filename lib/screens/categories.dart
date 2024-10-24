@@ -48,12 +48,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     },
     {
       'type': 'Electronics',
-      'subType': [
-        "TV",
-        "Camera",
-        "Laptop",
-        "Handphone"
-      ] // This category doesn't seem to have corresponding items in the `items` list, so it's left empty.
+      'subType': ["TV", "Camera", "Laptop", "Handphone"]
     },
   ];
 
