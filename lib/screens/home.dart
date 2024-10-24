@@ -6,7 +6,6 @@ import 'package:e_nusantara/screens/shop.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'product_details.dart';
-import 'categories.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});

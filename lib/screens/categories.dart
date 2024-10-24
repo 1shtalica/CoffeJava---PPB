@@ -1,5 +1,6 @@
 import 'package:e_nusantara/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:e_nusantara/screens/product_list.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -11,6 +12,45 @@ class CategoriesPage extends StatefulWidget {
 class _CategoriesPageState extends State<CategoriesPage> {
   String selectedCategory = "Women";
   String? selectedSubCategory;
+  final List<Map<String, dynamic>> category = [
+    {
+      'type': "Women",
+      'subType': [
+        "Women's T-Shirt",
+        "Women's Blus",
+        "Women's Dress",
+        "Women's Skirt",
+        "Women's Bag",
+        "Women's Shoe"
+      ]
+    },
+    {
+      'type': 'Men',
+      'subType': [
+        "Men's T-Shirt",
+        "Men's Shirt",
+        "Men's Trousers",
+        "Men's Jacket",
+        "Men's Hoodie",
+        "Men's Shoe"
+      ]
+    },
+    {
+      'type': 'Kids',
+      'subType': [
+        "Kid's T-Shirt",
+        "Kid's Dress",
+        "Kid's Trousers",
+        "Kid's Hat",
+        "Kid's Bag",
+        "Kid's Shoe"
+      ]
+    },
+    {
+      'type': 'Electronics',
+      'subType': ["TV", "Camera", "Laptop", "Handphone"]
+    },
+  ];
 
   // Ini list buat gambar ama produknya, kalo mau nambah kategori, langkah2nya:
   //1. tmbhn di list dibawah path gambar ama deskripsinya
@@ -76,7 +116,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
       body: ListView(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               InkWell(
                 onTap: () {
@@ -86,8 +125,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   });
                 },
                 child: Container(
-                  width: 50,
-                  margin: const EdgeInsets.all(10),
+                  width: 135,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   decoration: BoxDecoration(
                       color: Colors.transparent,
                       border: selectedCategory == "Women"
@@ -112,8 +152,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   });
                 },
                 child: Container(
-                  width: 50,
-                  margin: const EdgeInsets.all(10),
+                  width: 135,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   decoration: BoxDecoration(
                       color: Colors.transparent,
                       border: selectedCategory == "Men"
@@ -138,8 +179,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   });
                 },
                 child: Container(
-                  width: 50,
-                  margin: const EdgeInsets.all(10),
+                  width: 135,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                   decoration: BoxDecoration(
                       color: Colors.transparent,
                       border: selectedCategory == "Kids"
@@ -231,7 +273,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
             ),
           ),
           if (selectedSubCategory != null &&
-              products[selectedSubCategory] != null)
+              products.containsKey(selectedSubCategory))
             Column(children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -243,35 +285,47 @@ class _CategoriesPageState extends State<CategoriesPage> {
               ),
               Column(
                 children: products[selectedSubCategory]!
-                    .map((product) => Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                                spreadRadius: 2,
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                product['image']!,
-                                height: 50,
-                                width: 50,
-                                fit: BoxFit.cover,
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                product['name']!,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              )
-                            ],
+                    .map((product) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProductList(
+                                        selectedProductCategory:
+                                            product['name'] ?? 'unknown',
+                                      )),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  spreadRadius: 2,
+                                )
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  product['image']!,
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  product['name']!,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
                           ),
                         ))
                     .toList(),
@@ -288,30 +342,36 @@ class _CategoriesPageState extends State<CategoriesPage> {
 Widget _buildItemCard(Map<String, String> item) {
   return Container(
     width: 150,
-    margin: const EdgeInsets.all(10),
+    margin: const EdgeInsets.all(15),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       color: Colors.white,
       boxShadow: const [
         BoxShadow(
-          color: Colors.black38,
-          blurRadius: 10,
-          spreadRadius: 2,
-        )
+            color: Colors.black38,
+            blurRadius: 7,
+            spreadRadius: 2,
+            offset: Offset(4, 4))
       ],
     ),
     child: Column(
       children: [
-        Image.asset(
-          item['image']!,
-          fit: BoxFit.cover,
-          height: 100,
-          width: 150,
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+          child: item['image'] != null
+              ? Image.asset(
+                  item['image']!,
+                  fit: BoxFit.cover,
+                  height: 100,
+                  width: 150,
+                )
+              : const SizedBox.shrink(),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Text(
-            item['description']!,
+            item['description'] ?? 'Unknown',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
