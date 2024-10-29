@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Ratting extends StatelessWidget {
   final String username;
-  final int rating; // Note: Changed 'ratting' to 'rating' for correct spelling.
+  final int rating; 
   final String review;
 
   Ratting({required this.username, required this.rating, required this.review});
@@ -16,13 +16,13 @@ class Ratting extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only( right: 10),
+              padding: EdgeInsets.only(right: 10),
               child: Text(username,
                   style: TextStyle(
                       fontSize: 14, height: 1.5, fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only( right: 10),
+              padding: EdgeInsets.only(right: 10),
               child: Row(
                 children: List.generate(5, (index) {
                   return Icon(
