@@ -1,6 +1,7 @@
 import 'package:e_nusantara/screens/bag.dart';
 import 'package:e_nusantara/screens/categories.dart';
 import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
 import 'package:e_nusantara/widget/cardList.dart';
@@ -132,7 +133,7 @@ class _HomeWidget extends State<HomeWidget> {
       const ShopWidget(),
       const BagWidget(),
       const FavoriteScreen(),
-      const ProfileWidget()
+      const ProfileWidget(),
       // Tambahkan screen lainnya jika diperlukan
     ];
 
