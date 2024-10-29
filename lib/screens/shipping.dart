@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Orders extends StatefulWidget {
+class ShippingAddress extends StatefulWidget {
   @override
-  _OrdersState createState() => _OrdersState();
+  _ShippingAddressState createState() => _ShippingAddressState();
 }
 
-class _OrdersState extends State<Orders> {
-  String selectedTab = 'Delivered';
+class _ShippingAddressState extends State<ShippingAddress> {
+  String selectedAddress = 'Home';
+  String defaultAddress = 'Home';
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class _OrdersState extends State<Orders> {
           },
         ),
         title: Text(
-          'My Orders',
+          'Shipping Address',
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -33,29 +34,29 @@ class _OrdersState extends State<Orders> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TabButton(
-                  title: 'Delivered',
-                  selected: selectedTab == 'Delivered',
+                  title: 'Home',
+                  selected: selectedAddress == 'Home',
                   onTap: () {
                     setState(() {
-                      selectedTab = 'Delivered';
+                      selectedAddress = 'Home';
                     });
                   },
                 ),
                 TabButton(
-                  title: 'Processing',
-                  selected: selectedTab == 'Processing',
+                  title: 'Office',
+                  selected: selectedAddress == 'Office',
                   onTap: () {
                     setState(() {
-                      selectedTab = 'Processing';
+                      selectedAddress = 'Office';
                     });
                   },
                 ),
                 TabButton(
-                  title: 'Cancelled',
-                  selected: selectedTab == 'Cancelled',
+                  title: 'Other',
+                  selected: selectedAddress == 'Other',
                   onTap: () {
                     setState(() {
-                      selectedTab = 'Cancelled';
+                      selectedAddress = 'Other';
                     });
                   },
                 ),
@@ -66,7 +67,16 @@ class _OrdersState extends State<Orders> {
               child: ListView.builder(
                 itemCount: 3,
                 itemBuilder: (context, index) {
-                  return OrderCard(status: selectedTab);
+                  String addressTitle = selectedAddress + ' $index';
+                  return AddressCard(
+                    title: addressTitle,
+                    isDefault: defaultAddress == addressTitle,
+                    onSetDefault: () {
+                      setState(() {
+                        defaultAddress = addressTitle;
+                      });
+                    },
+                  );
                 },
               ),
             ),
@@ -109,10 +119,16 @@ class TabButton extends StatelessWidget {
   }
 }
 
-class OrderCard extends StatelessWidget {
-  final String status;
+class AddressCard extends StatelessWidget {
+  final String title;
+  final bool isDefault;
+  final VoidCallback onSetDefault;
 
-  OrderCard({required this.status});
+  AddressCard({
+    required this.title,
+    required this.isDefault,
+    required this.onSetDefault,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -125,59 +141,43 @@ class OrderCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Order 1947034',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  '05-12-2019',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text('Tracking number: IW3475453455'),
-            SizedBox(height: 4),
-            Text('Quantity: 3'),
-            SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total Amount: 112\$',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  status,
-                  style: TextStyle(
-                    color: status == 'Delivered'
-                        ? Colors.green
-                        : status == 'Processing'
-                            ? Colors.orange
-                            : Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton(
-                onPressed: () {},
-                child: Text('Details'),
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
+            Text(
+              title.contains('Home')
+                  ? 'Home Address'
+                  : title.contains('Office')
+                      ? 'Office Address'
+                      : 'Other Address',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
+            ),
+            SizedBox(height: 8),
+            Text('123 Main St, Suite 1, City, Country'),
+            SizedBox(height: 4),
+            Text('Postal Code: 12345'),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  isDefault ? 'Default Address' : '',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (!isDefault)
+                  OutlinedButton(
+                    onPressed: onSetDefault,
+                    child: Text('Set as Default'),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),

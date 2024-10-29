@@ -1,4 +1,6 @@
 import 'package:e_nusantara/screens/orders.dart';
+import 'package:e_nusantara/screens/setting.dart';
+import 'package:e_nusantara/screens/shipping.dart';
 import 'package:flutter/material.dart';
 
 class ProfileWidget extends StatefulWidget {
@@ -19,22 +21,12 @@ class _ProfileScreen extends State<ProfileWidget> {
       'subtitle': '3 addresses',
     },
     {
-      'title': 'Payment methods',
-      'subtitle': 'Visa **34',
-    },
-    {
-      'title': 'Promocodes',
-      'subtitle': 'You have special promocodes',
-    },
-    {
-      'title': 'My reviews',
-      'subtitle': 'Reviews for 4 items',
-    },
-    {
       'title': 'Settings',
       'subtitle': 'Notifications, password',
     },
   ];
+
+  final subScreen = [Orders(), ShippingAddress(), Settings()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +84,10 @@ class _ProfileScreen extends State<ProfileWidget> {
                       subtitle: Text(item['subtitle']!),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Orders()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => subScreen[index]));
                       },
                     ),
                     const Divider(),
