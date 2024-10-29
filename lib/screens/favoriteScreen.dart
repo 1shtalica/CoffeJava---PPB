@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:filter_list/filter_list.dart';
+import 'package:provider/provider.dart';
+import '../provider/FavoriteProvider.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -10,75 +12,15 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreen extends State<FavoriteScreen> {
-  List<FavoriteItem> favoritesItem = [
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'LIME',
-      color: 'Blue',
-      price: 32,
-      size: 'L',
-      rating: 4.5,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/2.png',
-      title: 'Longsleeve Violeta',
-      brand: 'Mango',
-      color: 'Orange',
-      price: 90,
-      size: 'S',
-      rating: 3.0,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 100000,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: true,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/4.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 65,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/5.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 100,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: true,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 80,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: false,
-    )
-  ];
+  List<FavoriteItem> favoritesItem = [];
 
   List<FavoriteItem> filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    filteredItems = favoritesItem;
+
+    filteredItems = Favoriteprovider().favorites;
   }
 
   void openFilterDelegate() async {
@@ -109,6 +51,10 @@ class _FavoriteScreen extends State<FavoriteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+    favoritesItem = favoriteProvider.favorites;
+    filteredItems = favoritesItem;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -186,20 +132,24 @@ class _FavoriteScreen extends State<FavoriteScreen> {
             ),
           ),
           Expanded(
-              child: ListView(
-            children: filteredItems
-                .map((item) => FavoriteItem(
-                      imageUrl: item.imageUrl,
-                      title: item.title,
-                      brand: item.brand,
-                      color: item.color,
-                      price: item.price,
-                      size: item.size,
-                      rating: item.rating,
-                      isSoldOut: item.isSoldOut,
-                    ))
-                .toList(),
-          )),
+            child: ListView(
+              children: filteredItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+
+                return FavoriteItem(
+                    imageUrl: item.imageUrl,
+                    title: item.title,
+                    brand: item.brand,
+                    color: item.color,
+                    price: item.price,
+                    size: item.size,
+                    rating: item.rating,
+                    isSoldOut: item.isSoldOut,
+                    index: index);
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -215,6 +165,7 @@ class FavoriteItem extends StatelessWidget {
   final String size;
   final double rating;
   final bool isSoldOut;
+  final int index;
 
   const FavoriteItem({
     super.key,
@@ -226,11 +177,12 @@ class FavoriteItem extends StatelessWidget {
     required this.size,
     required this.rating,
     required this.isSoldOut,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
-    //  bool isLoved = false;
+    final favoriteProvider = Provider.of<Favoriteprovider>(context);
     return Card(
       child: ListTile(
         leading: Image.asset(imageUrl),
@@ -256,7 +208,9 @@ class FavoriteItem extends StatelessWidget {
               Icons.favorite,
               color: Colors.red,
             ),
-            onPressed: () {}),
+            onPressed: () {
+              favoriteProvider.deleteFavoriteItem(index);
+            }),
       ),
     );
   }

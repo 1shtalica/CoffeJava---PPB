@@ -121,6 +121,7 @@ class _HomeWidget extends State<HomeWidget> {
                       child: CardList(
                         image: 'assets/image/${index + 1}.png',
                         index: index,
+                         title: 'Product ${index + 1}',
                       ),
                     );
                   },

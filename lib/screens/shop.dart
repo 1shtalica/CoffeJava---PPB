@@ -910,7 +910,7 @@ class _ShopScreen extends State<ShopWidget> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => product_details(
-                                      image: productList[index].image!,
+                                      image: productList[index].image!,title: productList[index].nameProduct!,
                                     )));
                       },
                       child: _buildProductCard(product),

@@ -4,9 +4,14 @@ import 'package:e_nusantara/screens/product_details.dart';
 import 'package:flutter/material.dart';
 
 class CardList extends StatelessWidget {
-  const CardList({super.key, required this.image, required this.index});
+  const CardList(
+      {super.key,
+      required this.image,
+      required this.index,
+      required this.title});
   final String image;
   final int index;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,7 @@ class CardList extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => product_details(
               image: 'assets/image/${index + 1}.png',
+              title: title,
             ),
           ),
         );
@@ -54,7 +60,7 @@ class CardList extends StatelessWidget {
               ),
             ),
             Text(
-              "Product ${index + 1}",
+              title,
               style: TextStyle(),
             ),
             Text(
@@ -66,7 +72,7 @@ class CardList extends StatelessWidget {
             ),
             Row(
               children: [
-                Text(((Random().nextInt(1000) )).toString()+" Review •"),
+                Text(((Random().nextInt(1000))).toString() + " Review •"),
                 Icon(
                   Icons.star,
                   color: Colors.amber,

@@ -1,3 +1,5 @@
+import 'package:e_nusantara/provider/FavoriteProvider.dart';
+import 'package:e_nusantara/screens/favoriteScreen.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
@@ -15,32 +17,28 @@ import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 import '../provider/SizeChartProvider.dart';
 
 class product_details extends StatefulWidget {
-  const product_details({Key? key, required this.image}) : super(key: key);
+  const product_details({Key? key, required this.image, required this.title})
+      : super(key: key);
   final String image;
+  final String title;
 
   @override
   _ProductDetailsState createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<product_details> {
-  int selectedSizeIndex = -1;
   late List<String> sampleImages;
+
   @override
   void initState() {
     super.initState();
-    print(widget.image);
+
     sampleImages = [
       widget.image,
       'assets/image/example1.jpg',
       'assets/image/example2.jpg',
       'assets/image/example3.jpg',
     ];
-  }
-
-  void handleSizeSelected(int index) {
-    setState(() {
-      selectedSizeIndex = index;
-    });
   }
 
   final List<Map<String, dynamic>> _ratings = [
@@ -105,7 +103,10 @@ class _ProductDetailsState extends State<product_details> {
   @override
   Widget build(BuildContext context) {
     final sizeChartProvider = Provider.of<SizeChartProvider>(context);
+    final favoriteProvider = Provider.of<Favoriteprovider>(context);
     int ratingLength = _ratings.length;
+    bool isFavorite =
+        favoriteProvider.favorites.any((item) => item.title == widget.title);
     double totalRating =
         _ratings.fold(0, (sum, rating) => sum + rating["rating"]);
 
@@ -118,9 +119,9 @@ class _ProductDetailsState extends State<product_details> {
         automaticallyImplyLeading: false,
         title: Container(
           alignment: Alignment.center,
-          child: const Text(
-            'Judul Halaman',
-            style: TextStyle(
+          child: Text(
+            widget.title,
+            style: const TextStyle(
               color: Colors.black,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -137,7 +138,9 @@ class _ProductDetailsState extends State<product_details> {
         actions: [
           IconButton(
             icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              print(favoriteProvider.favorites.length);
+            },
           ),
         ],
       ),
@@ -307,7 +310,6 @@ class _ProductDetailsState extends State<product_details> {
                   Text(
                     "you may like other similar products",
                     style: TextStyle(),
-                    
                   ),
                   SizedBox(
                     height: 30,
@@ -325,9 +327,9 @@ class _ProductDetailsState extends State<product_details> {
                               padding: EdgeInsets.only(
                                   left: 10, right: 10, bottom: 10),
                               child: CardList(
-                                image: 'assets/image/${index + 1}.png',
-                                index: index,
-                              ),
+                                  image: 'assets/image/${index + 1}.png',
+                                  index: index,
+                                  title: 'Product${index + 1}'),
                             );
                           },
                         ),
@@ -340,87 +342,127 @@ class _ProductDetailsState extends State<product_details> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-              ),
-              builder: (BuildContext context) {
-                return SizedBox(
-                  height: 180,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16),
-                        child: SizeChart(),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD08835),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        width: 380,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD08835),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(25.0)),
+                    ),
+                    builder: (BuildContext context) {
+                      return SizedBox(
+                        height: 180,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 16, right: 16),
+                              child: SizeChart(),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          onPressed: () {
-                            if (sizeChartProvider.selectedIndex == -1) {
-                              showTopSnackBar(
-                                Overlay.of(context),
-                                CustomSnackBar.error(
-                                  message:
-                                      "you have to selected the product size first",
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFD08835),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              width: 380,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFD08835),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
                                 ),
-                              );
-                            } else {
-                              showTopSnackBar(
-                                Overlay.of(context),
-                                CustomSnackBar.success(
-                                  message:
-                                      "you have successfully added a product",
+                                onPressed: () {
+                                  if (sizeChartProvider.selectedIndex == -1) {
+                                    showTopSnackBar(
+                                      Overlay.of(context),
+                                      CustomSnackBar.error(
+                                        message:
+                                            "you have to selected the product size first",
+                                      ),
+                                    );
+                                  } else {
+                                    showTopSnackBar(
+                                      Overlay.of(context),
+                                      CustomSnackBar.success(
+                                        message:
+                                            "you have successfully added a product",
+                                      ),
+                                    );
+                                    sizeChartProvider.selectSize(-1);
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Text(
+                                  "ADD TO CART",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              );
-                              sizeChartProvider.selectSize(-1);
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text(
-                            "ADD TO CART",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
+                              ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
+                      );
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD08835),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
                   ),
-                );
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  "ADD TO CART",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  if (!isFavorite) {
+                    isFavorite = !isFavorite;
+                    favoriteProvider.AddFavoriteItem(
+                      FavoriteItem(
+                        imageUrl: widget.image,
+                        title: widget.title,
+                        brand: 'sadd',
+                        color: 'Gradssaday',
+                        price: 100000,
+                        size: 'L',
+                        rating: 4.0,
+                        isSoldOut: false,
+                        index: -1,
+                      ),
+                    );
+                  } else {
+                    isFavorite = !isFavorite;
+                    int productIndex = favoriteProvider.favorites
+                        .indexWhere((item) => item.title == widget.title);
+                    favoriteProvider.deleteFavoriteItem(productIndex);
+                  }
+                });
               },
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFD08835),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
+              icon: favoriteProvider.favorites
+                      .any((item) => item.title == widget.title)
+                  ? const Icon(Icons.favorite, color: Colors.red)
+                  : const Icon(Icons.favorite_border),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: const Text(
-            "ADD TO CART",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
+          ],
         ),
       ),
     );
