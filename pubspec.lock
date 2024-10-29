@@ -150,6 +150,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  flutter_popup_menu_button:
+    dependency: "direct main"
+    description:
+      name: flutter_popup_menu_button
+      sha256: "3ddf95a0e9d9c42d16d18c31f23d7fae41ac212b20217c43d07d8582cdbfe0b2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
