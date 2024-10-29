@@ -61,13 +61,13 @@ class _ProfileScreen extends State<ProfileWidget> {
           const ListTile(
             leading: CircleAvatar(
               radius: 30.0,
-              backgroundImage: AssetImage("assets/image/rindang_profile.jpg"),
+              backgroundImage: AssetImage("assets/image/maria.png"),
             ),
             title: Text(
-              'Rindang Bani Isyan',
+              'Maria Kujou',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text('rindangKarawang@karawang.co.id'),
+            subtitle: Text('Mariakujou@e-nusantara.com'),
           ),
           const SizedBox(
             height: 10,

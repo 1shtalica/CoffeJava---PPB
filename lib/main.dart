@@ -10,7 +10,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(
             create: (_) => SizeChartProvider()), // Registrasi
-             ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (_) => Favoriteprovider(),
         ), // Favorite
       ],
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDDA86B)),
         useMaterial3: false,
+        fontFamily: 'AbhayaLibre',
       ),
       home: const SignInPage(title: 'Flutter Demo Home Page'),
       debugShowCheckedModeBanner: false,
