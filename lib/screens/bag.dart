@@ -33,7 +33,7 @@ class _BagScreen extends State<BagWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffF9F9F9),
+        backgroundColor: const Color(0xffF9F9F9),
         elevation: 0,
         actions: [
           IconButton(
@@ -73,26 +73,26 @@ class _BagScreen extends State<BagWidget> {
 
   Container ListofItems(List<BagModels> bagList) {
     return Container(
-      margin: EdgeInsets.only(top: 10),
-      padding: EdgeInsets.only(top: 10, bottom: 5),
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10, bottom: 5),
       height: 400,
       width: double.infinity,
       child: ListView.separated(
-        separatorBuilder: (context, index) => SizedBox(height: 25),
+        separatorBuilder: (context, index) => const SizedBox(height: 25),
         itemCount: bagList.length,
         itemBuilder: (context, index) {
           return Container(
-            margin: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
             height: 130,
             decoration: BoxDecoration(
-              color: Color(0xffFFFFFF),
+              color: const Color(0xffFFFFFF),
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -102,10 +102,10 @@ class _BagScreen extends State<BagWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     //image
-                    Container(
+                    SizedBox(
                       width: 150,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             bottomLeft: Radius.circular(8)),
                         child: Image.asset(
@@ -114,48 +114,48 @@ class _BagScreen extends State<BagWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     //details
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(bagList[index].name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.black)),
-                          SizedBox(
+                          const SizedBox(
                             height: 3,
                             width: 200,
                           ),
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "Color: ",
                                 style: TextStyle(color: Color(0xff9B9B9B)),
                               ),
                               Text(
                                 bagList[index].color,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black),
                               ),
-                              SizedBox(width: 20),
-                              Text(
+                              const SizedBox(width: 20),
+                              const Text(
                                 "Size: ",
                                 style: TextStyle(color: Color(0xff9B9B9B)),
                               ),
                               Text(
                                 bagList[index].size,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           //quantity
                           Row(
                             children: [
@@ -171,12 +171,12 @@ class _BagScreen extends State<BagWidget> {
                                         color: Colors.grey.withOpacity(0.2),
                                         spreadRadius: 2,
                                         blurRadius: 5,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ]),
                                 child: Center(
                                   child: IconButton(
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.remove,
                                       color: Color(0xff9B9B9B),
                                     ),
@@ -187,12 +187,12 @@ class _BagScreen extends State<BagWidget> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
                               Text(bagList[index].quantity.toString(),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
 
                               Container(
                                 height: 40,
@@ -205,13 +205,13 @@ class _BagScreen extends State<BagWidget> {
                                       color: Colors.grey.withOpacity(0.2),
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 2),
+                                      offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
                                 child: Center(
                                   child: IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.add,
                                         color: Color(0xff9B9B9B),
                                       ),
@@ -228,11 +228,11 @@ class _BagScreen extends State<BagWidget> {
                                   children: [
                                     Text(
                                       ('${bagList[index].price * bagList[index].quantity}'),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w800),
                                     ),
-                                    Text(
+                                    const Text(
                                       '\$',
                                       style: TextStyle(
                                           fontSize: 15,
@@ -242,7 +242,7 @@ class _BagScreen extends State<BagWidget> {
                                 ),
                               ),
                               //3 dots thingy
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                             ],
                           ),
                         ],
@@ -255,22 +255,22 @@ class _BagScreen extends State<BagWidget> {
                   right: 0,
                   child: FlutterPopupMenuButton(
                     direction: MenuDirection.left,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(
                         Radius.circular(10),
                       ),
                     ),
-                    popupMenuSize: Size(200, 100),
+                    popupMenuSize: const Size(200, 100),
                     child: FlutterPopupMenuIcon(
                       key: GlobalKey(),
-                      child: Icon(Icons.more_vert),
+                      child: const Icon(Icons.more_vert),
                     ),
                     children: [
                       FlutterPopupMenuItem(
                         closeOnItemClick: true,
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
                                 color: Color(0xff9B9B9B),
@@ -279,7 +279,7 @@ class _BagScreen extends State<BagWidget> {
                             ),
                           ),
                           child: ListTile(
-                            title: Text(
+                            title: const Text(
                               "Add to favorites",
                               textAlign: TextAlign.center,
                             ),
@@ -291,7 +291,7 @@ class _BagScreen extends State<BagWidget> {
                       FlutterPopupMenuItem(
                         closeOnItemClick: true,
                         child: ListTile(
-                          title: Text(
+                          title: const Text(
                             "Delete from the list",
                             textAlign: TextAlign.center,
                           ),
@@ -315,17 +315,17 @@ class _BagScreen extends State<BagWidget> {
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(90),
-        color: Color(0xffFFFFFF),
+        color: const Color(0xffFFFFFF),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
       child: TextField(
         onTap: () {
           //Modal bottom sheet
@@ -336,39 +336,40 @@ class _BagScreen extends State<BagWidget> {
                 child: Column(
                   children: [
                     Container(
-                      margin: EdgeInsets.only(top: 60),
+                      margin: const EdgeInsets.only(top: 60),
                       height: 40,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(90),
-                        color: Color(0xffFFFFFF),
+                        color: const Color(0xffFFFFFF),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.2),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
 
                       //textfield
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: TextField(
                           //TODO: filter promo codes based on text
                           onTap: () {},
                           decoration: InputDecoration(
-                            fillColor: Color(0xffFFFFFF),
+                            fillColor: const Color(0xffFFFFFF),
                             filled: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
                             ),
                             //TODO: tappable icon?
-                            suffixIcon: Icon(Icons.arrow_circle_right_rounded,
+                            suffixIcon: const Icon(
+                                Icons.arrow_circle_right_rounded,
                                 size: 40),
                             hintText: 'Enter your promo code',
-                            hintStyle: TextStyle(
+                            hintStyle: const TextStyle(
                               fontFamily: 'AbhayaLibre',
                               color: Color(0xff9B9B9B),
                               fontSize: 14,
@@ -383,9 +384,9 @@ class _BagScreen extends State<BagWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          margin:
-                              EdgeInsets.only(top: 20, bottom: 20, left: 20),
-                          child: Text(
+                          margin: const EdgeInsets.only(
+                              top: 20, bottom: 20, left: 20),
+                          child: const Text(
                             'Your Promo Codes',
                             style: TextStyle(
                               color: Color(0xff222222),
@@ -403,11 +404,12 @@ class _BagScreen extends State<BagWidget> {
                       child: Container(
                         child: ListView.separated(
                           separatorBuilder: (context, index) =>
-                              SizedBox(height: 25),
+                              const SizedBox(height: 25),
                           itemCount: promoList.length,
                           itemBuilder: (context, index) {
                             return Container(
-                                margin: EdgeInsets.only(left: 20, right: 20),
+                                margin:
+                                    const EdgeInsets.only(left: 20, right: 20),
                                 height: 100,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -417,7 +419,7 @@ class _BagScreen extends State<BagWidget> {
                                       color: Colors.grey.withOpacity(0.2),
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 2),
+                                      offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
@@ -429,10 +431,11 @@ class _BagScreen extends State<BagWidget> {
                                           MainAxisAlignment.start,
                                       children: [
                                         //image
-                                        Container(
+                                        SizedBox(
                                           width: 100,
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius:
+                                                const BorderRadius.only(
                                               topLeft: Radius.circular(8),
                                               bottomLeft: Radius.circular(8),
                                             ),
@@ -444,7 +447,7 @@ class _BagScreen extends State<BagWidget> {
                                         ),
 
                                         //details
-                                        Container(
+                                        SizedBox(
                                           width: 150,
                                           child: Column(
                                             mainAxisAlignment:
@@ -453,11 +456,11 @@ class _BagScreen extends State<BagWidget> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 10),
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10),
                                                   child: Text(
                                                     promoList[index].name,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       color: Color(0xff222222),
                                                       fontSize: 15,
                                                       fontFamily: 'AbhayaLibre',
@@ -465,13 +468,13 @@ class _BagScreen extends State<BagWidget> {
                                                           FontWeight.w800,
                                                     ),
                                                   )),
-                                              SizedBox(height: 5),
+                                              const SizedBox(height: 5),
                                               Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 10),
+                                                  margin: const EdgeInsets.only(
+                                                      left: 10),
                                                   child: Text(
                                                     promoList[index].code,
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       color: Color(0xff222222),
                                                       fontSize: 12,
                                                       fontFamily: 'AbhayaLibre',
@@ -493,11 +496,13 @@ class _BagScreen extends State<BagWidget> {
                                                     CrossAxisAlignment.end,
                                                 children: [
                                                   Container(
-                                                    margin: EdgeInsets.only(
-                                                        right: 20, bottom: 10),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 20,
+                                                            bottom: 10),
                                                     child: Text(
                                                       '${promoList[index].DaysLeft()} days remaining',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         color:
                                                             Color(0xff9B9B9B),
                                                         fontSize: 12,
@@ -510,8 +515,10 @@ class _BagScreen extends State<BagWidget> {
                                                   ),
                                                   //TODO: change to elevatedbutton to set code
                                                   Container(
-                                                    margin: EdgeInsets.only(
-                                                        right: 20, bottom: 5),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 20,
+                                                            bottom: 5),
                                                     width: 100,
                                                     height: 40,
                                                     decoration: BoxDecoration(
@@ -520,7 +527,7 @@ class _BagScreen extends State<BagWidget> {
                                                           BorderRadius.circular(
                                                               25),
                                                     ),
-                                                    child: Center(
+                                                    child: const Center(
                                                       child: Text(
                                                         'Apply',
                                                         style: TextStyle(
@@ -552,15 +559,15 @@ class _BagScreen extends State<BagWidget> {
           );
         },
         decoration: InputDecoration(
-          fillColor: Color(0xffFFFFFF),
+          fillColor: const Color(0xffFFFFFF),
           filled: true,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
-          suffixIcon: Icon(Icons.arrow_circle_right_rounded, size: 40),
+          suffixIcon: const Icon(Icons.arrow_circle_right_rounded, size: 40),
           hintText: 'Enter your promo code',
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             fontFamily: 'AbhayaLibre',
             color: Color(0xff9B9B9B),
             fontSize: 14,
@@ -580,11 +587,11 @@ class _BagScreen extends State<BagWidget> {
 
     return Container(
       height: 20,
-      margin: EdgeInsets.only(top: 20, left: 30, right: 30),
+      margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             'Total amount:',
             style: TextStyle(
               fontFamily: 'AbhayaLibre',
@@ -597,7 +604,7 @@ class _BagScreen extends State<BagWidget> {
           //price adds according to bag
           Text(
             '${total.toString()}\$',
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -611,20 +618,20 @@ class _BagScreen extends State<BagWidget> {
     //TODO: change to elevatedbutton when making new screen
     return Container(
       height: 60,
-      margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 30),
       decoration: BoxDecoration(
-        color: Color(0xffDDA86B),
+        color: const Color(0xffDDA86B),
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Center(
+      child: const Center(
         child: Text(
           'CHECK OUT',
           style: TextStyle(
@@ -636,8 +643,8 @@ class _BagScreen extends State<BagWidget> {
 
   Container MybagText() {
     return Container(
-      margin: EdgeInsets.only(top: 30),
-      child: Row(
+      margin: const EdgeInsets.only(top: 30),
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(

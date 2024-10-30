@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/SizeChartProvider.dart'; 
+import '../provider/SizeChartProvider.dart';
 
 class SizeChart extends StatelessWidget {
-  
-
-  
+  const SizeChart({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +14,7 @@ class SizeChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Size",
             style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
           ),
@@ -27,7 +25,6 @@ class SizeChart extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   sizeChartProvider.selectSize(index);
-                 
                 },
                 child: _sizeList(
                   index: index,
@@ -54,7 +51,7 @@ class SizeChart extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: isSelected ? Color(0xFFD08835) : Color(0xFFECC488),
+        color: isSelected ? const Color(0xFFD08835) : const Color(0xFFECC488),
       ),
       child: Text(
         name,

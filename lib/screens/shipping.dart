@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ShippingAddress extends StatefulWidget {
+  const ShippingAddress({super.key});
+
   @override
   _ShippingAddressState createState() => _ShippingAddressState();
 }
@@ -21,7 +23,7 @@ class _ShippingAddressState extends State<ShippingAddress> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'Shipping Address',
           style: TextStyle(color: Colors.black),
         ),
@@ -62,12 +64,12 @@ class _ShippingAddressState extends State<ShippingAddress> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: 3,
                 itemBuilder: (context, index) {
-                  String addressTitle = selectedAddress + ' $index';
+                  String addressTitle = '$selectedAddress $index';
                   return AddressCard(
                     title: addressTitle,
                     isDefault: defaultAddress == addressTitle,
@@ -92,7 +94,11 @@ class TabButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  TabButton({required this.title, required this.selected, required this.onTap});
+  const TabButton(
+      {super.key,
+      required this.title,
+      required this.selected,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +107,10 @@ class TabButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: selected ? Color(0xFFDDA86B) : Colors.grey.shade200,
+            color: selected ? const Color(0xFFDDA86B) : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           alignment: Alignment.center,
           child: Text(
             title,
@@ -124,7 +130,8 @@ class AddressCard extends StatelessWidget {
   final bool isDefault;
   final VoidCallback onSetDefault;
 
-  AddressCard({
+  const AddressCard({
+    super.key,
     required this.title,
     required this.isDefault,
     required this.onSetDefault,
@@ -135,7 +142,7 @@ class AddressCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -147,22 +154,22 @@ class AddressCard extends StatelessWidget {
                   : title.contains('Office')
                       ? 'Office Address'
                       : 'Other Address',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 8),
-            Text('123 Main St, Suite 1, City, Country'),
-            SizedBox(height: 4),
-            Text('Postal Code: 12345'),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const Text('123 Main St, Suite 1, City, Country'),
+            const SizedBox(height: 4),
+            const Text('Postal Code: 12345'),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   isDefault ? 'Default Address' : '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
                   ),
@@ -170,12 +177,12 @@ class AddressCard extends StatelessWidget {
                 if (!isDefault)
                   OutlinedButton(
                     onPressed: onSetDefault,
-                    child: Text('Set as Default'),
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
+                    child: Text('Set as Default'),
                   ),
               ],
             ),

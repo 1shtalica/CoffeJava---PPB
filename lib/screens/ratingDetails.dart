@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class RatingDetails extends StatelessWidget {
   @override
-  const RatingDetails({Key? key, required this.ratings}) : super(key: key);
+  const RatingDetails({super.key, required this.ratings});
   final List<Map<String, dynamic>> ratings;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-         elevation: 0,
+        elevation: 0,
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Container(
@@ -25,7 +26,6 @@ class RatingDetails extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-          
             Navigator.pop(context);
           },
         ),
@@ -37,9 +37,9 @@ class RatingDetails extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: CustomScrollView(
-          slivers: [
-            SliverList(
+          child: CustomScrollView(
+        slivers: [
+          SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 return Ratting(
@@ -51,9 +51,8 @@ class RatingDetails extends StatelessWidget {
               childCount: ratings.length,
             ),
           ),
-          ],
-        )
-      ),
+        ],
+      )),
     );
   }
 }
