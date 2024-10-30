@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Orders extends StatefulWidget {
+  const Orders({super.key});
+
   @override
   _OrdersState createState() => _OrdersState();
 }
@@ -20,7 +22,7 @@ class _OrdersState extends State<Orders> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'My Orders',
           style: TextStyle(color: Colors.black),
         ),
@@ -61,7 +63,7 @@ class _OrdersState extends State<Orders> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
                 itemCount: 3,
@@ -82,7 +84,11 @@ class TabButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  TabButton({required this.title, required this.selected, required this.onTap});
+  const TabButton(
+      {super.key,
+      required this.title,
+      required this.selected,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +97,10 @@ class TabButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: selected ? Color(0xFFDDA86B) : Colors.grey.shade200,
+            color: selected ? const Color(0xFFDDA86B) : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           alignment: Alignment.center,
           child: Text(
             title,
@@ -112,20 +118,20 @@ class TabButton extends StatelessWidget {
 class OrderCard extends StatelessWidget {
   final String status;
 
-  OrderCard({required this.status});
+  const OrderCard({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -141,15 +147,15 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
-            Text('Tracking number: IW3475453455'),
-            SizedBox(height: 4),
-            Text('Quantity: 3'),
-            SizedBox(height: 4),
+            const SizedBox(height: 8),
+            const Text('Tracking number: IW3475453455'),
+            const SizedBox(height: 4),
+            const Text('Quantity: 3'),
+            const SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Total Amount: 112\$',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -166,17 +172,17 @@ class OrderCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerLeft,
               child: OutlinedButton(
                 onPressed: () {},
-                child: Text('Details'),
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+                child: Text('Details'),
               ),
             ),
           ],

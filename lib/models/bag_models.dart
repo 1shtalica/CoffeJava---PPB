@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class BagModels {
   final String name;
   final String color;

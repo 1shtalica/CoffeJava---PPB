@@ -17,8 +17,7 @@ import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 import '../provider/SizeChartProvider.dart';
 
 class product_details extends StatefulWidget {
-  const product_details({Key? key, required this.image, required this.title})
-      : super(key: key);
+  const product_details({super.key, required this.image, required this.title});
   final String image;
   final String title;
 
@@ -205,8 +204,8 @@ class _ProductDetailsState extends State<product_details> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                      SizedBox(width: 4),
+                      const Icon(Icons.star, color: Colors.amber, size: 20),
+                      const SizedBox(width: 4),
                       Text(
                         "${averageRating.toStringAsFixed(1)} ($ratingLength reviews) ",
                         style: const TextStyle(
@@ -236,9 +235,9 @@ class _ProductDetailsState extends State<product_details> {
                       ),
                       Row(
                         children: [
-                          Text(averageRating.toString() + "/5"),
-                          SizedBox(width: 10),
-                          Text(ratingLength.toString() + " reviews")
+                          Text("$averageRating/5"),
+                          const SizedBox(width: 10),
+                          Text("$ratingLength reviews")
                         ],
                       )
                     ],
@@ -273,11 +272,11 @@ class _ProductDetailsState extends State<product_details> {
               );
             },
             child: Container(
-              decoration: BoxDecoration(color: Colors.transparent),
-              child: Padding(
+              decoration: const BoxDecoration(color: Colors.transparent),
+              child: const Padding(
                 padding: EdgeInsets.all(10),
                 child: Padding(
-                  padding: const EdgeInsets.only(right: 24.0, left: 12),
+                  padding: EdgeInsets.only(right: 24.0, left: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -307,14 +306,14 @@ class _ProductDetailsState extends State<product_details> {
                   ),
                   const Divider(color: Colors.black45),
                   const SizedBox(height: 40),
-                  Text(
+                  const Text(
                     "you may like other similar products",
                     style: TextStyle(),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
-                  Container(
+                  SizedBox(
                       height: 200,
                       child: SizedBox(
                         width: double.infinity,
@@ -324,7 +323,7 @@ class _ProductDetailsState extends State<product_details> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                   left: 10, right: 10, bottom: 10),
                               child: CardList(
                                   image: 'assets/image/${index + 1}.png',
@@ -350,7 +349,7 @@ class _ProductDetailsState extends State<product_details> {
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(25.0)),
                     ),
@@ -360,12 +359,13 @@ class _ProductDetailsState extends State<product_details> {
                         child: Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: 16, right: 16),
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
                               child: SizeChart(),
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                color: Color(0xFFD08835),
+                                color: const Color(0xFFD08835),
                                 borderRadius: BorderRadius.circular(50),
                               ),
                               width: 380,
@@ -383,7 +383,7 @@ class _ProductDetailsState extends State<product_details> {
                                   if (sizeChartProvider.selectedIndex == -1) {
                                     showTopSnackBar(
                                       Overlay.of(context),
-                                      CustomSnackBar.error(
+                                      const CustomSnackBar.error(
                                         message:
                                             "you have to selected the product size first",
                                       ),
@@ -391,7 +391,7 @@ class _ProductDetailsState extends State<product_details> {
                                   } else {
                                     showTopSnackBar(
                                       Overlay.of(context),
-                                      CustomSnackBar.success(
+                                      const CustomSnackBar.success(
                                         message:
                                             "you have successfully added a product",
                                       ),
@@ -400,7 +400,7 @@ class _ProductDetailsState extends State<product_details> {
                                     Navigator.pop(context);
                                   }
                                 },
-                                child: Text(
+                                child: const Text(
                                   "ADD TO CART",
                                   style: TextStyle(
                                     fontSize: 18,

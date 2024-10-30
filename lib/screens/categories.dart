@@ -104,7 +104,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomeWidget()),
+                MaterialPageRoute(builder: (context) => const HomeWidget()),
               );
             },
           ),

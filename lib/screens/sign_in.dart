@@ -1,3 +1,5 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:e_nusantara/notifications/notification_controller.dart';
 import 'package:e_nusantara/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'sign_up.dart';
@@ -13,6 +15,20 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   bool _isPasswordHidden = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +108,17 @@ class _SignInPageState extends State<SignInPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeWidget()));
+                  AwesomeNotifications().createNotification(
+                      content: NotificationContent(
+                    id: 1,
+                    channelKey: "login_channel",
+                    title: "Nusa Chan",
+                    body: "Selamat kamu sudah login >//<",
+                  ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeWidget()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDDA86B),

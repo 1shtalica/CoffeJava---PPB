@@ -3,8 +3,23 @@ import 'package:provider/provider.dart';
 import 'Screens/sign_in.dart';
 import './provider/SizeChartProvider.dart'; // Import Provider
 import './provider/FavoriteProvider.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
-void main() {
+void main() async {
+  await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+        channelGroupKey: "auth_channel_group",
+        channelKey: "login_channel",
+        channelName: "Login Notification",
+        channelDescription: "Berhasil Login")
+  ], channelGroups: [
+    NotificationChannelGroup(
+        channelGroupKey: "auth_channel_group", channelGroupName: "auth group")
+  ]);
+  bool isAllowedNotif = await AwesomeNotifications().isNotificationAllowed();
+  if (!isAllowedNotif) {
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
   runApp(
     MultiProvider(
       providers: [

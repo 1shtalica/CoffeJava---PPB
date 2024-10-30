@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 
 class Tabbar extends StatelessWidget {
+  const Tabbar({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2, 
+    return const DefaultTabController(
+      length: 2,
       child: Column(
         children: [
-        
           TabBar(
             tabs: [
-              Tab(
-                  text:
-                      'Product Information'),
+              Tab(text: 'Product Information'),
               Tab(text: 'About The Product'),
             ],
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Color(0xFFD08835), 
+            indicatorColor: Color(0xFFD08835),
           ),
           SizedBox(
-            height: 200, 
+            height: 200,
             child: TabBarView(
               children: [
-                
                 Padding(
                     padding: EdgeInsets.all(10),
                     child: SingleChildScrollView(
@@ -64,7 +62,6 @@ class Tabbar extends StatelessWidget {
                         ],
                       ),
                     )),
-                
                 Padding(
                     padding: EdgeInsets.all(10),
                     child: SingleChildScrollView(

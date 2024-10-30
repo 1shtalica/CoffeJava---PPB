@@ -195,7 +195,7 @@ class _ProductListState extends State<ProductList> {
                                             InkWell(
                                               onTap: () {},
                                               child: Container(
-                                                child: Text('Rating'),
+                                                child: const Text('Rating'),
                                               ),
                                             )
                                           ],
@@ -204,13 +204,13 @@ class _ProductListState extends State<ProductList> {
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: const Text('Terapkan Filter'),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                                 const Color(0xFFD08835),
                                             minimumSize:
                                                 const Size.fromHeight(50),
                                           ),
+                                          child: const Text('Terapkan Filter'),
                                         ),
                                       ],
                                     ),
@@ -250,7 +250,7 @@ class _ProductListState extends State<ProductList> {
                 )
               ],
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(10),
             )
           ],

@@ -48,7 +48,7 @@ class CardList extends StatelessWidget {
                 width: 120,
                 height: 100,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
                   ),
@@ -61,19 +61,19 @@ class CardList extends StatelessWidget {
             ),
             Text(
               title,
-              style: TextStyle(),
+              style: const TextStyle(),
             ),
             Text(
               NumberFormat.simpleCurrency(
                 locale: 'id_ID',
                 name: 'Rp',
               ).format((Random().nextInt(100) + 50) * 1000).toString(),
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
-                Text(((Random().nextInt(1000))).toString() + " Review •"),
-                Icon(
+                Text("${Random().nextInt(1000)} Review •"),
+                const Icon(
                   Icons.star,
                   color: Colors.amber,
                 )
