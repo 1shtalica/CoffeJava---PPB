@@ -44,21 +44,29 @@ class _BagScreen extends State<BagWidget> {
       ),
 
       //main column
-      body: Column(
-        children: [
-          MybagText(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            MybagText(),
+            Expanded(
+              child: ListView(
+                children: [
+                  // List of items
+                  ListofItems(bagList),
 
-          ListofItems(bagList),
+                  // Enter promo code container
+                  EnterPromoCodeContainer(promoList),
 
-          // Enter promo code container
-          EnterPromoCodeContainer(promoList),
+                  // Total amount
+                  TotalamountContainer(bagList),
 
-          //total amount
-          TotalamountContainer(bagList),
-
-          // //Check out button
-          CheckoutButton(),
-        ],
+                  // Check out button
+                  CheckoutButton(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -66,8 +74,8 @@ class _BagScreen extends State<BagWidget> {
   Container ListofItems(List<BagModels> bagList) {
     return Container(
       margin: EdgeInsets.only(top: 10),
-      padding: EdgeInsets.only(top: 20, bottom: 20),
-      height: 500,
+      padding: EdgeInsets.only(top: 10, bottom: 5),
+      height: 400,
       width: double.infinity,
       child: ListView.separated(
         separatorBuilder: (context, index) => SizedBox(height: 25),
@@ -221,20 +229,20 @@ class _BagScreen extends State<BagWidget> {
                                     Text(
                                       ('${bagList[index].price * bagList[index].quantity}'),
                                       style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 15,
                                           fontWeight: FontWeight.w800),
                                     ),
                                     Text(
                                       '\$',
                                       style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 15,
                                           fontWeight: FontWeight.w800),
                                     )
                                   ],
                                 ),
                               ),
                               //3 dots thingy
-                              SizedBox(width: 20),
+                              SizedBox(width: 10),
                             ],
                           ),
                         ],
@@ -422,7 +430,7 @@ class _BagScreen extends State<BagWidget> {
                                       children: [
                                         //image
                                         Container(
-                                          width: 130,
+                                          width: 100,
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(8),
@@ -451,7 +459,7 @@ class _BagScreen extends State<BagWidget> {
                                                     promoList[index].name,
                                                     style: TextStyle(
                                                       color: Color(0xff222222),
-                                                      fontSize: 17,
+                                                      fontSize: 15,
                                                       fontFamily: 'AbhayaLibre',
                                                       fontWeight:
                                                           FontWeight.w800,
@@ -465,7 +473,7 @@ class _BagScreen extends State<BagWidget> {
                                                     promoList[index].code,
                                                     style: TextStyle(
                                                       color: Color(0xff222222),
-                                                      fontSize: 14,
+                                                      fontSize: 12,
                                                       fontFamily: 'AbhayaLibre',
                                                       fontWeight:
                                                           FontWeight.w800,
@@ -492,7 +500,7 @@ class _BagScreen extends State<BagWidget> {
                                                       style: TextStyle(
                                                         color:
                                                             Color(0xff9B9B9B),
-                                                        fontSize: 14,
+                                                        fontSize: 12,
                                                         fontFamily:
                                                             'AbhayaLibre',
                                                         fontWeight:
@@ -503,8 +511,8 @@ class _BagScreen extends State<BagWidget> {
                                                   //TODO: change to elevatedbutton to set code
                                                   Container(
                                                     margin: EdgeInsets.only(
-                                                        right: 20),
-                                                    width: 97,
+                                                        right: 20, bottom: 5),
+                                                    width: 100,
                                                     height: 40,
                                                     decoration: BoxDecoration(
                                                       color: Colors.red,
@@ -517,7 +525,7 @@ class _BagScreen extends State<BagWidget> {
                                                         'Apply',
                                                         style: TextStyle(
                                                           color: Colors.white,
-                                                          fontSize: 14,
+                                                          fontSize: 12,
                                                           fontFamily:
                                                               'AbhayaLibre',
                                                           fontWeight:
@@ -571,7 +579,7 @@ class _BagScreen extends State<BagWidget> {
     }
 
     return Container(
-      height: 30,
+      height: 20,
       margin: EdgeInsets.only(top: 20, left: 30, right: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
