@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class Ratting extends StatelessWidget {
   final String username;
-  final int rating; 
+  final int rating;
   final String review;
 
-  Ratting({required this.username, required this.rating, required this.review});
+  const Ratting(
+      {super.key,
+      required this.username,
+      required this.rating,
+      required this.review});
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +20,13 @@ class Ratting extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: Text(username,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 14, height: 1.5, fontWeight: FontWeight.bold)),
             ),
             Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: Row(
                 children: List.generate(5, (index) {
                   return Icon(
@@ -33,9 +37,9 @@ class Ratting extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               child: Text(review,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     height: 1.5,
                   )),

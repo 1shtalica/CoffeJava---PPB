@@ -4,9 +4,14 @@ import 'package:e_nusantara/screens/product_details.dart';
 import 'package:flutter/material.dart';
 
 class CardList extends StatelessWidget {
-  const CardList({super.key, required this.image, required this.index});
+  const CardList(
+      {super.key,
+      required this.image,
+      required this.index,
+      required this.title});
   final String image;
   final int index;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,7 @@ class CardList extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => product_details(
               image: 'assets/image/${index + 1}.png',
+              title: title,
             ),
           ),
         );
@@ -42,7 +48,7 @@ class CardList extends StatelessWidget {
                 width: 120,
                 height: 100,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
                   ),
@@ -54,20 +60,20 @@ class CardList extends StatelessWidget {
               ),
             ),
             Text(
-              "Product ${index + 1}",
-              style: TextStyle(),
+              title,
+              style: const TextStyle(),
             ),
             Text(
               NumberFormat.simpleCurrency(
                 locale: 'id_ID',
                 name: 'Rp',
               ).format((Random().nextInt(100) + 50) * 1000).toString(),
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
-                Text(((Random().nextInt(1000) )).toString()+" Review •"),
-                Icon(
+                Text("${Random().nextInt(1000)} Review •"),
+                const Icon(
                   Icons.star,
                   color: Colors.amber,
                 )

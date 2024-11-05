@@ -1,12 +1,11 @@
 import 'package:e_nusantara/screens/bag.dart';
 import 'package:e_nusantara/screens/categories.dart';
 import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
-import 'product_details.dart';
-import 'categories.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -69,18 +68,18 @@ class _HomeWidget extends State<HomeWidget> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CategoriesPage()),
+                                builder: (context) => const CategoriesPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFDDA86B),
+                          backgroundColor: const Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 60, vertical: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        child: Text('Check'),
+                        child: const Text('Check'),
                       ),
                     ],
                   ),
@@ -117,10 +116,12 @@ class _HomeWidget extends State<HomeWidget> {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, bottom: 10),
                       child: CardList(
                         image: 'assets/image/${index + 1}.png',
                         index: index,
+                        title: 'Product ${index + 1}',
                       ),
                     );
                   },
@@ -133,7 +134,7 @@ class _HomeWidget extends State<HomeWidget> {
       const ShopWidget(),
       const BagWidget(),
       const FavoriteScreen(),
-      const ProfileWidget()
+      const ProfileWidget(),
       // Tambahkan screen lainnya jika diperlukan
     ];
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:filter_list/filter_list.dart';
+import 'package:provider/provider.dart';
+import '../provider/FavoriteProvider.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -10,75 +12,14 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreen extends State<FavoriteScreen> {
-  List<FavoriteItem> favoritesItem = [
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'LIME',
-      color: 'Blue',
-      price: 32,
-      size: 'L',
-      rating: 4.5,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/2.png',
-      title: 'Longsleeve Violeta',
-      brand: 'Mango',
-      color: 'Orange',
-      price: 90,
-      size: 'S',
-      rating: 3.0,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 100000,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: true,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/4.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 65,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: false,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/5.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 100,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: true,
-    ),
-    const FavoriteItem(
-      imageUrl: 'assets/image/3.png',
-      title: 'Shirt',
-      brand: 'Olivier',
-      color: 'Gray',
-      price: 80,
-      size: 'L',
-      rating: 4.0,
-      isSoldOut: false,
-    )
-  ];
-
+  List<FavoriteItem> favoritesItem = [];
   List<FavoriteItem> filteredItems = [];
+  bool isGridView = true;
 
   @override
   void initState() {
     super.initState();
-    filteredItems = favoritesItem;
+    filteredItems = Favoriteprovider().favorites;
   }
 
   void openFilterDelegate() async {
@@ -88,7 +29,7 @@ class _FavoriteScreen extends State<FavoriteScreen> {
     await FilterListDialog.display<String>(
       context,
       listData: options,
-      selectedListData: [],
+      selectedListData: options,
       choiceChipLabel: (item) => item,
       validateSelectedItem: (list, val) => list!.contains(val),
       onItemSearch: (item, query) {
@@ -107,8 +48,18 @@ class _FavoriteScreen extends State<FavoriteScreen> {
     );
   }
 
+  void toggleView() {
+    setState(() {
+      isGridView = !isGridView;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+    favoritesItem = favoriteProvider.favorites;
+    filteredItems = favoritesItem;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -120,7 +71,7 @@ class _FavoriteScreen extends State<FavoriteScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: openFilterDelegate,
+            onPressed: () {},
             icon: const Icon(
               Icons.search,
               color: Colors.black,
@@ -159,7 +110,7 @@ class _FavoriteScreen extends State<FavoriteScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: openFilterDelegate,
                   child: const Text(
                     'Filters',
                     style: TextStyle(fontSize: 16),
@@ -176,9 +127,9 @@ class _FavoriteScreen extends State<FavoriteScreen> {
                   ],
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.view_list,
+                  onPressed: toggleView,
+                  icon: Icon(
+                    isGridView ? Icons.view_list : Icons.grid_view,
                     size: 24,
                   ),
                 )
@@ -186,20 +137,51 @@ class _FavoriteScreen extends State<FavoriteScreen> {
             ),
           ),
           Expanded(
-              child: ListView(
-            children: filteredItems
-                .map((item) => FavoriteItem(
-                      imageUrl: item.imageUrl,
-                      title: item.title,
-                      brand: item.brand,
-                      color: item.color,
-                      price: item.price,
-                      size: item.size,
-                      rating: item.rating,
-                      isSoldOut: item.isSoldOut,
-                    ))
-                .toList(),
-          )),
+            child: isGridView
+                ? GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredItems[index];
+                      return FavoriteItem(
+                        imageUrl: item.imageUrl,
+                        title: item.title,
+                        brand: item.brand,
+                        color: item.color,
+                        price: item.price,
+                        size: item.size,
+                        rating: item.rating,
+                        isSoldOut: item.isSoldOut,
+                        index: index,
+                        isGridView: true,
+                      );
+                    })
+                : ListView.builder(
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      final item = filteredItems[index];
+                      return FavoriteItem(
+                        imageUrl: item.imageUrl,
+                        title: item.title,
+                        brand: item.brand,
+                        color: item.color,
+                        price: item.price,
+                        size: item.size,
+                        rating: item.rating,
+                        isSoldOut: item.isSoldOut,
+                        index: index,
+                        isGridView: false,
+                      );
+                    },
+                  ),
+          )
         ],
       ),
     );
@@ -215,6 +197,8 @@ class FavoriteItem extends StatelessWidget {
   final String size;
   final double rating;
   final bool isSoldOut;
+  final int index;
+  final bool isGridView;
 
   const FavoriteItem({
     super.key,
@@ -226,38 +210,141 @@ class FavoriteItem extends StatelessWidget {
     required this.size,
     required this.rating,
     required this.isSoldOut,
+    required this.index,
+    required this.isGridView,
   });
 
   @override
   Widget build(BuildContext context) {
-    //  bool isLoved = false;
-    return Card(
-      child: ListTile(
-        leading: Image.asset(imageUrl),
-        title: Text(title),
-        subtitle: Column(
+    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+
+    if (isGridView) {
+      return Card(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Brand: $brand'),
-            Text('Color: $color'),
-            Text('Size: $size'),
-            Text('Rating: $rating'),
-            Text(
-                'Price: ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(price)}'),
-            if (isSoldOut)
-              const Text(
-                'Sold Out',
-                style: TextStyle(color: Colors.red),
+            // Image container with fixed aspect ratio
+            Expanded(
+              flex: 3,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(imageUrl),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      ),
+                      onPressed: () {
+                        favoriteProvider.deleteFavoriteItem(index);
+                      },
+                    ),
+                  ),
+                ],
               ),
+            ),
+            // Content container
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      brand,
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp')
+                          .format(price),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (isSoldOut)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Sold Out',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
-        trailing: IconButton(
+      );
+    } else {
+      return Card(
+        child: ListTile(
+          leading: Image.asset(imageUrl),
+          title: Text(title),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Brand: $brand'),
+              Text('Color: $color'),
+              Text('Size: $size'),
+              Text('Rating: $rating'),
+              Text(
+                  'Price: ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(price)}'),
+              if (isSoldOut)
+                const Text(
+                  'Sold Out',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
+          trailing: IconButton(
             icon: const Icon(
               Icons.favorite,
               color: Colors.red,
             ),
-            onPressed: () {}),
-      ),
-    );
+            onPressed: () {
+              favoriteProvider.deleteFavoriteItem(index);
+            },
+          ),
+        ),
+      );
+    }
   }
 }
