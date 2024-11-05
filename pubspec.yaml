@@ -43,7 +43,7 @@ dependencies:
   fan_carousel_image_slider: ^1.0.1
   intl: ^0.19.0
   flutter_popup_menu_button: ^0.0.1+5
- 
+  awesome_notifications: ^0.8.2
 
 dev_dependencies:
   flutter_test:

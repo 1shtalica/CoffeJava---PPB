@@ -24,7 +24,7 @@ class BagModels {
       size: "L",
       quantity: 1,
       price: 51,
-      image: "assets/image/women-01.jpg",
+      image: "assets/image/Women-01.jpg",
     ));
 
     bagList.add(BagModels(
@@ -42,7 +42,7 @@ class BagModels {
       size: "M",
       quantity: 9,
       price: 43,
-      image: "assets/image/women-04.jpg",
+      image: "assets/image/Women-04.jpg",
     ));
 
     bagList.add(BagModels(
@@ -51,7 +51,7 @@ class BagModels {
       size: "M",
       quantity: 9,
       price: 43,
-      image: "assets/image/women-04.jpg",
+      image: "assets/image/Women-04.jpg",
     ));
 
     return bagList;

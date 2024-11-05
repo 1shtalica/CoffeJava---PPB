@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({super.key});
 
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,13 +143,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 }
 
-class ChangePasswordScreen extends StatelessWidget {
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+
+  @override
+  _ChangePasswordScreenState createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController oldPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  ChangePasswordScreen({super.key});
+  bool _isOldPasswordHidden = true;
+  bool _isNewPasswordHidden = true;
+  bool _isConfirmPasswordHidden = true;
+
+  void _showPasswordChangeNotification() {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: 'login_channel',
+        title: 'Nusa Chan',
+        body: 'Password kamu berhasil dirubah >//<',
+        notificationLayout: NotificationLayout.Default,
+      ),
+    );
+  }
+
+  void _validateAndSave() {
+    String newPassword = newPasswordController.text;
+    String confirmPassword = confirmPasswordController.text;
+
+    if (newPassword.isEmpty || confirmPassword.isEmpty) {
+      _showErrorDialog("Password fields cannot be empty.");
+    } else if (newPassword != confirmPassword) {
+      _showErrorDialog("Passwords do not match.");
+    } else {
+      _showSuccessSnackbar("Password changed successfully!");
+      _showPasswordChangeNotification();
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,33 +229,69 @@ class ChangePasswordScreen extends StatelessWidget {
           children: [
             TextField(
               controller: oldPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _isOldPasswordHidden,
+              decoration: InputDecoration(
                 labelText: 'Current Password',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isOldPasswordHidden
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isOldPasswordHidden = !_isOldPasswordHidden;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: newPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _isNewPasswordHidden,
+              decoration: InputDecoration(
                 labelText: 'New Password',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isNewPasswordHidden
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isNewPasswordHidden = !_isNewPasswordHidden;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: confirmPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _isConfirmPasswordHidden,
+              decoration: InputDecoration(
                 labelText: 'Confirm New Password',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isConfirmPasswordHidden
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isConfirmPasswordHidden = !_isConfirmPasswordHidden;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: _validateAndSave,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDDA86B),
                 padding:
