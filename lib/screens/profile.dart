@@ -2,6 +2,8 @@ import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/setting.dart';
 import 'package:e_nusantara/screens/shipping.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:e_nusantara/notifications/notification_controller.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({super.key});
@@ -11,6 +13,19 @@ class ProfileWidget extends StatefulWidget {
 }
 
 class _ProfileScreen extends State<ProfileWidget> {
+  void initState() {
+    // TODO: implement initState
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod);
+    super.initState();
+  }
+
   final List<Map<String, String>> menuItems = [
     {
       'title': 'My orders',
