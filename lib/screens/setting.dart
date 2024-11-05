@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
+  const Settings({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Settings',
           style: TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -23,12 +25,12 @@ class Settings extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         children: [
           ListTile(
-            title: Text(
+            title: const Text(
               'Edit Profile',
               style: TextStyle(fontSize: 16, color: Colors.black87),
             ),
-            trailing:
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black38),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.black38),
             onTap: () {
               Navigator.push(
                 context,
@@ -36,14 +38,14 @@ class Settings extends StatelessWidget {
               );
             },
           ),
-          Divider(height: 20),
+          const Divider(height: 20),
           ListTile(
-            title: Text(
+            title: const Text(
               'Change Password',
               style: TextStyle(fontSize: 16, color: Colors.black87),
             ),
-            trailing:
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black38),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.black38),
             onTap: () {
               Navigator.push(
                 context,
@@ -58,6 +60,8 @@ class Settings extends StatelessWidget {
 }
 
 class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
@@ -72,12 +76,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -90,25 +94,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             CircleAvatar(
               radius: 50,
               backgroundColor: Colors.grey.shade300,
-              child: Icon(Icons.person, size: 50, color: Colors.white),
+              child: const Icon(Icons.person, size: 50, color: Colors.white),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: fullNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Full Name',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
@@ -139,18 +143,20 @@ class ChangePasswordScreen extends StatelessWidget {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  ChangePasswordScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Change Password',
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -163,30 +169,30 @@ class ChangePasswordScreen extends StatelessWidget {
             TextField(
               controller: oldPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Current Password',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: newPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'New Password',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: confirmPasswordController,
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Confirm New Password',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(

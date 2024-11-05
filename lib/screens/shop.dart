@@ -606,7 +606,7 @@ class _ShopScreen extends State<ShopWidget> {
                       showModalBottomSheet(
                           backgroundColor: Colors.white,
                           isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
+                          shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(20),
                                   topRight: Radius.circular(20))),
@@ -620,7 +620,7 @@ class _ShopScreen extends State<ShopWidget> {
                               builder: (context, ScrollController) {
                                 return Column(
                                   children: [
-                                    Container(
+                                    SizedBox(
                                       height: 100,
                                       child: Center(
                                           child: Column(
@@ -648,19 +648,19 @@ class _ShopScreen extends State<ShopWidget> {
                                             })),
                                     Padding(
                                       padding: const EdgeInsets.all(10.0),
-                                      child: Container(
+                                      child: SizedBox(
                                         height: 50,
                                         child: ElevatedButton(
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: const Text('Terapkan Filter'),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                                 const Color(0xFFD08835),
                                             minimumSize:
                                                 const Size.fromHeight(50),
                                           ),
+                                          child: const Text('Terapkan Filter'),
                                         ),
                                       ),
                                     )
@@ -910,7 +910,8 @@ class _ShopScreen extends State<ShopWidget> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => product_details(
-                                      image: productList[index].image!,title: productList[index].nameProduct!,
+                                      image: productList[index].image!,
+                                      title: productList[index].nameProduct!,
                                     )));
                       },
                       child: _buildProductCard(product),
@@ -982,7 +983,7 @@ Widget _buildProductCard(Product myProduct) {
                         color: Color.fromARGB(255, 255, 182, 35),
                       ),
                       Text(
-                        myProduct.rating.toString() ?? 'unknown',
+                        myProduct.rating.toString(),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       )
                     ],

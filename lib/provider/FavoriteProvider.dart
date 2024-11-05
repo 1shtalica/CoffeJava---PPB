@@ -2,7 +2,7 @@ import 'package:e_nusantara/screens/favoriteScreen.dart';
 import 'package:flutter/material.dart';
 
 class Favoriteprovider extends ChangeNotifier {
-  List<FavoriteItem> _favoritesItem = [];
+  final List<FavoriteItem> _favoritesItem = [];
 
   List<FavoriteItem> get favorites => _favoritesItem;
 

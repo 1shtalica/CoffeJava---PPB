@@ -92,8 +92,10 @@ class _SignInPageState extends State<SignInPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeWidget()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeWidget()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDDA86B),
