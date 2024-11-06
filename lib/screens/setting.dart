@@ -301,7 +301,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
               ),
               child: const Text(
-                'SAVE',
+                'CHANGE',
                 style: TextStyle(
                   color: Colors.white,
                 ),
