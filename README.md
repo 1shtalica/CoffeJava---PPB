@@ -13,3 +13,7 @@ https://renchan10.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=
 # Figma
 
 https://www.figma.com/design/4FsVZWNYvHXViz395gl38D/E-Commerce-App-Design-(Community)?node-id=0-1&t=NGgFJ1BPnphadYah-1
+
+# Relational Diagram
+
+https://drive.google.com/file/d/1-1zCz0sFo9zzn0vH3SxI1QU1Ab2W-Unr/view?usp=sharing
