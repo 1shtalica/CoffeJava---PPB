@@ -64,13 +64,7 @@ class _HomeWidget extends State<HomeWidget> {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CategoriesPage()),
-                          );
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
