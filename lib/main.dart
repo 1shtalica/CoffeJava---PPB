@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'Screens/sign_in.dart';
 import './provider/SizeChartProvider.dart'; // Import Provider
@@ -20,6 +21,7 @@ void main() async {
   if (!isAllowedNotif) {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
+   await dotenv.load();
   runApp(
     MultiProvider(
       providers: [

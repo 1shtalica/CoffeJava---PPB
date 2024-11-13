@@ -1,5 +1,7 @@
+import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/widget/ratting.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RatingDetails extends StatelessWidget {
   @override
@@ -32,7 +34,16 @@ class RatingDetails extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
+            onPressed: () async {
+              final storage1 = FlutterSecureStorage();
+              String? token = await storage1.read(key: 'refreshToken');
+              print(await storage1.read(key: 'refreshToken'));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const SignInPage(title: "sign in")));
+            },
           ),
         ],
       ),

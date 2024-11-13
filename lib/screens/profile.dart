@@ -4,6 +4,7 @@ import 'package:e_nusantara/screens/shipping.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:e_nusantara/notifications/notification_controller.dart';
+import '../api/auth_service.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({super.key});
@@ -13,18 +14,34 @@ class ProfileWidget extends StatefulWidget {
 }
 
 class _ProfileScreen extends State<ProfileWidget> {
-  void initState() {
-    // TODO: implement initState
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod:
-            NotificationController.onNotificationCreatedMethod,
-        onDismissActionReceivedMethod:
-            NotificationController.onDismissActionReceivedMethod,
-        onNotificationDisplayedMethod:
-            NotificationController.onNotificationDisplayedMethod);
-    super.initState();
-  }
+  final AuthService _authService = AuthService();
+  String name = "";
+String email = "";
+
+@override
+void initState() {
+  super.initState(); 
+  _initializeProfile(); 
+  
+  // Set up Awesome Notifications listeners
+  AwesomeNotifications().setListeners(
+    onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+    onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+    onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
+    onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+  );
+}
+
+
+void _initializeProfile() async {
+  final result = await _authService.decodeProfile(context);
+  setState(() {
+    name = result['name'];
+    email = result['email'];
+  
+  });
+}
+
 
   final List<Map<String, String>> menuItems = [
     {
@@ -73,16 +90,16 @@ class _ProfileScreen extends State<ProfileWidget> {
           const SizedBox(
             height: 10,
           ),
-          const ListTile(
+          ListTile(
             leading: CircleAvatar(
               radius: 30.0,
               backgroundImage: AssetImage("assets/image/maria.png"),
             ),
             title: Text(
-              'Maria Kujou',
+              name,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text('Mariakujou@e-nusantara.com'),
+            subtitle: Text(email),
           ),
           const SizedBox(
             height: 10,

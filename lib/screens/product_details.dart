@@ -1,8 +1,11 @@
+import 'package:e_nusantara/Screens/sign_in.dart';
 import 'package:e_nusantara/provider/FavoriteProvider.dart';
 import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/sign_up.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import '../widget/size.dart';
 import '../widget/ratting.dart';
@@ -15,6 +18,8 @@ import './ratingDetails.dart';
 import 'package:fan_carousel_image_slider/fan_carousel_image_slider.dart';
 
 import '../provider/SizeChartProvider.dart';
+import 'package:http/http.dart' as http;
+import '../api/auth_service.dart';
 
 class product_details extends StatefulWidget {
   const product_details({super.key, required this.image, required this.title});
@@ -26,7 +31,45 @@ class product_details extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<product_details> {
+  final storage = FlutterSecureStorage();
   late List<String> sampleImages;
+  final AuthService _authService = AuthService();
+  Future<void> _logout() async {
+    // Ambil token yang tersimpan dari localStorage
+    String? token = await storage.read(key: 'refreshToken');
+    print(token);
+
+    // Endpoint API logout
+    String url = "http://192.168.18.14:3000/api/v1/logout";
+
+    // Header dengan Authorization
+    Map<String, String> headers = {
+      "Authorization": "Bearer $token",
+    };
+
+    // Mengirim DELETE request
+    try {
+      final response = await http.delete(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print("Logout berhasil: ${response.body}");
+        // Setelah logout, hapus token dari storage
+      } else {
+        print("Gagal logout: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (error) {
+      print("Error: $error");
+    } finally {
+      await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'refreshToken');
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const SignInPage(title: "sign in")));
+    }
+  }
 
   @override
   void initState() {
@@ -138,7 +181,7 @@ class _ProductDetailsState extends State<product_details> {
           IconButton(
             icon: const Icon(Icons.share, color: Colors.black),
             onPressed: () {
-              print(favoriteProvider.favorites.length);
+              _logout();
             },
           ),
         ],

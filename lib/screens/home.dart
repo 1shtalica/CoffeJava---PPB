@@ -6,6 +6,7 @@ import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -64,7 +65,11 @@ class _HomeWidget extends State<HomeWidget> {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          final storage = FlutterSecureStorage();
+                          String? token =
+                              await storage.read(key: 'refreshToken');
+                          print(token);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
