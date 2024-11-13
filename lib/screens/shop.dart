@@ -545,6 +545,14 @@ class _ShopScreen extends State<ShopWidget> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          surface: Colors.white,
+          primary: Color(0xFFDDA86B),
+        ),
+      ),
       home: Scaffold(
         body: Column(
           children: [
@@ -885,38 +893,35 @@ class _ShopScreen extends State<ShopWidget> {
               //   return _buildProductCard(productList[index]);
               // },)
 
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: GridView.builder(
-                  itemCount: selectedProduct.isEmpty
-                      ? productList.length
-                      : selectedProduct.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: MediaQuery.of(context).orientation ==
-                              Orientation.portrait
-                          ? 2
-                          : 2,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                      childAspectRatio: 0.8),
-                  itemBuilder: (context, index) {
-                    Product product = selectedProduct.isEmpty
-                        ? productList[index]
-                        : selectedProduct[index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => product_details(
-                                      image: productList[index].image!,
-                                      title: productList[index].nameProduct!,
-                                    )));
-                      },
-                      child: _buildProductCard(product),
-                    );
-                  },
-                ),
+              child: GridView.builder(
+                itemCount: selectedProduct.isEmpty
+                    ? productList.length
+                    : selectedProduct.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? 2
+                        : 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    childAspectRatio: 0.8),
+                itemBuilder: (context, index) {
+                  Product product = selectedProduct.isEmpty
+                      ? productList[index]
+                      : selectedProduct[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => product_details(
+                                    image: productList[index].image!,
+                                    title: productList[index].nameProduct!,
+                                  )));
+                    },
+                    child: _buildProductCard(product),
+                  );
+                },
               ),
             )
           ],
@@ -929,14 +934,14 @@ class _ShopScreen extends State<ShopWidget> {
 Widget _buildProductCard(Product myProduct) {
   return InkWell(
     child: Container(
-      margin: const EdgeInsets.fromLTRB(15, 5, 15, 15),
+      margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
         boxShadow: const [
           BoxShadow(
               color: Colors.black38,
-              blurRadius: 7,
+              blurRadius: 3,
               spreadRadius: 2,
               offset: Offset(4, 4))
         ],
