@@ -7,9 +7,10 @@ import 'sign_up.dart';
 import '../api/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key, required this.title});
+  const SignInPage({super.key, required this.title, this.successMessage});
 
   final String title;
+  final String? successMessage;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -26,16 +27,26 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     storage = FlutterSecureStorage();
     super.initState();
-     
-    
+
     _checkTokenAndNavigate();
     // Set listeners for notifications
     AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
-        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
     );
+
+    if (widget.successMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(widget.successMessage!)),
+        );
+      });
+    }
   }
 
   // Function to check if token exists and navigate accordingly
@@ -58,8 +69,10 @@ class _SignInPageState extends State<SignInPage> {
     final password = _passwordController.text;
 
     final result = await _authService.login(email, password);
-print( result ?['refreshToken']);
-    if (result != null && result['accessToken'] != null && result['refreshToken']!= null) {
+    print(result?['refreshToken']);
+    if (result != null &&
+        result['accessToken'] != null &&
+        result['refreshToken'] != null) {
       // If login is successful, save the access token
       await storage.write(key: 'accessToken', value: result['accessToken']);
       await storage.write(key: 'refreshToken', value: result['refreshToken']);
@@ -159,7 +172,8 @@ print( result ?['refreshToken']);
                     },
                     child: const Text(
                       'Sign Up',
-                      style: TextStyle(color: Color.fromARGB(255, 189, 176, 162)),
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 189, 176, 162)),
                     ),
                   ),
                 ],
@@ -170,7 +184,8 @@ print( result ?['refreshToken']);
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFDDA86B),
-                    padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 120, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),

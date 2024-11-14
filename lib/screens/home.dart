@@ -65,7 +65,6 @@ class _HomeWidget extends State<HomeWidget> {
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
-<<<<<<< HEAD
                         onPressed: () async {
                           final storage = FlutterSecureStorage();
                           String? token =
@@ -77,9 +76,6 @@ class _HomeWidget extends State<HomeWidget> {
                                 builder: (context) => const CategoriesPage()),
                           );
                         },
-=======
-                        onPressed: () {},
->>>>>>> 5c810e6f30256c8ed4bb61871de458d91b79970e
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFDDA86B),
                           padding: const EdgeInsets.symmetric(
