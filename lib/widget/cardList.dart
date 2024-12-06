@@ -8,10 +8,13 @@ class CardList extends StatelessWidget {
       {super.key,
       required this.image,
       required this.index,
-      required this.title});
+      required this.title, required this.product_id, required this.price, required this.totalReview});
   final String image;
   final int index;
   final String title;
+  final int product_id;
+  final int price;
+  final int totalReview;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +24,8 @@ class CardList extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => product_details(
-              image: 'assets/image/${index + 1}.png',
-              title: title,
+              image: image,
+              title: title, productId: product_id,
             ),
           ),
         );
@@ -54,7 +57,7 @@ class CardList extends StatelessWidget {
                   ),
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: AssetImage(image),
+                    image: NetworkImage(image),
                   ),
                 ),
               ),
@@ -62,17 +65,19 @@ class CardList extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(),
+              overflow: TextOverflow.ellipsis
+              
             ),
             Text(
               NumberFormat.simpleCurrency(
                 locale: 'id_ID',
                 name: 'Rp',
-              ).format((Random().nextInt(100) + 50) * 1000).toString(),
+              ).format((price) * 1000).toString(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
-                Text("${Random().nextInt(1000)} Review •"),
+                Text("${totalReview} Review •"),
                 const Icon(
                   Icons.star,
                   color: Colors.amber,

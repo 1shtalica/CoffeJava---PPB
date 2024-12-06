@@ -6,7 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class AuthService { 
+class AuthService {
   final String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -47,7 +47,8 @@ class AuthService {
       }
     } catch (e) {
       print('Error wqe: $e');
-      return null;
+      return {'error': e.toString().replaceFirst('Exception: ', '')};
+
     }
   }
 
@@ -114,7 +115,7 @@ class AuthService {
     String? token = await storage.read(key: 'accessToken');
     if (token != null) {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      
+
       String? name = decodedToken['name'];
       String? email = decodedToken['emailUser'];
 

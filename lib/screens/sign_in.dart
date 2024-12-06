@@ -29,7 +29,7 @@ class _SignInPageState extends State<SignInPage> {
     super.initState();
 
     _checkTokenAndNavigate();
-    // Set listeners for notifications
+   
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
       onNotificationCreatedMethod:
@@ -49,14 +49,14 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  // Function to check if token exists and navigate accordingly
+ 
   Future<void> _checkTokenAndNavigate() async {
     print("test sesions");
     final storage1 = FlutterSecureStorage();
     String? token = await storage1.read(key: 'refreshToken');
     print(await storage.read(key: 'refreshToken'));
     if (token != null) {
-      // If token exists, navigate to Home page
+      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
@@ -69,17 +69,17 @@ class _SignInPageState extends State<SignInPage> {
     final password = _passwordController.text;
 
     final result = await _authService.login(email, password);
-    print(result?['refreshToken']);
+    
     if (result != null &&
         result['accessToken'] != null &&
         result['refreshToken'] != null) {
-      // If login is successful, save the access token
+      
       await storage.write(key: 'accessToken', value: result['accessToken']);
       await storage.write(key: 'refreshToken', value: result['refreshToken']);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Login successful')));
 
-      // Create notification on successful login
+      
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
@@ -96,8 +96,9 @@ class _SignInPageState extends State<SignInPage> {
       );
     } else {
       // If login fails, show error message
+      print(result);
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Login failed')));
+          .showSnackBar(SnackBar(content: Text(result?['error'].toString() ?? "login failed")));
     }
   }
 
