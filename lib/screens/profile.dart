@@ -16,49 +16,54 @@ class ProfileWidget extends StatefulWidget {
 class _ProfileScreen extends State<ProfileWidget> {
   final AuthService _authService = AuthService();
   String name = "";
-String email = "";
+  String email = "";
+  String profileImage = "";
+  String id = "";
 
-@override
-void initState() {
-  super.initState(); 
-  _initializeProfile(); 
-  
-  // Set up Awesome Notifications listeners
-  AwesomeNotifications().setListeners(
-    onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-    onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-    onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
-    onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-  );
-}
+  @override
+  void initState() {
+    super.initState();
+    _initializeProfile();
 
+    // Set up Awesome Notifications listeners
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
+    );
+  }
 
-void _initializeProfile() async {
-  final result = await _authService.decodeProfile(context);
-  setState(() {
-    name = result['name'];
-    email = result['email'];
-  
-  });
-}
-
+  void _initializeProfile() async {
+    final result = await _authService.decodeProfile(context);
+    setState(() {
+      name = result['name'];
+      email = result['email'];
+      id = result['id'];
+      // profileImage = result['profileImage'];
+    });
+  }
 
   final List<Map<String, String>> menuItems = [
     {
       'title': 'My orders',
       'subtitle': 'Already have 12 orders',
     },
-    {
-      'title': 'Shipping addresses',
-      'subtitle': '3 addresses',
-    },
+    // {
+    //   'title': 'Shipping addresses',
+    //   'subtitle': '3 addresses',
+    // },
     {
       'title': 'Settings',
       'subtitle': 'Notifications, password',
     },
   ];
 
-  final subScreen = [Orders(), ShippingAddress(), Settings()];
+  // final subScreen = [Orders(), ShippingAddress(), Settings()];
+  final subScreen = [Orders(), Settings()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

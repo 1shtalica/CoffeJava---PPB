@@ -48,7 +48,6 @@ class AuthService {
     } catch (e) {
       print('Error wqe: $e');
       return {'error': e.toString().replaceFirst('Exception: ', '')};
-
     }
   }
 
@@ -116,10 +115,14 @@ class AuthService {
     if (token != null) {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
+      String? id = decodedToken['id'];
       String? name = decodedToken['name'];
-      String? email = decodedToken['emailUser'];
+      String? email = decodedToken['email'];
+      // String? profileImage = decodedToken['profileImage'];
+      //   const profileImage = User.profileImage;
+      // const tanggalLahir = User.tanggalLahir;
 
-      return {"name": name, "email": email};
+      return {"id": id, "name": name, "email": email};
     }
     Navigator.pushReplacement(
       context,

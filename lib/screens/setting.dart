@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import '../api/auth_service.dart';
+import '../api/setting_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -76,6 +81,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
+  File? _profileImage;
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedImage = await ImagePicker().pickImage(source: source);
+
+      if (pickedImage != null) {
+        setState(() {
+          _profileImage = File(pickedImage.path);
+        });
+      }
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
+
+  void _showImagePickerDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Take a picture"),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Choose from gallery"),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,10 +148,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey.shade300,
-              child: const Icon(Icons.person, size: 50, color: Colors.white),
+            GestureDetector(
+              onTap: _showImagePickerDialog,
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.grey.shade300,
+                backgroundImage:
+                    _profileImage != null ? FileImage(_profileImage!) : null,
+                child: _profileImage == null
+                    ? const Icon(Icons.person, size: 50, color: Colors.white)
+                    : null,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -156,6 +214,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
+  final AuthService _authService = AuthService();
+  String id = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProfile();
+  }
+
+  void _initializeProfile() async {
+    final result = await _authService.decodeProfile(context);
+    setState(() {
+      id = result['id'];
+    });
+  }
+
   bool _isOldPasswordHidden = true;
   bool _isNewPasswordHidden = true;
   bool _isConfirmPasswordHidden = true;
@@ -172,17 +246,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  void _validateAndSave() {
+  void _validateAndSave() async {
+    String oldPassword = oldPasswordController.text;
     String newPassword = newPasswordController.text;
     String confirmPassword = confirmPasswordController.text;
 
-    if (newPassword.isEmpty || confirmPassword.isEmpty) {
-      _showErrorDialog("Password fields cannot be empty.");
+    if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      _showErrorDialog("All fields are required.");
     } else if (newPassword != confirmPassword) {
       _showErrorDialog("Passwords do not match.");
     } else {
-      _showSuccessSnackbar("Password changed successfully!");
-      _showPasswordChangeNotification();
+      final resetPasswordService = ResetPasswordService();
+      bool success = await resetPasswordService.resetPassword(
+          id, oldPassword, newPassword);
+
+      if (success) {
+        _showSuccessSnackbar("Password successfully changed!");
+        _showPasswordChangeNotification();
+      } else {
+        _showErrorDialog("Failed to change password. Please try again.");
+      }
     }
   }
 
