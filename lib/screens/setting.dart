@@ -5,6 +5,8 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import '../api/auth_service.dart';
 import '../api/setting_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -80,12 +82,36 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final FlutterSecureStorage storage = FlutterSecureStorage();
 
+  final AuthService _authService = AuthService();
+
+  String id = "";
+  String? selectedGender;
+  DateTime? selectedDate;
   File? _profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProfile();
+  }
+
+  void _initializeProfile() async {
+    final result = await _authService.decodeProfile(context);
+    setState(() {
+      id = result['id'];
+    });
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final pickedImage = await ImagePicker().pickImage(source: source);
+      final pickedImage = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 800, // Batasi lebar gambar
+        maxHeight: 800, // Batasi tinggi gambar
+        imageQuality: 80, // Kompresi gambar (0-100)
+      );
 
       if (pickedImage != null) {
         setState(() {
@@ -127,6 +153,164 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    final userId = id;
+    final fullName = fullNameController.text.trim();
+    final email = emailController.text.trim();
+
+    if (fullName.isEmpty ||
+        email.isEmpty ||
+        selectedGender == null ||
+        selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email')),
+      );
+      return;
+    }
+
+    try {
+      final token = await storage.read(key: 'refreshToken');
+      if (token == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated')),
+        );
+        return;
+      }
+
+      print(token);
+
+      // Kirim update profile
+      final success = await ResetPasswordService().updateUserProfile(
+        token: token,
+        userId: userId,
+        nama: fullName,
+        email: email,
+        gender: selectedGender,
+        tanggalLahir: selectedDate?.toIso8601String(),
+      );
+
+      if (_profileImage != null) {
+        final imageUpdated = await ResetPasswordService().updateProfileImage(
+          userId: userId,
+          token: token,
+          imageFile: _profileImage!,
+        );
+        if (!imageUpdated) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update image')),
+          );
+          return;
+        }
+      }
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile')),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred')),
+      );
+    }
+  }
+
+  Widget _buildAvatar() {
+    return GestureDetector(
+      onTap: _showImagePickerDialog,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey.shade300,
+        backgroundImage:
+            _profileImage != null ? FileImage(_profileImage!) : null,
+        child: _profileImage == null
+            ? const Icon(Icons.person, size: 50, color: Colors.white)
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      keyboardType: keyboardType,
+    );
+  }
+
+  Widget _buildGenderDropdown() {
+    return DropdownButtonFormField<String>(
+      value: selectedGender,
+      items: ['Male', 'Female'].map((String gender) {
+        return DropdownMenuItem<String>(
+          value: gender.toLowerCase(),
+          child: Text(gender),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          selectedGender = value;
+        });
+      },
+      decoration: const InputDecoration(
+        labelText: 'Gender',
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _selectDate(context),
+      child: AbsorbPointer(
+        child: TextField(
+          decoration: InputDecoration(
+            labelText: selectedDate != null
+                ? "${selectedDate!.toLocal()}".split(' ')[0]
+                : 'Select Birth Date',
+            border: const OutlineInputBorder(),
+            suffixIcon: const Icon(Icons.calendar_today),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,55 +330,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: _showImagePickerDialog,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage:
-                    _profileImage != null ? FileImage(_profileImage!) : null,
-                child: _profileImage == null
-                    ? const Icon(Icons.person, size: 50, color: Colors.white)
-                    : null,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildAvatar(),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: fullNameController,
+                label: 'Full Name',
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: fullNameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: emailController,
+                label: 'Email',
+                keyboardType: TextInputType.emailAddress,
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDDA86B),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 120, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+              const SizedBox(height: 16),
+              _buildGenderDropdown(),
+              const SizedBox(height: 16),
+              _buildDatePicker(context),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDDA86B),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 120, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+                child: const Text(
+                  'SAVE',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              child: const Text(
-                'SAVE',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
