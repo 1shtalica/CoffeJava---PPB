@@ -21,7 +21,7 @@ void main() async {
   if (!isAllowedNotif) {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
-   await dotenv.load();
+  await dotenv.load();
   runApp(
     MultiProvider(
       providers: [

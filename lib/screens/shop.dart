@@ -50,7 +50,7 @@ class _ShopScreen extends State<ShopWidget> {
 
   List<Product> productList = [
     Product(
-      nameProduct: "Basic T-Shirt Exclusive Summer 2024 Festival",
+      nameProduct: "Basic T-Shirt Exclusive Summer 2024 Festival -TwentyOne",
       category: "Men's Clothing",
       subCategory: "T-Shirt",
       location: "New York",
@@ -916,7 +916,8 @@ class _ShopScreen extends State<ShopWidget> {
                           MaterialPageRoute(
                               builder: (context) => product_details(
                                     image: productList[index].image!,
-                                    title: productList[index].nameProduct!, productId: 34,
+                                    title: productList[index].nameProduct!,
+                                    productId: 34,
                                   )));
                     },
                     child: _buildProductCard(product),
@@ -941,7 +942,7 @@ Widget _buildProductCard(Product myProduct) {
         boxShadow: const [
           BoxShadow(
               color: Colors.black38,
-              blurRadius: 3,
+              blurRadius: 8,
               spreadRadius: 2,
               offset: Offset(4, 4))
         ],
@@ -967,11 +968,14 @@ Widget _buildProductCard(Product myProduct) {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    myProduct.nameProduct ?? 'unknown',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Text(
+                      myProduct.nameProduct ?? 'unknown',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                   ),
                   Text(
                     NumberFormat.simpleCurrency(
@@ -989,7 +993,7 @@ Widget _buildProductCard(Product myProduct) {
                       Text(
                         myProduct.rating.toString(),
                         style: const TextStyle(fontWeight: FontWeight.bold),
-                      )
+                      ),
                     ],
                   ),
                 ],
