@@ -191,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     try {
-      final token = await storage.read(key: 'refreshToken');
+      final token = await storage.read(key: 'accessToken');
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User not authenticated')),

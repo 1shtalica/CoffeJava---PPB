@@ -46,7 +46,9 @@ class ResetPasswordService {
     String? gender,
     String? tanggalLahir,
   }) async {
+    final storage = FlutterSecureStorage();
     final url = Uri.parse('$baseUrl/editUser/$userId');
+    print(url);
 
     try {
       final Map<String, dynamic> updateData = {
@@ -68,7 +70,12 @@ class ResetPasswordService {
       );
 
       if (response.statusCode == 200) {
-        print('Profile updated successfully: ${response.body}');
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        print('token baru ${responseData['accessToken']}');
+        await storage.write(
+            key: 'refreshToken', value: responseData['refreshToken']);
+        await storage.write(
+            key: 'accessToken', value: responseData['accessToken']);
         return true;
       } else {
         final data = jsonDecode(response.body);

@@ -53,6 +53,8 @@ class _SignInPageState extends State<SignInPage> {
   Future<void> _checkTokenAndNavigate() async {
     print("test sesions");
     final storage1 = FlutterSecureStorage();
+    
+ 
     String? token = await storage1.read(key: 'refreshToken');
     print(await storage.read(key: 'refreshToken'));
     if (token != null) {
