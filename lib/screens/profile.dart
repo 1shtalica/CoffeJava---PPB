@@ -1,6 +1,5 @@
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/setting.dart';
-import 'package:e_nusantara/screens/shipping.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:e_nusantara/notifications/notification_controller.dart';
@@ -38,7 +37,7 @@ class _ProfileScreen extends State<ProfileWidget> {
   }
 
   Future<void> _refreshScreen() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 2)); // Simulasi refresh
     await _initializeProfile();
   }
 
@@ -46,12 +45,17 @@ class _ProfileScreen extends State<ProfileWidget> {
     try {
       final result = await _authService.decodeProfile(context);
       setState(() {
-        name = result['name'];
-        email = result['email'];
-        id = result['id'];
+        profileImage = result['profileImage'] ?? ""; // Gambar profil
+        name = result['name'] ?? "Loading..."; // Nama dengan fallback
+        email = result['email'] ?? "Loading..."; // Email dengan fallback
+        id = result['id'] ?? ""; // ID dengan fallback
       });
     } catch (e) {
       print("Error initializing profile: $e");
+      setState(() {
+        name = "Loading...";
+        email = "Loading...";
+      });
     }
   }
 
@@ -102,7 +106,9 @@ class _ProfileScreen extends State<ProfileWidget> {
             ListTile(
               leading: CircleAvatar(
                 radius: 30.0,
-                backgroundImage: AssetImage("assets/image/maria.png"),
+                backgroundImage: profileImage.isNotEmpty
+                    ? NetworkImage(profileImage)
+                    : AssetImage("assets/image/maria.png") as ImageProvider,
               ),
               title: Text(
                 name,
@@ -124,9 +130,10 @@ class _ProfileScreen extends State<ProfileWidget> {
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => subScreen[index]));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => subScreen[index]),
+                          );
                         },
                       ),
                       const Divider(),
