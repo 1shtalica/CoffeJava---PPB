@@ -118,11 +118,17 @@ class AuthService {
       String? id = decodedToken['id'];
       String? name = decodedToken['name'];
       String? email = decodedToken['email'];
+      String? profileImage = decodedToken['profileImage'];
       // String? profileImage = decodedToken['profileImage'];
       //   const profileImage = User.profileImage;
       // const tanggalLahir = User.tanggalLahir;
 
-      return {"id": id, "name": name, "email": email};
+      return {
+        "id": id,
+        "name": name,
+        "email": email,
+        "profileImage": profileImage
+      };
     }
     Navigator.pushReplacement(
       context,

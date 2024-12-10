@@ -1,6 +1,5 @@
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/setting.dart';
-import 'package:e_nusantara/screens/shipping.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:e_nusantara/notifications/notification_controller.dart';
@@ -37,14 +36,27 @@ class _ProfileScreen extends State<ProfileWidget> {
     );
   }
 
-  void _initializeProfile() async {
-    final result = await _authService.decodeProfile(context);
-    setState(() {
-      name = result['name'];
-      email = result['email'];
-      id = result['id'];
-      // profileImage = result['profileImage'];
-    });
+  Future<void> _refreshScreen() async {
+    await Future.delayed(Duration(seconds: 2)); // Simulasi refresh
+    await _initializeProfile();
+  }
+
+  Future<void> _initializeProfile() async {
+    try {
+      final result = await _authService.decodeProfile(context);
+      setState(() {
+        profileImage = result['profileImage'] ?? ""; // Gambar profil
+        name = result['name'] ?? "Loading..."; // Nama dengan fallback
+        email = result['email'] ?? "Loading..."; // Email dengan fallback
+        id = result['id'] ?? ""; // ID dengan fallback
+      });
+    } catch (e) {
+      print("Error initializing profile: $e");
+      setState(() {
+        name = "Loading...";
+        email = "Loading...";
+      });
+    }
   }
 
   final List<Map<String, String>> menuItems = [
@@ -52,18 +64,14 @@ class _ProfileScreen extends State<ProfileWidget> {
       'title': 'My orders',
       'subtitle': 'Already have 12 orders',
     },
-    // {
-    //   'title': 'Shipping addresses',
-    //   'subtitle': '3 addresses',
-    // },
     {
       'title': 'Settings',
       'subtitle': 'Notifications, password',
     },
   ];
 
-  // final subScreen = [Orders(), ShippingAddress(), Settings()];
   final subScreen = [Orders(), Settings()];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,63 +85,65 @@ class _ProfileScreen extends State<ProfileWidget> {
           },
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "Profile",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFDDA86B),
+      body: RefreshIndicator(
+        onRefresh: _refreshScreen,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Profile",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFDDA86B),
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          ListTile(
-            leading: CircleAvatar(
-              radius: 30.0,
-              backgroundImage: AssetImage("assets/image/maria.png"),
+            const SizedBox(height: 10),
+            ListTile(
+              leading: CircleAvatar(
+                radius: 30.0,
+                backgroundImage: profileImage.isNotEmpty
+                    ? NetworkImage(profileImage)
+                    : AssetImage("assets/image/maria.png") as ImageProvider,
+              ),
+              title: Text(
+                name,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(email),
             ),
-            title: Text(
-              name,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(email),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: menuItems.length,
-              itemBuilder: (context, index) {
-                final item = menuItems[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(item['title']!),
-                      subtitle: Text(item['subtitle']!),
-                      trailing: const Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        Navigator.push(
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: menuItems.length,
+                itemBuilder: (context, index) {
+                  final item = menuItems[index];
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(item['title']!),
+                        subtitle: Text(item['subtitle']!),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => subScreen[index]));
-                      },
-                    ),
-                    const Divider(),
-                  ],
-                );
-              },
+                                builder: (context) => subScreen[index]),
+                          );
+                        },
+                      ),
+                      const Divider(),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
