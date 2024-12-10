@@ -52,10 +52,7 @@ class _ProfileScreen extends State<ProfileWidget> {
       });
     } catch (e) {
       print("Error initializing profile: $e");
-      setState(() {
-        name = "Loading...";
-        email = "Loading...";
-      });
+      
     }
   }
 

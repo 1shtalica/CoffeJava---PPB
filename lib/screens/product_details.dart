@@ -9,6 +9,7 @@ import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../widget/size.dart';
 import '../widget/ratting.dart';
@@ -90,10 +91,10 @@ class _ProductDetailsState extends State<product_details> {
 
   Future<void> _initializeProductDetails() async {
     ProductService productService = ProductService();
-    
+
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
-          limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
+        limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
 
     setState(() {
       productDetail = fetchedProduct;
@@ -191,7 +192,12 @@ class _ProductDetailsState extends State<product_details> {
                           ),
                         ),
                         Text(
-                          productDetail?.price.toString() ?? '',
+                          NumberFormat.simpleCurrency(
+                            locale: 'id_ID',
+                            name: 'Rp',
+                          )
+                              .format((productDetail?.price.round())! * 1000)
+                              .toString(),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -205,7 +211,9 @@ class _ProductDetailsState extends State<product_details> {
                             color: Color.fromRGBO(117, 117, 117, 1),
                           ),
                         ),
-                        SizeChart(),
+                        SizeChart(
+                          stock: productDetail!.stock ?? [],
+                        ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
@@ -221,13 +229,12 @@ class _ProductDetailsState extends State<product_details> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          productDetail?.decs ?? '',
-                          style: TextStyle(fontSize: 14, height: 1.5),
-                        ),
-                        const SizedBox(height: 20),
+                        
+                        
                         const Divider(color: Colors.black45),
-                        Tabbar(),
+                        Tabbar(
+                          product: productDetail!,
+                        ),
                         const Divider(color: Colors.black45),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,15 +345,16 @@ class _ProductDetailsState extends State<product_details> {
                                     padding: const EdgeInsets.only(
                                         left: 10, right: 10, bottom: 10),
                                     child: CardList(
-                                        image:
-                                            products[index].images![0],
+                                        image: products[index].images![0],
                                         index: index,
                                         title: products[index].pName ?? "",
-                                        product_id: products[index].productId ?? 0,
-                                        price: products[index].price.toInt() ?? 0,
-                                        totalReview: products[index].ratings!.length),
+                                        product_id:
+                                            products[index].productId ?? 0,
+                                        price:
+                                            products[index].price.toInt() ?? 0,
+                                        totalReview:
+                                            products[index].ratings!.length),
                                   );
-                                  
                                 },
                               ),
                             ))
@@ -378,7 +386,9 @@ class _ProductDetailsState extends State<product_details> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 16, right: 16),
-                              child: SizeChart(),
+                              child: SizeChart(
+                                stock: productDetail!.stock ?? [],
+                              ),
                             ),
                             Container(
                               decoration: BoxDecoration(

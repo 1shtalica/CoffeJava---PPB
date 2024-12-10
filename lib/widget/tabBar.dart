@@ -1,122 +1,116 @@
+import 'package:e_nusantara/models/product_models.dart';
 import 'package:flutter/material.dart';
 
-class Tabbar extends StatelessWidget {
-  const Tabbar({super.key});
+class Tabbar extends StatefulWidget {
+  final Product product;
+  Tabbar({super.key, required this.product});
+
+  @override
+  _TabbarState createState() => _TabbarState();
+}
+
+class _TabbarState extends State<Tabbar> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  double _maxHeight = 180;
+
+  var category;
+  var subCategorY;
+  var specificSubCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    category = widget.product.categories!
+        .map((category) => category.categoryName)
+        .join(", ");
+    subCategorY = widget.product.subCategories!
+        .map((subCategory) => subCategory.subCategoryName)
+        .join(", ");
+    specificSubCategory = widget.product.specificSubCategories!
+        .map((specificSubCategory) =>
+            specificSubCategory.specificSubCategoryName)
+        .join(", ");
+
+    _tabController.addListener(_handleTabSelection);
+  }
+
+  void _handleTabSelection() {
+    setState(() {
+      _maxHeight = _tabController.index == 0 ? 180 : 150;
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 2,
       child: Column(
         children: [
           TabBar(
-            tabs: [
+            controller: _tabController,
+            tabs: const [
               Tab(text: 'Product Information'),
               Tab(text: 'About The Product'),
             ],
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Color(0xFFD08835),
+            indicatorColor: const Color(0xFFD08835),
           ),
-          SizedBox(
-            height: 200,
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: _maxHeight,
+            ),
             child: TabBarView(
+              controller: _tabController,
               children: [
                 Padding(
-                    padding: EdgeInsets.all(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Rincian",
-                            style: TextStyle(fontSize: 25),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "SKU:xxxxxxxxx",
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("Material: cotton cloth"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("SKU:xxxxxxxxx"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("SKU:xxxxxxxxx"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("category: men's clothing"),
-                          Text("SKU:xxxxxxxxx"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("Brand: authentic indonesian"),
-                        ],
-                      ),
-                    )),
+                  padding: const EdgeInsets.all(10),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Rincian",
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        const SizedBox(height: 10),
+                        Text("SKU: ${widget.product.productId}"),
+                        const SizedBox(height: 5),
+                        Text("Brand: ${widget.product.brand}"),
+                        const SizedBox(height: 5),
+                        Text("Categories: ${category}"),
+                        const SizedBox(height: 5),
+                        Text("Sub categories: ${subCategorY}"),
+                        const SizedBox(height: 5),
+                        Text("Spesific categories: ${specificSubCategory}"),
+                       
+                      ],
+                    ),
+                  ),
+                ),
                 Padding(
-                    padding: EdgeInsets.all(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "About Batik Shirts",
-                            style: TextStyle(fontSize: 25),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text("A Blend of Tradition and Modern Style"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              "High Quality Material: Soft and breathable cotton"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("Attractive Design: Classic and modern motifs"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              "Environmentally Friendly: Sustainable production process"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text("Various Size and Color Options"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              "Comfort in Wearing: Suitable for various occasions"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              "Celebrating Culture: Showcasing the richness of Indonesian culture"),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                              "Guaranteed Quality: Made with attention to detail"),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                              "The image color is slightly different from the actual product color due to lighting during the photoshoot process.")
-                        ],
-                      ),
-                    ))
+                  padding: const EdgeInsets.all(10),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "About ${widget.product.pName}",
+                          style: const TextStyle(fontSize: 25),
+                        ),
+                        const SizedBox(height: 10),
+                        Text("${widget.product.decs}"),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
