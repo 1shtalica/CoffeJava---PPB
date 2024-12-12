@@ -43,12 +43,104 @@ class product_details extends StatefulWidget {
 
 class _ProductDetailsState extends State<product_details> {
   List<fixProduct.Product> products = [];
+  bool isAddedFavorite = false;
   bool isLoading = true;
   Product? productDetail;
   List<Review> _ratings = [];
   final storage = FlutterSecureStorage();
   List<String> sampleImages = [];
   final AuthService _authService = AuthService();
+
+  Future<void> addFavotite() async {
+    if (!isAddedFavorite) {
+      final storage = FlutterSecureStorage();
+      String? token = await storage.read(key: 'accessToken');
+      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      };
+      final body = json.encode({
+        'productId': widget.productId,
+      });
+      try {
+        final response = await http.post(url, headers: headers, body: body);
+
+        if (response.statusCode == 200) {
+          print('Product added to favorites!');
+        } else {
+          print('Failed to add to favorites: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+      } finally {
+        chekckIsFavorite();
+      }
+    }
+  }
+
+  Future<void> deleteFavotite() async {
+    if (isAddedFavorite) {
+      final storage = FlutterSecureStorage();
+      String? token = await storage.read(key: 'accessToken');
+      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      };
+      final body = json.encode({
+        'productId': widget.productId,
+      });
+      try {
+        final response = await http.delete(url, headers: headers, body: body);
+
+        if (response.statusCode == 200) {
+          print('Product delete from favorites!');
+        } else {
+          print('Failed to delete favorites: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+      } finally {
+        chekckIsFavorite();
+      }
+    }
+  }
+
+  Future<void> chekckIsFavorite() async {
+    final storage = FlutterSecureStorage();
+    String? token = await storage.read(key: 'accessToken');
+    final url = Uri.parse('http://192.168.18.14:3000/favorites');
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        List<dynamic> favorites = json.decode(response.body);
+        bool isFavorite = favorites
+            .any((favorite) => favorite['product_id'] == widget.productId);
+
+        if (isFavorite) {
+          print('Product is in the favorites!');
+          setState(() {
+            isAddedFavorite = true;
+          });
+        } else {
+          print('Product is not in the favorites.');
+          setState(() {
+            isAddedFavorite = false;
+          });
+        }
+      } else {
+        print('Failed to fetch favorites: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   Future<void> fetchProductCategory() async {
     final ProductService productService = ProductService();
@@ -95,6 +187,7 @@ class _ProductDetailsState extends State<product_details> {
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
         limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
+    chekckIsFavorite();
 
     setState(() {
       productDetail = fetchedProduct;
@@ -229,8 +322,6 @@ class _ProductDetailsState extends State<product_details> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        
-                        
                         const Divider(color: Colors.black45),
                         Tabbar(
                           product: productDetail!,
@@ -460,33 +551,15 @@ class _ProductDetailsState extends State<product_details> {
             ),
             IconButton(
               onPressed: () {
-                setState(() {
-                  if (!isFavorite) {
-                    isFavorite = !isFavorite;
-                    favoriteProvider.AddFavoriteItem(
-                      FavoriteItem(
-                        imageUrl: widget.image,
-                        title: widget.title,
-                        brand: 'sadd',
-                        color: 'Gradssaday',
-                        price: 100000,
-                        size: 'L',
-                        rating: 4.0,
-                        isSoldOut: false,
-                        index: -1,
-                        isGridView: false,
-                      ),
-                    );
-                  } else {
-                    isFavorite = !isFavorite;
-                    int productIndex = favoriteProvider.favorites
-                        .indexWhere((item) => item.title == widget.title);
-                    favoriteProvider.deleteFavoriteItem(productIndex);
-                  }
-                });
+                print('kondisi item ${isAddedFavorite}');
+                if (isAddedFavorite == false) {
+                  addFavotite();
+                } else {
+                  print("test");
+                  deleteFavotite();
+                }
               },
-              icon: favoriteProvider.favorites
-                      .any((item) => item.title == widget.title)
+              icon: isAddedFavorite
                   ? const Icon(Icons.favorite, color: Colors.red)
                   : const Icon(Icons.favorite_border),
             ),

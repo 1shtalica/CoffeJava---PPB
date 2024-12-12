@@ -22,14 +22,17 @@ class _SignInPageState extends State<SignInPage> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = true;
 
   @override
   void initState() {
     storage = FlutterSecureStorage();
     super.initState();
 
-    _checkTokenAndNavigate();
-   
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkTokenAndNavigate();
+    });
+
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
       onNotificationCreatedMethod:
@@ -49,21 +52,27 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
- 
   Future<void> _checkTokenAndNavigate() async {
+    setState(() {
+      isLoading = true;
+    });
     print("test sesions");
     final storage1 = FlutterSecureStorage();
-    
- 
+
     String? token = await storage1.read(key: 'refreshToken');
-    print(await storage.read(key: 'refreshToken'));
+    print(await storage.read(key: 'accessToken'));
     if (token != null) {
-      
+      setState(() {
+        false;
+      });
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
       );
     }
+    setState(() {
+      false;
+    });
   }
 
   Future<void> _login() async {
@@ -71,17 +80,15 @@ class _SignInPageState extends State<SignInPage> {
     final password = _passwordController.text;
 
     final result = await _authService.login(email, password);
-    
+
     if (result != null &&
         result['accessToken'] != null &&
         result['refreshToken'] != null) {
-      
       await storage.write(key: 'accessToken', value: result['accessToken']);
       await storage.write(key: 'refreshToken', value: result['refreshToken']);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Login successful')));
 
-      
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
@@ -99,112 +106,116 @@ class _SignInPageState extends State<SignInPage> {
     } else {
       // If login fails, show error message
       print(result);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(result?['error'].toString() ?? "login failed")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(result?['error'].toString() ?? "login failed")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Sign In',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+    return isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () {},
+              ),
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: _isPasswordHidden,
+                      decoration: InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              },
+                              icon: Icon(
+                                _isPasswordHidden
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ))),
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("don't have an account?"),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignUpPage(title: "sign up")));
+                          },
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 189, 176, 162)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFDDA86B),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 120, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'SIGN IN',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                obscureText: _isPasswordHidden,
-                decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordHidden = !_isPasswordHidden;
-                          });
-                        },
-                        icon: Icon(
-                          _isPasswordHidden
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ))),
-              ),
-              const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("don't have an account?"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const SignUpPage(title: "sign up")));
-                    },
-                    child: const Text(
-                      'Sign Up',
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 189, 176, 162)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDDA86B),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 120, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                  ),
-                  child: const Text(
-                    'SIGN IN',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 }
