@@ -65,12 +65,12 @@ class _HomeWidget extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = [
-      SingleChildScrollView(
-        child: isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Column(
+      isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
@@ -180,8 +180,8 @@ class _HomeWidget extends State<HomeWidget> {
                   )
                 ],
               ),
-      ),
-      const MyShopWidget(),
+            ),
+      const ShopWidget(),
       const BagWidget(),
       const FavoriteScreen(),
       const ProfileWidget(),
