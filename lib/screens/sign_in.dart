@@ -75,9 +75,10 @@ class _SignInPageState extends State<SignInPage> {
 
     String? token = await storage1.read(key: 'refreshToken');
     print(await storage.read(key: 'accessToken'));
+    FlutterNativeSplash.remove();
     if (token != null) {
       print("masuk2");
-      FlutterNativeSplash.remove();
+      
       setState(() {
         isLoading = false;
       });
