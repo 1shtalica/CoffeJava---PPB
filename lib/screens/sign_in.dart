@@ -4,6 +4,7 @@ import 'package:e_nusantara/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'sign_up.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import '../api/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
@@ -32,6 +33,7 @@ class _SignInPageState extends State<SignInPage> {
     storage = FlutterSecureStorage();
 
     _checkTokenAndNavigate();
+    
 
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
@@ -57,6 +59,7 @@ class _SignInPageState extends State<SignInPage> {
       isLoading = true;
     });
     bool isLogin = await _authService.checkToken();
+    print(isLogin);
     if(!isLogin){
       
       setState(() {
@@ -74,6 +77,7 @@ class _SignInPageState extends State<SignInPage> {
     print(await storage.read(key: 'accessToken'));
     if (token != null) {
       print("masuk2");
+      FlutterNativeSplash.remove();
       setState(() {
         isLoading = false;
       });
