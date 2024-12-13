@@ -1,7 +1,6 @@
 import 'package:e_nusantara/screens/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:filter_list/filter_list.dart';
-import 'package:e_nusantara/screens/product_details.dart';
 import 'package:intl/intl.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 
@@ -26,27 +25,6 @@ class _ShopScreen extends State<ShopWidget> {
   ];
 
   final List<bool> _selectedView = <bool>[true, false];
-
-  // List<TypeProduct> typeProductList = [
-  //   TypeProduct(
-  //     nameType: "Women's Fashion",
-  //     categories: categoryList
-  //         .where((category) => category.nameCategory!.startsWith("Women's"))
-  //         .toList(),
-  //   ),
-  //   TypeProduct(
-  //     nameType: "Men's Fashion",
-  //     categories: categoryList
-  //         .where((category) => category.nameCategory!.startsWith("Men's"))
-  //         .toList(),
-  //   ),
-  //   TypeProduct(
-  //     nameType: "Kid's Fashion",
-  //     categories: categoryList
-  //         .where((category) => category.nameCategory!.startsWith("Kid's"))
-  //         .toList(),
-  //   ),
-  // ];
 
   List<Product> productList = [
     Product(
