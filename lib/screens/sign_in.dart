@@ -25,13 +25,13 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = true;
 
   @override
-  void initState() {
-    storage = FlutterSecureStorage();
+  void initState()  {
     super.initState();
+   
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkTokenAndNavigate();
-    });
+    storage = FlutterSecureStorage();
+
+    _checkTokenAndNavigate();
 
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
@@ -56,22 +56,36 @@ class _SignInPageState extends State<SignInPage> {
     setState(() {
       isLoading = true;
     });
+    bool isLogin = await _authService.checkToken();
+    if(!isLogin){
+      
+      setState(() {
+        print("masuk");
+        isLoading =  false;
+        return;
+      });
+      
+    }
+
     print("test sesions");
     final storage1 = FlutterSecureStorage();
 
     String? token = await storage1.read(key: 'refreshToken');
     print(await storage.read(key: 'accessToken'));
     if (token != null) {
+      print("masuk2");
       setState(() {
-        false;
+        isLoading = false;
       });
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeWidget()),
       );
+      return;
     }
     setState(() {
-      false;
+      print("masuk3");
+      isLoading = false;
     });
   }
 
@@ -120,7 +134,7 @@ class _SignInPageState extends State<SignInPage> {
         : Scaffold(
             appBar: AppBar(
               elevation: 0,
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () {},

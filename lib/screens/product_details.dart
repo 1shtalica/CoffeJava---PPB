@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/product_models.dart';
 import 'package:e_nusantara/provider/FavoriteProvider.dart';
 import 'package:e_nusantara/screens/favoriteScreen.dart';
@@ -43,6 +44,7 @@ class product_details extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<product_details> {
+  final Checklogin _checklogin = new Checklogin();
   List<fixProduct.Product> products = [];
   bool isAddedFavorite = false;
   bool isLoading = true;
@@ -53,6 +55,7 @@ class _ProductDetailsState extends State<product_details> {
   final AuthService _authService = AuthService();
 
   Future<bool> addToCart(int sizeIndex) async {
+     _checklogin.checkAndNavigate(context);
     String? token = await storage.read(key: 'accessToken');
     final String? baseUrl = dotenv.env['BASE_URL'];
     final url = Uri.parse('${baseUrl}/checkout');
@@ -74,6 +77,7 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> addFavotite() async {
+    _checklogin.checkAndNavigate(context);
     if (!isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
@@ -102,6 +106,7 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> deleteFavotite() async {
+    _checklogin.checkAndNavigate(context);
     if (isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
@@ -205,6 +210,7 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> _initializeProductDetails() async {
+    _checklogin.checkAndNavigate(context);
     ProductService productService = ProductService();
 
     Product? fetchedProduct = await fetchProductDetails(widget.productId);

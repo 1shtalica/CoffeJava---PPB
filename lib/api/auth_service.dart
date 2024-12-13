@@ -162,4 +162,44 @@ class AuthService {
       return false;
     }
   }
+
+  Future<bool> checkToken() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    final refreshToken = await storage.read(key: 'refreshToken');
+    final accessToken = await storage.read(key: 'accessToken');
+
+    if (refreshToken == null) {
+      return false;
+    }
+    if (accessToken == null) {
+      return false;
+    }
+    bool isExpired = JwtDecoder.isExpired(refreshToken);
+    if (isExpired) {
+      await storage.delete(key: "refreshToken");
+      await storage.delete(key: "accessToken");
+
+      return false;
+    }
+    isExpired = JwtDecoder.isExpired(accessToken);
+    print("expired ${isExpired}");
+    if (isExpired) {
+      final url = Uri.parse('${baseUrl}/token');
+      final headers = {
+        'Authorization': 'Bearer $refreshToken',
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        final newToken = responseBody['accessToken'];
+        storage.write(key: "accessToken", value: newToken);
+        print("get new token");
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
 }
