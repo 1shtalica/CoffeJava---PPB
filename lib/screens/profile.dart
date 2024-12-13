@@ -52,8 +52,32 @@ class _ProfileScreen extends State<ProfileWidget> {
       });
     } catch (e) {
       print("Error initializing profile: $e");
-      
     }
+  }
+
+  Future<void> showSignOutDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Sign Out"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                //Signout isi di sini
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final List<Map<String, String>> menuItems = [
@@ -64,6 +88,10 @@ class _ProfileScreen extends State<ProfileWidget> {
     {
       'title': 'Settings',
       'subtitle': 'Notifications, password',
+    },
+    {
+      'title': 'Sign Out',
+      'subtitle': 'Sign out from your account',
     },
   ];
 
@@ -126,11 +154,15 @@ class _ProfileScreen extends State<ProfileWidget> {
                         subtitle: Text(item['subtitle']!),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => subScreen[index]),
-                          );
+                          if (item['title'] == 'Sign Out') {
+                            showSignOutDialog();
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => subScreen[index]),
+                            );
+                          }
                         },
                       ),
                       const Divider(),
