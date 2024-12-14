@@ -1,4 +1,4 @@
-import 'package:e_nusantara/screens/orders.dart';
+import 'package:e_nusantara/models/product_models.dart';
 import 'package:flutter/material.dart';
 
 class MyShopWidget extends StatefulWidget {
@@ -9,6 +9,12 @@ class MyShopWidget extends StatefulWidget {
 }
 
 class _MyShopWidgetState extends State<MyShopWidget> {
+  @override
+  void initState() {
+    super.initState();
+    fetchProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,16 +41,31 @@ class _MyShopWidgetState extends State<MyShopWidget> {
             ),
             pinned: true,
           ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate((Builder, index) {
-            return Container(
-              height: 100,
-              child: Center(
-                child: Text("item $index"),
-              ),
-              decoration: BoxDecoration(color: Colors.amber[100 * (index % 9)]),
-            );
-          }, childCount: 25))
+          SliverGrid.builder(
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemBuilder: (BuildContext, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  child: Center(
+                    child: Text("item $index"),
+                  ),
+                ),
+              );
+            },
+            itemCount: 50,
+          ),
+          // SliverList(
+          //     delegate: SliverChildBuilderDelegate((Builder, index) {
+          //   return Container(
+          //     height: 100,
+          //     child: Center(
+          //       child: Text("item $index"),
+          //     ),
+          //     decoration: BoxDecoration(color: Colors.amber[100 * (index % 9)]),
+          //   );
+          // }, childCount: 25))
         ],
       ),
     );
@@ -151,3 +172,5 @@ class FilterListDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
       false;
 }
+
+Future<void> fetchProduct() async {}

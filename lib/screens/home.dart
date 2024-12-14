@@ -181,7 +181,7 @@ class _HomeWidget extends State<HomeWidget> {
                 ],
               ),
             ),
-      const ShopWidget(),
+      const MyShopWidget(),
       const BagWidget(),
       const FavoriteScreen(),
       const ProfileWidget(),
