@@ -49,6 +49,7 @@ dependencies:
   jwt_decoder: ^2.0.1
   flutter_dotenv: ^5.2.1
   image_picker: ^0.8.7+5
+  midtrans_snap: ^1.0.1
 
 dev_dependencies:
   flutter_test:

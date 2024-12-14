@@ -64,4 +64,8 @@ class BagModels {
   void decreaseQuantity() {
     quantity--;
   }
+
+  void deleteItem(List<BagModels> bagList) {
+    bagList.remove(this);
+  }
 }
