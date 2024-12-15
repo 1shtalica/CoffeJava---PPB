@@ -1,7 +1,7 @@
 import 'package:e_nusantara/models/pagination_models.dart';
 import 'package:e_nusantara/screens/bag.dart';
 import 'package:e_nusantara/screens/categories.dart';
-import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/favorite_screen.dart';
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
@@ -183,7 +183,7 @@ class _HomeWidget extends State<HomeWidget> {
             ),
       const MyShopWidget(),
       const BagWidget(),
-      const FavoriteScreen(),
+      FavoriteScreen(),
       const ProfileWidget(),
       // Tambahkan screen lainnya jika diperlukan
     ];

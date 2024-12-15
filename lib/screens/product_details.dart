@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/product_models.dart';
-import 'package:e_nusantara/provider/FavoriteProvider.dart';
-import 'package:e_nusantara/screens/favoriteScreen.dart';
+// import 'package:e_nusantara/provider/FavoriteProvider.dart';
+import 'package:e_nusantara/screens/favorite_screen.dart';
 import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/screens/sign_up.dart';
 import 'package:e_nusantara/widget/cardList.dart';
@@ -28,6 +28,7 @@ import '../provider/SizeChartProvider.dart';
 import 'package:http/http.dart' as http;
 import '../api/auth_service.dart';
 import "../api/product_service.dart";
+import '../api/favorite_service.dart';
 
 class product_details extends StatefulWidget {
   const product_details(
@@ -54,8 +55,10 @@ class _ProductDetailsState extends State<product_details> {
   List<String> sampleImages = [];
   final AuthService _authService = AuthService();
 
+  final favoriteService _favoriteService = favoriteService();
+
   Future<bool> addToCart(int sizeIndex) async {
-     _checklogin.checkAndNavigate(context);
+    _checklogin.checkAndNavigate(context);
     String? token = await storage.read(key: 'accessToken');
     final String? baseUrl = dotenv.env['BASE_URL'];
     final url = Uri.parse('${baseUrl}/checkout');
@@ -74,99 +77,6 @@ class _ProductDetailsState extends State<product_details> {
       return true;
     }
     return false;
-  }
-
-  Future<void> addFavotite() async {
-    _checklogin.checkAndNavigate(context);
-    if (!isAddedFavorite) {
-      final storage = FlutterSecureStorage();
-      String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
-      final headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
-      final body = json.encode({
-        'productId': widget.productId,
-      });
-      try {
-        final response = await http.post(url, headers: headers, body: body);
-
-        if (response.statusCode == 200) {
-          print('Product added to favorites!');
-        } else {
-          print('Failed to add to favorites: ${response.statusCode}');
-        }
-      } catch (e) {
-        print('Error: $e');
-      } finally {
-        chekckIsFavorite();
-      }
-    }
-  }
-
-  Future<void> deleteFavotite() async {
-    _checklogin.checkAndNavigate(context);
-    if (isAddedFavorite) {
-      final storage = FlutterSecureStorage();
-      String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
-      final headers = {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
-      final body = json.encode({
-        'productId': widget.productId,
-      });
-      try {
-        final response = await http.delete(url, headers: headers, body: body);
-
-        if (response.statusCode == 200) {
-          print('Product delete from favorites!');
-        } else {
-          print('Failed to delete favorites: ${response.statusCode}');
-        }
-      } catch (e) {
-        print('Error: $e');
-      } finally {
-        chekckIsFavorite();
-      }
-    }
-  }
-
-  Future<void> chekckIsFavorite() async {
-    final storage = FlutterSecureStorage();
-    String? token = await storage.read(key: 'accessToken');
-    final url = Uri.parse('http://192.168.18.14:3000/favorites');
-    final headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    };
-    try {
-      final response = await http.get(url, headers: headers);
-
-      if (response.statusCode == 200) {
-        List<dynamic> favorites = json.decode(response.body);
-        bool isFavorite = favorites
-            .any((favorite) => favorite['product_id'] == widget.productId);
-
-        if (isFavorite) {
-          print('Product is in the favorites!');
-          setState(() {
-            isAddedFavorite = true;
-          });
-        } else {
-          print('Product is not in the favorites.');
-          setState(() {
-            isAddedFavorite = false;
-          });
-        }
-      } else {
-        print('Failed to fetch favorites: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
   }
 
   Future<void> fetchProductCategory() async {
@@ -202,6 +112,44 @@ class _ProductDetailsState extends State<product_details> {
     }
   }
 
+  Future<void> toggleFavorite() async {
+    try {
+      if (!isAddedFavorite) {
+        print('Adding favorite with productId: ${widget.productId}');
+        await _favoriteService.addFavorites(widget.productId);
+
+        setState(() {
+          isAddedFavorite = true;
+        });
+      } else {
+        await _favoriteService.deleteFavorites(widget.productId);
+
+        setState(() {
+          isAddedFavorite = false;
+        });
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to add favorite')));
+    } finally {
+      checkFavorite();
+    }
+  }
+
+  Future<void> checkFavorite() async {
+    bool isFavorites = await _favoriteService.isCheckFavorite(widget.productId);
+
+    setState(() {
+      isAddedFavorite = isFavorites;
+    });
+
+    if (isFavorites) {
+      print('product is in the favorites');
+    } else {
+      print('product is not the favorites');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -216,7 +164,7 @@ class _ProductDetailsState extends State<product_details> {
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
         limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
-    chekckIsFavorite();
+    checkFavorite();
 
     setState(() {
       productDetail = fetchedProduct;
@@ -236,10 +184,8 @@ class _ProductDetailsState extends State<product_details> {
   @override
   Widget build(BuildContext context) {
     final sizeChartProvider = Provider.of<SizeChartProvider>(context);
-    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+    // final favoriteProvider = Provider.of<Favoriteprovider>(context);
     int ratingLength = _ratings.length;
-    bool isFavorite =
-        favoriteProvider.favorites.any((item) => item.title == widget.title);
     double totalRating = _ratings.fold(0, (sum, rating) => sum + rating.value);
 
     double averageRating = ratingLength > 0 ? totalRating / ratingLength : 0;
@@ -593,19 +539,10 @@ class _ProductDetailsState extends State<product_details> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                print('kondisi item ${isAddedFavorite}');
-                if (isAddedFavorite == false) {
-                  addFavotite();
-                } else {
-                  print("test");
-                  deleteFavotite();
-                }
-              },
-              icon: isAddedFavorite
-                  ? const Icon(Icons.favorite, color: Colors.red)
-                  : const Icon(Icons.favorite_border),
-            ),
+                onPressed: toggleFavorite,
+                icon: isAddedFavorite
+                    ? const Icon(Icons.favorite, color: Colors.red)
+                    : const Icon(Icons.favorite_border)),
           ],
         ),
       ),
