@@ -1,5 +1,10 @@
 import 'package:e_nusantara/models/product_models.dart';
+import 'package:e_nusantara/models/pagination_models.dart';
+import 'package:e_nusantara/api/product_service.dart';
 import 'package:flutter/material.dart';
+import 'package:e_nusantara/widget/cardShop.dart';
+import 'package:filter_list/filter_list.dart';
+import 'package:http/http.dart' as http;
 
 class MyShopWidget extends StatefulWidget {
   const MyShopWidget({super.key});
@@ -9,65 +14,330 @@ class MyShopWidget extends StatefulWidget {
 }
 
 class _MyShopWidgetState extends State<MyShopWidget> {
+  //Filter
+  String? filterSearch;
+  int? filterCategory = null;
+  int? filterSubCategory = null;
+  int? filterSpecificSubCategory = null;
+  bool isSearchVisible = false;
+
+  //Product
+  List<Product> products = [];
+  List<Category> listCategory = [];
+  List<SubCategory> listSubcategory = [];
+  List<SpecificSubCategory> listSpecificSubCategory = [];
+  bool isLoading = true;
+  late Pagination pagination;
+
+  //Controller
+  final scrollController = ScrollController(keepScrollOffset: true);
+
   @override
   void initState() {
     super.initState();
+    scrollController.addListener(_scrollListener);
     fetchProduct();
+    fetchAllData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Color(0xFFDDA86B),
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                "assets/image/banner.png",
-                fit: BoxFit.cover,
-              ),
-              title: Text("Shop"),
-              centerTitle: true,
-            ),
-            actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
-          ),
-          SliverPersistentHeader(
-            delegate: FilterListDelegate(
-              maxExtent: 100,
-              minExtent: 50,
-            ),
-            pinned: true,
-          ),
-          SliverGrid.builder(
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (BuildContext, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  child: Center(
-                    child: Text("item $index"),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : CustomScrollView(
+              controller: scrollController,
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Color(0xFFDDA86B),
+                  expandedHeight: 200,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Image.asset(
+                      "assets/image/banner.png",
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text("Shop"),
+                    centerTitle: true,
                   ),
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isSearchVisible = !isSearchVisible;
+                          });
+                        },
+                        icon: Icon(Icons.search))
+                  ],
                 ),
-              );
-            },
-            itemCount: 50,
-          ),
-          // SliverList(
-          //     delegate: SliverChildBuilderDelegate((Builder, index) {
-          //   return Container(
-          //     height: 100,
-          //     child: Center(
-          //       child: Text("item $index"),
-          //     ),
-          //     decoration: BoxDecoration(color: Colors.amber[100 * (index % 9)]),
-          //   );
-          // }, childCount: 25))
-        ],
-      ),
+                if (isSearchVisible)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onSubmitted: (value) {
+                          setState(() {
+                            filterSearch = value;
+                            isSearchVisible = false;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ),
+                SliverPersistentHeader(
+                  delegate: FilterListDelegate(
+                    maxExtent: 100,
+                    minExtent: 50,
+                  ),
+                  pinned: true,
+                ),
+                SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 250.0,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Center(
+                          child: ProductCard(
+                            image: products[index].images?[0] ?? '',
+                            title: products[index].pName ?? 'No Title',
+                            productId: products[index].productId ?? 0,
+                            price: products[index].price.toInt() ?? 0,
+                            totalReview: products[index].ratings!.length,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: products.length,
+                ),
+                if (isLoading)
+                  SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
+            ),
+    );
+  }
+
+  Future<void> fetchAllData() async {
+    final ProductService pService = ProductService();
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Fetch paralel
+      final results = await Future.wait([
+        pService.fetchAllCategories(),
+        pService.fetchAllSubcategories(),
+        pService.fetchAllSpecificSubcategories(),
+      ]);
+
+      setState(() {
+        listCategory = results[0] as List<Category>;
+        listSubcategory = results[1] as List<SubCategory>;
+        listSpecificSubCategory = results[2] as List<SpecificSubCategory>;
+        print('Categories: ${results[0]}');
+        print('Subcategories: ${results[1]}');
+        print('Specific Subcategories: ${results[2]}');
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchProduct({int page = 1}) async {
+    final ProductService pService = ProductService();
+    try {
+      isLoading = true;
+
+      final result = await pService.fetchAllProducts(page: page, limit: 20);
+
+      setState(() {
+        products.addAll(result['products']);
+        pagination = result['pagination'];
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print("Error loading products: $e");
+    }
+  }
+
+  Future<void> fetchCategory() async {
+    final ProductService pService = ProductService();
+    try {
+      isLoading = true;
+      final result = await pService.fetchAllCategories();
+
+      setState(() {
+        listCategory = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to load category');
+    }
+  }
+
+  Future<void> fetchSubCategory() async {
+    final ProductService pService = ProductService();
+    try {
+      isLoading = true;
+      final result = await pService.fetchAllSubcategories();
+
+      setState(() {
+        listSubcategory = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to load subcategory');
+    }
+  }
+
+  Future<void> fetchSpecificSubCategory() async {
+    final ProductService pService = ProductService();
+    try {
+      isLoading = true;
+      final result = await pService.fetchAllSpecificSubcategories();
+
+      setState(() {
+        listSpecificSubCategory = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to load specificsubcategory');
+    }
+  }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      int totalPages =
+          (pagination.items.total / pagination.items.perPage).ceil();
+      if (pagination.currentPage < totalPages) {
+        fetchProduct(page: pagination.currentPage + 1);
+      }
+    }
+  }
+
+  void openFilterCategoryDialog() async {
+    await FilterListDialog.display<Category>(
+      context,
+      height: 450.0,
+      listData: listCategory,
+      enableOnlySingleSelection: true,
+      selectedListData: filterCategory == null
+          ? null
+          : listCategory
+              .where((category) => category.categoryId == filterCategory)
+              .toList(),
+      choiceChipLabel: (category) => category?.categoryName ?? 'Unknown',
+      validateSelectedItem: (list, val) => list?.contains(val) ?? false,
+      onItemSearch: (category, query) {
+        return category?.categoryName
+                ?.toLowerCase()
+                .contains(query.toLowerCase()) ??
+            false;
+      },
+      onApplyButtonClick: (list) {
+        if (list != null && list.isNotEmpty) {
+          setState(() {
+            filterCategory = list.first.categoryId;
+          });
+        } else {
+          setState(() {
+            filterCategory = null;
+          });
+        }
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  void openFilterSubCategoryDialog() async {
+    await FilterListDialog.display<SubCategory>(
+      context,
+      height: 450.0,
+      listData: listSubcategory,
+      enableOnlySingleSelection: true,
+      selectedListData: filterSubCategory == null
+          ? null
+          : listSubcategory
+              .where((sub) => sub.subCategoryId == filterSubCategory)
+              .toList(),
+      choiceChipLabel: (sub) => sub?.subCategoryName ?? 'Unknown',
+      validateSelectedItem: (list, val) => list?.contains(val) ?? false,
+      onItemSearch: (sub, query) {
+        return sub?.subCategoryName
+                ?.toLowerCase()
+                .contains(query.toLowerCase()) ??
+            false;
+      },
+      onApplyButtonClick: (list) {
+        if (list != null && list.isNotEmpty) {
+          setState(() {
+            filterSubCategory = list.first.subCategoryId;
+          });
+        } else {
+          setState(() {
+            filterSubCategory = null;
+          });
+        }
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  void openFilterSpecificSubCategoryDialog() async {
+    await FilterListDialog.display<SpecificSubCategory>(
+      context,
+      height: 450.0,
+      listData: listSpecificSubCategory,
+      enableOnlySingleSelection: true,
+      selectedListData: filterSpecificSubCategory == null
+          ? null
+          : listSpecificSubCategory
+              .where((spec) =>
+                  spec.specificSubCategoryId == filterSpecificSubCategory)
+              .toList(),
+      choiceChipLabel: (spec) => spec?.specificSubCategoryName ?? 'Unknown',
+      validateSelectedItem: (list, val) => list?.contains(val) ?? false,
+      onItemSearch: (spec, query) {
+        return spec?.specificSubCategoryName
+                ?.toLowerCase()
+                .contains(query.toLowerCase()) ??
+            false;
+      },
+      onApplyButtonClick: (list) {
+        if (list != null && list.isNotEmpty) {
+          setState(() {
+            filterSpecificSubCategory = list.first.specificSubCategoryId;
+          });
+        } else {
+          setState(() {
+            filterSpecificSubCategory = null;
+          });
+        }
+        Navigator.pop(context);
+      },
     );
   }
 }
@@ -128,37 +398,43 @@ class FilterListDelegate extends SliverPersistentHeaderDelegate {
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: TextButton(
                       onPressed: () {},
+                      child: Text("Reset"),
+                    )),
+                Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text("Apply"),
+                    )),
+                Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    child: TextButton(
+                      onPressed: () {
+                        (context as Element)
+                            .findAncestorStateOfType<_MyShopWidgetState>()
+                            ?.openFilterCategoryDialog();
+                      },
                       child: Text("Category"),
                     )),
                 Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        (context as Element)
+                            .findAncestorStateOfType<_MyShopWidgetState>()
+                            ?.openFilterSubCategoryDialog();
+                      },
                       child: Text("SubCategory"),
                     )),
                 Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        (context as Element)
+                            .findAncestorStateOfType<_MyShopWidgetState>()
+                            ?.openFilterSpecificSubCategoryDialog();
+                      },
                       child: Text("SpecificCategory"),
-                    )),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text("Location"),
-                    )),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text("Brand"),
-                    )),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text("Price"),
                     )),
               ],
             ),
@@ -172,5 +448,3 @@ class FilterListDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
       false;
 }
-
-Future<void> fetchProduct() async {}
