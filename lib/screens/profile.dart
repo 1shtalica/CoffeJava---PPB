@@ -1,9 +1,12 @@
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/setting.dart';
+import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:e_nusantara/notifications/notification_controller.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../api/auth_service.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({super.key});
@@ -41,6 +44,44 @@ class _ProfileScreen extends State<ProfileWidget> {
     await _initializeProfile();
   }
 
+  Future<void> _logout() async {
+    final storage = FlutterSecureStorage();
+    // Ambil token yang tersimpan dari localStorage
+    String? token = await storage.read(key: 'refreshToken');
+    print(token);
+
+    // Endpoint API logout
+    String url = "http://192.168.18.14:3000/api/v1/logout";
+
+    // Header dengan Authorization
+    Map<String, String> headers = {
+      "Authorization": "Bearer $token",
+    };
+
+    // Mengirim DELETE request
+    try {
+      final response = await http.delete(Uri.parse(url), headers: headers);
+
+      if (response.statusCode == 200) {
+        print("Logout berhasil: ${response.body}");
+        // Setelah logout, hapus token dari storage
+      } else {
+        print("Gagal logout: ${response.statusCode}");
+        print("Response: ${response.body}");
+      }
+    } catch (error) {
+      print("Error: $error");
+    } finally {
+      await storage.delete(key: 'accessToken');
+      await storage.delete(key: 'refreshToken');
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const SignInPage(title: "sign in")));
+    }
+  }
+
   Future<void> _initializeProfile() async {
     try {
       final result = await _authService.decodeProfile(context);
@@ -52,11 +93,32 @@ class _ProfileScreen extends State<ProfileWidget> {
       });
     } catch (e) {
       print("Error initializing profile: $e");
-      setState(() {
-        name = "Loading...";
-        email = "Loading...";
-      });
     }
+  }
+
+  Future<void> showSignOutDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Sign Out"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                _logout();
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final List<Map<String, String>> menuItems = [
@@ -67,6 +129,10 @@ class _ProfileScreen extends State<ProfileWidget> {
     {
       'title': 'Settings',
       'subtitle': 'Notifications, password',
+    },
+    {
+      'title': 'Sign Out',
+      'subtitle': 'Sign out from your account',
     },
   ];
 
@@ -129,11 +195,15 @@ class _ProfileScreen extends State<ProfileWidget> {
                         subtitle: Text(item['subtitle']!),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => subScreen[index]),
-                          );
+                          if (item['title'] == 'Sign Out') {
+                            showSignOutDialog();
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => subScreen[index]),
+                            );
+                          }
                         },
                       ),
                       const Divider(),

@@ -1,5 +1,7 @@
 import 'package:e_nusantara/models/bag_models.dart';
 import 'package:e_nusantara/models/promo_models.dart';
+import 'package:e_nusantara/screens/checkout.dart';
+import 'package:e_nusantara/screens/shipping_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_menu_button/custom_popup_menu_button.dart';
 import 'package:flutter_popup_menu_button/menu_direction.dart';
@@ -18,13 +20,18 @@ class _BagScreen extends State<BagWidget> {
   List<BagModels> bagList = BagModels.getItems();
 
   void updateQuantity(int index, bool isAdd) {
-    setState(() {
-      if (isAdd) {
-        bagList[index].quantity++;
-      } else if (bagList[index].quantity > 0) {
-        bagList[index].quantity--;
-      }
-    });
+    if (isAdd) {
+      setState(() {
+        bagList[index].addQuantity();
+      });
+    } else {
+      setState(() {
+        bagList[index].decreaseQuantity();
+        if (bagList[index].quantity == 0) {
+          bagList[index].deleteItem(bagList);
+        }
+      });
+    }
   }
 
   @override
@@ -55,7 +62,7 @@ class _BagScreen extends State<BagWidget> {
                   ListofItems(bagList),
 
                   // Enter promo code container
-                  EnterPromoCodeContainer(promoList),
+                  // EnterPromoCodeContainer(promoList),
 
                   // Total amount
                   TotalamountContainer(bagList),
@@ -279,24 +286,31 @@ class _BagScreen extends State<BagWidget> {
                             ),
                           ),
                           child: ListTile(
-                            title: const Text(
+                            title: Text(
                               "Add to favorites",
                               textAlign: TextAlign.center,
                             ),
                             titleAlignment: ListTileTitleAlignment.center,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
                           ),
                         ),
                       ),
                       FlutterPopupMenuItem(
                         closeOnItemClick: true,
                         child: ListTile(
-                          title: const Text(
+                          title: Text(
                             "Delete from the list",
                             textAlign: TextAlign.center,
                           ),
                           titleAlignment: ListTileTitleAlignment.center,
-                          onTap: () {},
+                          onTap: () {
+                            setState(() {
+                              bagList[index].deleteItem(bagList);
+                            });
+                            Navigator.of(context).pop();
+                          },
                         ),
                       ),
                     ],
@@ -310,274 +324,6 @@ class _BagScreen extends State<BagWidget> {
     );
   }
 
-  Container EnterPromoCodeContainer(List<PromoModels> promoList) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(90),
-        color: const Color(0xffFFFFFF),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-      child: TextField(
-        onTap: () {
-          //Modal bottom sheet
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 60),
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(90),
-                        color: const Color(0xffFFFFFF),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-
-                      //textfield
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: TextField(
-                          //TODO: filter promo codes based on text
-                          onTap: () {},
-                          decoration: InputDecoration(
-                            fillColor: const Color(0xffFFFFFF),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            //TODO: tappable icon?
-                            suffixIcon: const Icon(
-                                Icons.arrow_circle_right_rounded,
-                                size: 40),
-                            hintText: 'Enter your promo code',
-                            hintStyle: const TextStyle(
-                              fontFamily: 'AbhayaLibre',
-                              color: Color(0xff9B9B9B),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    //promo text
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 20, bottom: 20, left: 20),
-                          child: const Text(
-                            'Your Promo Codes',
-                            style: TextStyle(
-                              color: Color(0xff222222),
-                              fontSize: 20,
-                              fontFamily: 'AbhayaLibre',
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    //promo list
-                    Expanded(
-                      child: Container(
-                        child: ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 25),
-                          itemCount: promoList.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                                margin:
-                                    const EdgeInsets.only(left: 20, right: 20),
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Stack(
-                                  children: [
-                                    //main Row
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        //image
-                                        SizedBox(
-                                          width: 100,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(8),
-                                              bottomLeft: Radius.circular(8),
-                                            ),
-                                            child: Image.asset(
-                                              promoList[index].image,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-
-                                        //details
-                                        SizedBox(
-                                          width: 150,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 10),
-                                                  child: Text(
-                                                    promoList[index].name,
-                                                    style: const TextStyle(
-                                                      color: Color(0xff222222),
-                                                      fontSize: 15,
-                                                      fontFamily: 'AbhayaLibre',
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  )),
-                                              const SizedBox(height: 5),
-                                              Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 10),
-                                                  child: Text(
-                                                    promoList[index].code,
-                                                    style: const TextStyle(
-                                                      color: Color(0xff222222),
-                                                      fontSize: 12,
-                                                      fontFamily: 'AbhayaLibre',
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  )),
-                                            ],
-                                          ),
-                                        ),
-
-                                        //apply button and remaining(with positioned)
-                                        Expanded(
-                                          child: Container(
-                                            child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 20,
-                                                            bottom: 10),
-                                                    child: Text(
-                                                      '${promoList[index].DaysLeft()} days remaining',
-                                                      style: const TextStyle(
-                                                        color:
-                                                            Color(0xff9B9B9B),
-                                                        fontSize: 12,
-                                                        fontFamily:
-                                                            'AbhayaLibre',
-                                                        fontWeight:
-                                                            FontWeight.w800,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  //TODO: change to elevatedbutton to set code
-                                                  Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 20,
-                                                            bottom: 5),
-                                                    width: 100,
-                                                    height: 40,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.red,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                    ),
-                                                    child: const Center(
-                                                      child: Text(
-                                                        'Apply',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                          fontFamily:
-                                                              'AbhayaLibre',
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ]),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ));
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        decoration: InputDecoration(
-          fillColor: const Color(0xffFFFFFF),
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          suffixIcon: const Icon(Icons.arrow_circle_right_rounded, size: 40),
-          hintText: 'Enter your promo code',
-          hintStyle: const TextStyle(
-            fontFamily: 'AbhayaLibre',
-            color: Color(0xff9B9B9B),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-
   Container TotalamountContainer(List<BagModels> bagList) {
     //total amount
     double total = 0;
@@ -587,7 +333,7 @@ class _BagScreen extends State<BagWidget> {
 
     return Container(
       height: 20,
-      margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
+      margin: const EdgeInsets.only(top: 20, left: 30, right: 30, bottom: 40),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -614,28 +360,27 @@ class _BagScreen extends State<BagWidget> {
     );
   }
 
-  Container CheckoutButton() {
-    //TODO: change to elevatedbutton when making new screen
-    return Container(
-      height: 60,
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 30),
-      decoration: BoxDecoration(
-        color: const Color(0xffDDA86B),
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  ElevatedButton CheckoutButton() {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ShippingDetailsScreen()));
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xffDDA86B), // Background color
+        foregroundColor: Colors.white, // Text color,
+        elevation: 5, // Shadow elevation
+        shadowColor: Colors.grey.withOpacity(0.2), // Shadow color
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(40), // Rounded corners
+        ),
+        minimumSize: Size(double.infinity, 60), // Width and height
       ),
-      child: const Center(
-        child: Text(
-          'CHECK OUT',
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+      child: const Text(
+        'CHECK OUT',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

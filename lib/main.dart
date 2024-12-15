@@ -5,8 +5,11 @@ import 'Screens/sign_in.dart';
 import './provider/SizeChartProvider.dart'; // Import Provider
 import './provider/FavoriteProvider.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await AwesomeNotifications().initialize(null, [
     NotificationChannel(
         channelGroupKey: "auth_channel_group",

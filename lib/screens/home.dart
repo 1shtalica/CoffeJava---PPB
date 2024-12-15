@@ -5,6 +5,7 @@ import 'package:e_nusantara/screens/favorite_screen.dart';
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
+import 'package:e_nusantara/screens/MyShopPage.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -64,12 +65,12 @@ class _HomeWidget extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> widgetOptions = [
-      SingleChildScrollView(
-        child: isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Column(
+      isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
@@ -114,8 +115,7 @@ class _HomeWidget extends State<HomeWidget> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CategoriesPage()),
+                                      builder: (context) => const ShopWidget()),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
@@ -180,8 +180,8 @@ class _HomeWidget extends State<HomeWidget> {
                   )
                 ],
               ),
-      ),
-      const ShopWidget(),
+            ),
+      const MyShopWidget(),
       const BagWidget(),
       FavoriteScreen(),
       const ProfileWidget(),

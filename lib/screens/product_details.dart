@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/product_models.dart';
 // import 'package:e_nusantara/provider/FavoriteProvider.dart';
 import 'package:e_nusantara/screens/favorite_screen.dart';
@@ -7,6 +8,7 @@ import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/screens/sign_up.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
@@ -43,15 +45,39 @@ class product_details extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<product_details> {
+  final Checklogin _checklogin = new Checklogin();
   List<fixProduct.Product> products = [];
+  bool isAddedFavorite = false;
   bool isLoading = true;
   Product? productDetail;
   List<Review> _ratings = [];
   final storage = FlutterSecureStorage();
   List<String> sampleImages = [];
   final AuthService _authService = AuthService();
+
   final favoriteService _favoriteService = favoriteService();
-  bool isAddedFavorite = false;
+
+  Future<bool> addToCart(int sizeIndex) async {
+    _checklogin.checkAndNavigate(context);
+    String? token = await storage.read(key: 'accessToken');
+    final String? baseUrl = dotenv.env['BASE_URL'];
+    final url = Uri.parse('${baseUrl}/checkout');
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+    final bodyAdd = json.encode({
+      "quantity": 1,
+      "product_id": widget.productId,
+      "size": productDetail!.stock?[sizeIndex].size
+    });
+
+    final response = await http.post(url, headers: headers, body: bodyAdd);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
 
   Future<void> fetchProductCategory() async {
     final ProductService productService = ProductService();
@@ -127,15 +153,18 @@ class _ProductDetailsState extends State<product_details> {
   @override
   void initState() {
     super.initState();
+
     _initializeProductDetails();
   }
 
   Future<void> _initializeProductDetails() async {
+    _checklogin.checkAndNavigate(context);
     ProductService productService = ProductService();
 
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
         limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
+    checkFavorite();
 
     setState(() {
       productDetail = fetchedProduct;
@@ -443,7 +472,7 @@ class _ProductDetailsState extends State<product_details> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 16),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (sizeChartProvider.selectedIndex == -1) {
                                     showTopSnackBar(
                                       Overlay.of(context),
@@ -453,13 +482,27 @@ class _ProductDetailsState extends State<product_details> {
                                       ),
                                     );
                                   } else {
-                                    showTopSnackBar(
-                                      Overlay.of(context),
-                                      const CustomSnackBar.success(
-                                        message:
-                                            "you have successfully added a product",
-                                      ),
-                                    );
+                                    bool sussces = await addToCart(
+                                        sizeChartProvider.selectedIndex);
+
+                                    if (sussces) {
+                                      showTopSnackBar(
+                                        Overlay.of(context),
+                                        const CustomSnackBar.success(
+                                          message:
+                                              "you have successfully added a product",
+                                        ),
+                                      );
+                                    } else {
+                                      showTopSnackBar(
+                                        Overlay.of(context),
+                                        const CustomSnackBar.info(
+                                          message:
+                                              "you already added this product. please go to shop page to edit quantity",
+                                        ),
+                                      );
+                                    }
+
                                     sizeChartProvider.selectSize(-1);
                                     Navigator.pop(context);
                                   }
