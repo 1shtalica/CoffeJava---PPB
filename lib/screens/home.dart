@@ -1,7 +1,7 @@
 import 'package:e_nusantara/models/pagination_models.dart';
 import 'package:e_nusantara/screens/bag.dart';
 import 'package:e_nusantara/screens/categories.dart';
-import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/favorite_screen.dart';
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/profile.dart';
 import 'package:e_nusantara/screens/shop.dart';
@@ -22,7 +22,7 @@ class _HomeWidget extends State<HomeWidget> {
   int selectedIndex = 0;
   bool isLoading = true;
   List<fixProduct.Product> products = [];
- late Pagination pagination ;
+  late Pagination pagination;
 
   void onItem(int index) {
     setState(() {
@@ -34,10 +34,9 @@ class _HomeWidget extends State<HomeWidget> {
   void initState() {
     super.initState();
     _initializeProducts();
-    if(isLoading == false){
+    if (isLoading == false) {
       print(pagination.currentPage);
     }
-    
   }
 
   Future<void> _initializeProducts() async {
@@ -46,12 +45,12 @@ class _HomeWidget extends State<HomeWidget> {
       isLoading = true;
       final result =
           await productService.fetchAllProducts(limit: 25); // Set limit 25
-    
+
       setState(() {
         products = result['products']; // Menyimpan produk ke state
         pagination =
             result['pagination']; // Menyimpan informasi pagination ke state
-            
+
         isLoading = false; // Menandakan bahwa loading selesai
       });
     } catch (e) {
@@ -67,7 +66,9 @@ class _HomeWidget extends State<HomeWidget> {
     final List<Widget> widgetOptions = [
       SingleChildScrollView(
         child: isLoading
-            ? Center(child:CircularProgressIndicator(),) 
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -168,8 +169,9 @@ class _HomeWidget extends State<HomeWidget> {
                               image: products[index].images?[0] ?? '',
                               index: index,
                               title: products[index].pName ?? 'No Title',
-                              product_id: products[index].productId ?? 0, price:  products[index].price.toInt() ?? 0, totalReview: products[index].ratings!.length,
-                              
+                              product_id: products[index].productId ?? 0,
+                              price: products[index].price.toInt() ?? 0,
+                              totalReview: products[index].ratings!.length,
                             ),
                           );
                         },
@@ -181,7 +183,7 @@ class _HomeWidget extends State<HomeWidget> {
       ),
       const ShopWidget(),
       const BagWidget(),
-      const FavoriteScreen(),
+      FavoriteScreen(),
       const ProfileWidget(),
       // Tambahkan screen lainnya jika diperlukan
     ];

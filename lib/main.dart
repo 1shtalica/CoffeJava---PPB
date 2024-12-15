@@ -27,9 +27,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
             create: (_) => SizeChartProvider()), // Registrasi
-        ChangeNotifierProvider(
-          create: (_) => Favoriteprovider(),
-        ), // Favorite
+        // ChangeNotifierProvider(
+        //   create: (_) => Favoriteprovider(),
+        // ), // Favorite
       ],
       child: const MyApp(),
     ),

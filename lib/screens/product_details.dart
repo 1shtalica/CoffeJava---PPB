@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:e_nusantara/models/product_models.dart';
-import 'package:e_nusantara/provider/FavoriteProvider.dart';
-import 'package:e_nusantara/screens/favoriteScreen.dart';
+// import 'package:e_nusantara/provider/FavoriteProvider.dart';
+import 'package:e_nusantara/screens/favorite_screen.dart';
 import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/screens/sign_up.dart';
 import 'package:e_nusantara/widget/cardList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../widget/size.dart';
 import '../widget/ratting.dart';
@@ -25,6 +26,7 @@ import '../provider/SizeChartProvider.dart';
 import 'package:http/http.dart' as http;
 import '../api/auth_service.dart';
 import "../api/product_service.dart";
+import '../api/favorite_service.dart';
 
 class product_details extends StatefulWidget {
   const product_details(
@@ -48,6 +50,8 @@ class _ProductDetailsState extends State<product_details> {
   final storage = FlutterSecureStorage();
   List<String> sampleImages = [];
   final AuthService _authService = AuthService();
+  final favoriteService _favoriteService = favoriteService();
+  bool isAddedFavorite = false;
 
   Future<void> fetchProductCategory() async {
     final ProductService productService = ProductService();
@@ -82,6 +86,44 @@ class _ProductDetailsState extends State<product_details> {
     }
   }
 
+  Future<void> toggleFavorite() async {
+    try {
+      if (!isAddedFavorite) {
+        print('Adding favorite with productId: ${widget.productId}');
+        await _favoriteService.addFavorites(widget.productId);
+
+        setState(() {
+          isAddedFavorite = true;
+        });
+      } else {
+        await _favoriteService.deleteFavorites(widget.productId);
+
+        setState(() {
+          isAddedFavorite = false;
+        });
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to add favorite')));
+    } finally {
+      checkFavorite();
+    }
+  }
+
+  Future<void> checkFavorite() async {
+    bool isFavorites = await _favoriteService.isCheckFavorite(widget.productId);
+
+    setState(() {
+      isAddedFavorite = isFavorites;
+    });
+
+    if (isFavorites) {
+      print('product is in the favorites');
+    } else {
+      print('product is not the favorites');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -90,10 +132,10 @@ class _ProductDetailsState extends State<product_details> {
 
   Future<void> _initializeProductDetails() async {
     ProductService productService = ProductService();
-    
+
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
-          limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
+        limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
 
     setState(() {
       productDetail = fetchedProduct;
@@ -113,10 +155,8 @@ class _ProductDetailsState extends State<product_details> {
   @override
   Widget build(BuildContext context) {
     final sizeChartProvider = Provider.of<SizeChartProvider>(context);
-    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+    // final favoriteProvider = Provider.of<Favoriteprovider>(context);
     int ratingLength = _ratings.length;
-    bool isFavorite =
-        favoriteProvider.favorites.any((item) => item.title == widget.title);
     double totalRating = _ratings.fold(0, (sum, rating) => sum + rating.value);
 
     double averageRating = ratingLength > 0 ? totalRating / ratingLength : 0;
@@ -191,7 +231,12 @@ class _ProductDetailsState extends State<product_details> {
                           ),
                         ),
                         Text(
-                          productDetail?.price.toString() ?? '',
+                          NumberFormat.simpleCurrency(
+                            locale: 'id_ID',
+                            name: 'Rp',
+                          )
+                              .format((productDetail?.price.round())! * 1000)
+                              .toString(),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -205,7 +250,9 @@ class _ProductDetailsState extends State<product_details> {
                             color: Color.fromRGBO(117, 117, 117, 1),
                           ),
                         ),
-                        SizeChart(),
+                        SizeChart(
+                          stock: productDetail!.stock ?? [],
+                        ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
@@ -221,13 +268,10 @@ class _ProductDetailsState extends State<product_details> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          productDetail?.decs ?? '',
-                          style: TextStyle(fontSize: 14, height: 1.5),
-                        ),
-                        const SizedBox(height: 20),
                         const Divider(color: Colors.black45),
-                        Tabbar(),
+                        Tabbar(
+                          product: productDetail!,
+                        ),
                         const Divider(color: Colors.black45),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,15 +382,16 @@ class _ProductDetailsState extends State<product_details> {
                                     padding: const EdgeInsets.only(
                                         left: 10, right: 10, bottom: 10),
                                     child: CardList(
-                                        image:
-                                            products[index].images![0],
+                                        image: products[index].images![0],
                                         index: index,
                                         title: products[index].pName ?? "",
-                                        product_id: products[index].productId ?? 0,
-                                        price: products[index].price.toInt() ?? 0,
-                                        totalReview: products[index].ratings!.length),
+                                        product_id:
+                                            products[index].productId ?? 0,
+                                        price:
+                                            products[index].price.toInt() ?? 0,
+                                        totalReview:
+                                            products[index].ratings!.length),
                                   );
-                                  
                                 },
                               ),
                             ))
@@ -378,7 +423,9 @@ class _ProductDetailsState extends State<product_details> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 16, right: 16),
-                              child: SizeChart(),
+                              child: SizeChart(
+                                stock: productDetail!.stock ?? [],
+                              ),
                             ),
                             Container(
                               decoration: BoxDecoration(
@@ -449,37 +496,10 @@ class _ProductDetailsState extends State<product_details> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                setState(() {
-                  if (!isFavorite) {
-                    isFavorite = !isFavorite;
-                    favoriteProvider.AddFavoriteItem(
-                      FavoriteItem(
-                        imageUrl: widget.image,
-                        title: widget.title,
-                        brand: 'sadd',
-                        color: 'Gradssaday',
-                        price: 100000,
-                        size: 'L',
-                        rating: 4.0,
-                        isSoldOut: false,
-                        index: -1,
-                        isGridView: false,
-                      ),
-                    );
-                  } else {
-                    isFavorite = !isFavorite;
-                    int productIndex = favoriteProvider.favorites
-                        .indexWhere((item) => item.title == widget.title);
-                    favoriteProvider.deleteFavoriteItem(productIndex);
-                  }
-                });
-              },
-              icon: favoriteProvider.favorites
-                      .any((item) => item.title == widget.title)
-                  ? const Icon(Icons.favorite, color: Colors.red)
-                  : const Icon(Icons.favorite_border),
-            ),
+                onPressed: toggleFavorite,
+                icon: isAddedFavorite
+                    ? const Icon(Icons.favorite, color: Colors.red)
+                    : const Icon(Icons.favorite_border)),
           ],
         ),
       ),

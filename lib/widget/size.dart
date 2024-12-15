@@ -1,9 +1,11 @@
+import 'package:e_nusantara/models/product_models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/SizeChartProvider.dart';
 
 class SizeChart extends StatelessWidget {
-  const SizeChart({super.key});
+  const SizeChart({super.key, required this.stock});
+  final List<Stock> stock;
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +21,21 @@ class SizeChart extends StatelessWidget {
             style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(6, (index) {
-              final sizeNames = ["S", "M", "L", "XL", "XXL", "XXXL"];
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: List.generate(stock.length, (index) {
+              final List<String> sizeNames =
+                  stock.map((stockItem) => stockItem.size).toList();
               return GestureDetector(
                 onTap: () {
-                  sizeChartProvider.selectSize(index);
+                  if (stock[index].quantity > 0) {
+                    sizeChartProvider.selectSize(index);
+                  }
                 },
                 child: _sizeList(
                   index: index,
                   name: sizeNames[index],
                   isSelected: sizeChartProvider.selectedIndex == index,
+                  isAvailable: stock[index].quantity > 0,
                 ),
               );
             }),
@@ -43,6 +49,7 @@ class SizeChart extends StatelessWidget {
     required int index,
     required String name,
     required bool isSelected,
+    required bool isAvailable,
   }) {
     return Container(
       width: 40,
@@ -51,11 +58,19 @@ class SizeChart extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: isSelected ? const Color(0xFFD08835) : const Color(0xFFECC488),
+        color: !isAvailable
+            ? Colors.grey.shade300 // Warna untuk ukuran yang tidak tersedia
+            : isSelected
+                ? const Color(0xFFD08835) // Warna untuk ukuran yang dipilih
+                : const Color(0xFFECC488), // Warna untuk ukuran lainnya
       ),
       child: Text(
         name,
-        style: const TextStyle(color: Colors.black),
+        style: TextStyle(
+          color: !isAvailable
+              ? Colors.grey
+              : Colors.black, // Teks lebih gelap jika tidak tersedia
+        ),
       ),
     );
   }

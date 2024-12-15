@@ -8,7 +8,10 @@ class CardList extends StatelessWidget {
       {super.key,
       required this.image,
       required this.index,
-      required this.title, required this.product_id, required this.price, required this.totalReview});
+      required this.title,
+      required this.product_id,
+      required this.price,
+      required this.totalReview});
   final String image;
   final int index;
   final String title;
@@ -25,7 +28,8 @@ class CardList extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => product_details(
               image: image,
-              title: title, productId: product_id,
+              title: title,
+              productId: product_id,
             ),
           ),
         );
@@ -62,17 +66,18 @@ class CardList extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              title,
-              style: const TextStyle(),
-              overflow: TextOverflow.ellipsis
-              
+            Container(
+              color: Colors.transparent,
+              width: 120,
+              child: Text(title,
+                  style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.fade),
             ),
             Text(
               NumberFormat.simpleCurrency(
                 locale: 'id_ID',
                 name: 'Rp',
-              ).format((price) * 1000).toString(),
+              ).format((price.round()) * 1000).toString(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
