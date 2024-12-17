@@ -86,6 +86,7 @@ class _ProductDetailsState extends State<product_details> {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
+      print(widget.productId);
       final body = json.encode({
         'productId': widget.productId,
       });
@@ -95,7 +96,7 @@ class _ProductDetailsState extends State<product_details> {
         if (response.statusCode == 200) {
           print('Product added to favorites!');
         } else {
-          print('Failed to add to favorites: ${response.statusCode}');
+          print('Failed to add to favorites: ${response.body}');
         }
       } catch (e) {
         print('Error: $e');
@@ -124,7 +125,7 @@ class _ProductDetailsState extends State<product_details> {
         if (response.statusCode == 200) {
           print('Product delete from favorites!');
         } else {
-          print('Failed to delete favorites: ${response.statusCode}');
+          print('Failed to delete favorites: ${response.body}');
         }
       } catch (e) {
         print('Error: $e');
@@ -236,9 +237,9 @@ class _ProductDetailsState extends State<product_details> {
   @override
   Widget build(BuildContext context) {
     final sizeChartProvider = Provider.of<SizeChartProvider>(context);
-   
+
     int ratingLength = _ratings.length;
-    
+
     double totalRating = _ratings.fold(0, (sum, rating) => sum + rating.value);
 
     double averageRating = ratingLength > 0 ? totalRating / ratingLength : 0;

@@ -7,7 +7,7 @@ class Checklogin {
     final AuthService _authService = AuthService();
     bool isLogin = await _authService.checkToken();
     if (!isLogin) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => const SignInPage(title: "sign in")));

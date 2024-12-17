@@ -33,11 +33,12 @@ class Product {
       required this.price});
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    print(json);
     return Product(
       productId: json['product_id'],
       pName: json['pName'],
-      ratings:
-          (json['rattings'] as List).map((i) => Review.fromJson(i)).toList(),
+      ratings: (json['rattings'] as List?)?.map((i) => Review.fromJson(i)).toList(),
+
       categories: (json['categories'] as List)
           .map((i) => Category.fromJson(i))
           .toList(),
@@ -71,10 +72,10 @@ class Review {
       required this.name});
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
-        rating_id: json['rating_id'],
-        review: json['review'],
-        value: json['value'],
-        name: json['name']);
+        rating_id: json['rating_id']??"",
+        review: json['review']??"",
+        value: json['value']??"",
+        name: json['name']??"");
   }
 }
 

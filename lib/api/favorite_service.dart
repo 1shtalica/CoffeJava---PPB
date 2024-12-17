@@ -22,18 +22,17 @@ class favoriteService {
     }
   }
 
-  Future<List<Product>> fetchFavorites() async {
+  Future<List<dynamic>> fetchFavorites() async {
     String? token = await getValidToken();
 
     if (token == null) {
       throw Exception('Token tidak valid');
     }
 
-    final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
+    final res = await http
+        .get(Uri.parse('http://192.168.18.14:3000/favorites'), headers: {
       'Authorization': 'Bearer $token',
     });
-
-    print("responsenya adalah ${res.body}");
 
     try {
       if (res.statusCode == 200) {
@@ -41,8 +40,11 @@ class favoriteService {
           return [];
         }
         List<dynamic> jsonData = jsonDecode(res.body);
-        print(jsonData);
-        return jsonData.map((json) => Product.fromJson(json)).toList();
+       
+
+      
+
+        return jsonData;
       } else {
         print('Failed to load favorites, status code: ${res.statusCode}');
         throw Exception('Failed to load favorites');
@@ -60,7 +62,7 @@ class favoriteService {
     }
     try {
       final res = await http.post(
-        Uri.parse('$baseUrl/favorites'),
+        Uri.parse('http://192.168.18.14:3000/favorites'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -91,7 +93,7 @@ class favoriteService {
 
     try {
       final res = await http.delete(
-        Uri.parse('$baseUrl/favorites'),
+        Uri.parse('http://192.168.18.14:3000/favorites'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ class favoriteService {
       throw Exception('Token tidak valid. Silakan login ulang.');
     }
 
-    final url = Uri.parse('$baseUrl/favorites');
+    final url = Uri.parse('http://192.168.18.14:3000/favorites');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
