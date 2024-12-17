@@ -28,6 +28,7 @@ class _FavoriteScreen extends State<FavoriteScreen> {
   Future<void> loadFavorites() async {
     try {
       final List<dynamic> favorites = await _favoriteService.fetchFavorites();
+      print(favorites);
       setState(() {
         favoritesItem = favorites
             .map((item) => Product.fromJson(item as Map<String, dynamic>))

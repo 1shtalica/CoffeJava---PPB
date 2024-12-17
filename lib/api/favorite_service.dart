@@ -41,6 +41,7 @@ class favoriteService {
           return [];
         }
         List<dynamic> jsonData = jsonDecode(res.body);
+        print(jsonData);
         return jsonData.map((json) => Product.fromJson(json)).toList();
       } else {
         print('Failed to load favorites, status code: ${res.statusCode}');
@@ -67,7 +68,8 @@ class favoriteService {
         body: jsonEncode({'productId': productId}),
       );
 
-      if (res.statusCode == 201) {
+      if (res.statusCode == 200) {
+        print(res.body);
         return true;
       } else {
         print('Failed to add favorite, status code: ${res.statusCode}');
