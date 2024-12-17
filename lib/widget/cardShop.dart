@@ -90,11 +90,11 @@ class ProductCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 children: [
-                  Text("$totalReview Review •"),
-                  const Icon(
+                  Icon(
                     Icons.star,
                     color: Colors.amber,
                   ),
+                  Text("• $totalReview Review "),
                 ],
               ),
             ),

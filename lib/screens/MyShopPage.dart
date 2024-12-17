@@ -15,11 +15,16 @@ class MyShopWidget extends StatefulWidget {
 
 class _MyShopWidgetState extends State<MyShopWidget> {
   //Filter
-  String? filterSearch;
+  String? filterSearch = null;
   int? filterCategory = null;
   int? filterSubCategory = null;
   int? filterSpecificSubCategory = null;
-  bool isSearchVisible = false;
+
+  List<Category> selectedCategory = [];
+  List<SubCategory> selectedSubCategory = [];
+  List<SpecificSubCategory> selectedSpecificSubCategory = [];
+
+  bool _isSearching = false;
 
   //Product
   List<Product> products = [];
@@ -59,37 +64,29 @@ class _MyShopWidgetState extends State<MyShopWidget> {
                       "assets/image/banner.png",
                       fit: BoxFit.cover,
                     ),
-                    title: Text("Shop"),
+                    title: !_isSearching ? Text("Shop") : _searchTextField(),
                     centerTitle: true,
                   ),
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isSearchVisible = !isSearchVisible;
-                          });
-                        },
-                        icon: Icon(Icons.search))
-                  ],
+                  actions: !_isSearching
+                      ? [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isSearching = true;
+                                });
+                              },
+                              icon: Icon(Icons.search))
+                        ]
+                      : [
+                          IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {
+                                setState(() {
+                                  _isSearching = false;
+                                });
+                              })
+                        ],
                 ),
-                if (isSearchVisible)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        onSubmitted: (value) {
-                          setState(() {
-                            filterSearch = value;
-                            isSearchVisible = false;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ),
                 SliverPersistentHeader(
                   delegate: FilterListDelegate(
                     maxExtent: 100,
@@ -97,28 +94,36 @@ class _MyShopWidgetState extends State<MyShopWidget> {
                   ),
                   pinned: true,
                 ),
-                SliverGrid.builder(
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 250.0,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
+                products.isEmpty
+                    ? SliverFillRemaining(
+                        hasScrollBody: false,
                         child: Center(
-                          child: ProductCard(
-                            image: products[index].images?[0] ?? '',
-                            title: products[index].pName ?? 'No Title',
-                            productId: products[index].productId ?? 0,
-                            price: products[index].price.toInt() ?? 0,
-                            totalReview: products[index].ratings!.length,
-                          ),
+                          child: Text(
+                              "There are no products with the required specifications"),
                         ),
+                      )
+                    : SliverGrid.builder(
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 250.0,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              child: Center(
+                                child: ProductCard(
+                                  image: products[index].images?[0] ?? '',
+                                  title: products[index].pName ?? 'No Title',
+                                  productId: products[index].productId ?? 0,
+                                  price: products[index].price.toInt() ?? 0,
+                                  totalReview: products[index].ratings!.length,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: products.length,
                       ),
-                    );
-                  },
-                  itemCount: products.length,
-                ),
                 if (isLoading)
                   SliverToBoxAdapter(
                     child: Center(child: CircularProgressIndicator()),
@@ -163,8 +168,25 @@ class _MyShopWidgetState extends State<MyShopWidget> {
     final ProductService pService = ProductService();
     try {
       isLoading = true;
+      if (page == 1) {
+        products = [];
+      }
 
-      final result = await pService.fetchAllProducts(page: page, limit: 20);
+      print("Fetching products with parameters:");
+      print("Page: $page");
+      print("Search: $filterSearch");
+      print("Category ID: $filterCategory");
+      print("Subcategory ID: $filterSubCategory");
+      print("Specific Subcategory ID: $filterSpecificSubCategory");
+
+      final result = await pService.fetchAllProducts(
+        page: page,
+        limit: 20,
+        search: filterSearch,
+        categoryId: filterCategory,
+        subcategoryId: filterSubCategory,
+        specificSubcategoryId: filterSpecificSubCategory,
+      );
 
       setState(() {
         products.addAll(result['products']);
@@ -244,11 +266,7 @@ class _MyShopWidgetState extends State<MyShopWidget> {
       height: 450.0,
       listData: listCategory,
       enableOnlySingleSelection: true,
-      selectedListData: filterCategory == null
-          ? null
-          : listCategory
-              .where((category) => category.categoryId == filterCategory)
-              .toList(),
+      selectedListData: selectedCategory,
       choiceChipLabel: (category) => category?.categoryName ?? 'Unknown',
       validateSelectedItem: (list, val) => list?.contains(val) ?? false,
       onItemSearch: (category, query) {
@@ -278,11 +296,7 @@ class _MyShopWidgetState extends State<MyShopWidget> {
       height: 450.0,
       listData: listSubcategory,
       enableOnlySingleSelection: true,
-      selectedListData: filterSubCategory == null
-          ? null
-          : listSubcategory
-              .where((sub) => sub.subCategoryId == filterSubCategory)
-              .toList(),
+      selectedListData: selectedSubCategory,
       choiceChipLabel: (sub) => sub?.subCategoryName ?? 'Unknown',
       validateSelectedItem: (list, val) => list?.contains(val) ?? false,
       onItemSearch: (sub, query) {
@@ -312,12 +326,7 @@ class _MyShopWidgetState extends State<MyShopWidget> {
       height: 450.0,
       listData: listSpecificSubCategory,
       enableOnlySingleSelection: true,
-      selectedListData: filterSpecificSubCategory == null
-          ? null
-          : listSpecificSubCategory
-              .where((spec) =>
-                  spec.specificSubCategoryId == filterSpecificSubCategory)
-              .toList(),
+      selectedListData: selectedSpecificSubCategory,
       choiceChipLabel: (spec) => spec?.specificSubCategoryName ?? 'Unknown',
       validateSelectedItem: (list, val) => list?.contains(val) ?? false,
       onItemSearch: (spec, query) {
@@ -340,8 +349,72 @@ class _MyShopWidgetState extends State<MyShopWidget> {
       },
     );
   }
+
+  Future<void> applyButtonPressed() async {
+    print("Filter Search: ${filterSearch ?? 'No Search Query'}");
+    print("Filter Category: ${filterCategory ?? 'No Category'}");
+    print("Filter SubCategory: ${filterSubCategory ?? 'No SubCategory'}");
+    print(
+        "Filter Specific SubCategory: ${filterSpecificSubCategory ?? 'No Specific SubCategory'}");
+    print("Category select: ${selectedCategory ?? 'EMPTY'}");
+    print("sub Category select: ${selectedSubCategory ?? 'EMPTY'}");
+    print(
+        "specific SubCategory select: ${selectedSpecificSubCategory ?? 'EMPTY'}");
+
+    fetchProduct();
+  }
+
+  Future<void> resetButtonPressed() async {
+    filterSearch = null;
+    filterCategory = null;
+    filterSubCategory = null;
+    filterSpecificSubCategory = null;
+
+    selectedCategory = [];
+    selectedSubCategory = [];
+
+    fetchProduct();
+  }
+
+  Widget _searchTextField() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: TextField(
+        autofocus: true,
+        cursorColor: Colors.white,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
+        textInputAction: TextInputAction.search,
+        decoration: const InputDecoration(
+          enabledBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+          focusedBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+          hintText: 'Search',
+          hintStyle: TextStyle(
+            color: Colors.white60,
+            fontSize: 20,
+          ),
+        ),
+        onSubmitted: (value) {
+          if (value.isEmpty) {
+            _isSearching = false;
+            filterSearch = null;
+            fetchProduct();
+          } else {
+            _isSearching = false;
+            filterSearch = value;
+            fetchProduct();
+          }
+        },
+      ),
+    );
+  }
 }
 
+//DAFTAR KELAS
 class FilterListDelegate extends SliverPersistentHeaderDelegate {
   FilterListDelegate({
     required this.maxExtent,
@@ -397,13 +470,21 @@ class FilterListDelegate extends SliverPersistentHeaderDelegate {
                 Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        (context as Element)
+                            .findAncestorStateOfType<_MyShopWidgetState>()
+                            ?.resetButtonPressed();
+                      },
                       child: Text("Reset"),
                     )),
                 Container(
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        (context as Element)
+                            .findAncestorStateOfType<_MyShopWidgetState>()
+                            ?.applyButtonPressed();
+                      },
                       child: Text("Apply"),
                     )),
                 Container(
