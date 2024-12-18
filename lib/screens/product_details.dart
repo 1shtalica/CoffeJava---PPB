@@ -77,11 +77,12 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> addFavotite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     _checklogin.checkAndNavigate(context);
     if (!isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final url = Uri.parse('$baseUrl/favorites');
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -107,11 +108,12 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> deleteFavotite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     _checklogin.checkAndNavigate(context);
     if (isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final url = Uri.parse('$baseUrl/favorites');
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -136,9 +138,10 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> chekckIsFavorite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     final storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'accessToken');
-    final url = Uri.parse('http://192.168.18.14:3000/favorites');
+    final url = Uri.parse('$baseUrl/favorites');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
