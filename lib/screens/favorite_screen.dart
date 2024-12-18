@@ -1,383 +1,264 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:filter_list/filter_list.dart';
-// import 'package:provider/provider.dart';
 import '../api/favorite_service.dart';
 import '../models/product_models.dart';
+import 'package:e_nusantara/screens/product_details.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({super.key});
+  const FavoriteScreen({super.key, required});
 
   @override
-  State<FavoriteScreen> createState() => _FavoriteScreen();
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _FavoriteScreen extends State<FavoriteScreen> {
-  List<Product> favoritesItem = [];
-  List<Product> filteredItems = [];
-  bool isGridView = true;
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  late Future<List<dynamic>> _favoritesFuture;
   final favoriteService _favoriteService = favoriteService();
-  bool isLoading = true;
+  bool isGridView = true;
 
   @override
   void initState() {
     super.initState();
-    loadFavorites();
+    _favoritesFuture = _favoriteService.fetchFavorites();
   }
 
-  Future<void> loadFavorites() async {
-    try {
-      final List<dynamic> favorites = await _favoriteService.fetchFavorites();
+  void deleteFavorite(int productId) async {
+    bool isSuccess = await _favoriteService.deleteFavorites(productId);
+    if (isSuccess) {
       setState(() {
-        favoritesItem = favorites
-            .map((item) => Product.fromJson(item as Map<String, dynamic>))
-            .toList();
-        filteredItems = favoritesItem;
-        isLoading = false;
+        _favoritesFuture = _favoriteService.fetchFavorites();
       });
-    } catch (err) {
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load favorites: $err')));
     }
   }
 
-  void removeFavorite(int productId) async {
-    try {
-      await _favoriteService.deleteFavorites(productId);
-      setState(() {
-        favoritesItem.removeWhere((product) => product.productId == productId);
-        filteredItems.removeWhere((product) => product.productId == productId);
-      });
-    } catch (err) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove favorites: $err')));
-    }
+  Widget buildFavoriteItem(dynamic item, bool isGridView) {
+    return isGridView ? _buildGridItem(item) : _buildListItem(item);
   }
 
-  void openFilterDelegate() async {
-    final List<String> options =
-        favoritesItem.map((item) => item.brand ?? '').toSet().toList();
-
-    await FilterListDialog.display<String>(
-      context,
-      listData: options,
-      selectedListData: options,
-      choiceChipLabel: (item) => item,
-      validateSelectedItem: (list, val) => list!.contains(val),
-      onItemSearch: (item, query) {
-        return item.toLowerCase().contains(query.toLowerCase());
-      },
-      onApplyButtonClick: (list) {
-        if (list != null) {
-          setState(() {
-            filteredItems = favoritesItem
-                .where((item) => list.contains(item.brand))
-                .toList();
-          });
-        }
-        Navigator.pop(context);
-      },
+  Widget _buildGridItem(dynamic item) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!, width: 3.0),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => product_details(
+                        image: item['images'][0]['image_url'] ?? "",
+                        title: item['pName'] ?? '',
+                        productId: item['product_id'] ?? 0,
+                      )));
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: Stack(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: PageView.builder(
+                        itemCount: item['images'].length ?? 0,
+                        itemBuilder: (context, index) {
+                          final imageUrl = item['images'][index];
+                          return Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(imageUrl[
+                                        'image_url']!), //busa juga kaya gini item['images'][index]['image_url']
+                                    fit: BoxFit.cover)),
+                          );
+                        }),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      onPressed: () => deleteFavorite(item['product_id']!),
+                      icon: const Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item['pName'] ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp')
+                          .format((item['price'].round())! * 1000),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (item['sale'] ?? false)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'On Sale',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  void toggleView() {
-    setState(() {
-      isGridView = !isGridView;
-    });
+  Widget _buildListItem(dynamic item) {
+    if (item == null) return const SizedBox();
+
+    final imageUrl = item['images']?[0]['image_url'] ?? "";
+    final productName = item['pName'] ?? '';
+    final productId = item['product_id'] ?? 0;
+    final brand = item['brand'] ?? '';
+    final price = (item['price'] ?? 0).round() * 1000;
+    final isOnSale = item['sale'] ?? false;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => product_details(
+              image: imageUrl,
+              title: productName,
+              productId: productId,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        child: ListTile(
+          leading: imageUrl.isNotEmpty
+              ? Image.network(
+                  imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error);
+                  },
+                )
+              : const Icon(Icons.image_not_supported),
+          title: Text(productName),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Brand: $brand'),
+              Text(
+                'Price: ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(price)}',
+              ),
+              if (isOnSale)
+                const Text(
+                  'On Sale',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
+          trailing: IconButton(
+            onPressed: () => deleteFavorite(productId),
+            icon: const Icon(
+              Icons.favorite,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'Favorites',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        actions: <Widget>[
+        title: const Text('Favorite Products'),
+        actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.search,
-              color: Colors.black,
-            ),
+            onPressed: () {
+              setState(() {
+                isGridView = !isGridView;
+              });
+            },
+            icon: Icon(isGridView ? Icons.view_list : Icons.grid_view),
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'music') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Music')),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'clothing') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Clothing')),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'computers') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Computers')),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'garden') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Garden')),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'beauty') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Beauty')),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                filteredItems = favoritesItem
-                                    .where((item) =>
-                                        item.categories?.any((any) =>
-                                            any.categoryName.toLowerCase() ==
-                                            'toys') ??
-                                        false)
-                                    .toList();
-                              });
-                            },
-                            child: const Text('Toys')),
-                      ],
+      body: FutureBuilder<List<dynamic>>(
+        future: _favoritesFuture, // Gunakan future yang sudah diinisialisasi
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Failed to load Favorite: ${snapshot.error}'),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No Favorite Products'));
+          } else {
+            List<dynamic> products =
+                snapshot.data!.map((product) => product['product']).toList();
+            return isGridView
+                ? GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.8,
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        onPressed: openFilterDelegate,
-                        child: const Text(
-                          'Filters',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      const Row(
-                        children: [
-                          Icon(Icons.sort, size: 24),
-                          SizedBox(width: 5),
-                          Text(
-                            'Price: lowest to high',
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ],
-                      ),
-                      IconButton(
-                        onPressed: toggleView,
-                        icon: Icon(
-                          isGridView ? Icons.view_list : Icons.grid_view,
-                          size: 24,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: filteredItems.isEmpty
-                      ? const Center(
-                          child: Text('No Favorites Found'),
-                        )
-                      : isGridView
-                          ? GridView.builder(
-                              padding: const EdgeInsets.all(8),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.7,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                              itemCount: filteredItems.length,
-                              itemBuilder: (context, index) {
-                                final item = filteredItems[index];
-                                return buildFavoriteItem(item, true);
-                              })
-                          : ListView.builder(
-                              itemCount: filteredItems.length,
-                              itemBuilder: (context, index) {
-                                final item = filteredItems[index];
-                                return buildFavoriteItem(item, false);
-                              },
-                            ),
-                )
-              ],
-            ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      return _buildGridItem(products[index]);
+                    },
+                  )
+                : ListView.builder(
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      return _buildListItem(products[index]);
+                    },
+                  );
+          }
+        },
+      ),
     );
-  }
-
-  Widget buildFavoriteItem(Product item, bool isGridView) {
-    if (isGridView) {
-      return Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-                flex: 3,
-                child: Stack(
-                  children: [
-                    Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            image:
-                                item.images != null && item.images!.isNotEmpty
-                                    ? DecorationImage(
-                                        image: NetworkImage(item.images!.first),
-                                        fit: BoxFit.cover)
-                                    : null),
-                        child: item.images == null || item.images!.isEmpty
-                            ? Center(child: Text('No Image Available'))
-                            : null),
-                    Positioned(
-                        top: 8,
-                        right: 8,
-                        child: IconButton(
-                            onPressed: () => removeFavorite(item.productId!),
-                            icon: const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            )))
-                  ],
-                )),
-            Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        item.pName ?? '',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        NumberFormat.currency(locale: 'id', symbol: 'Rp')
-                            .format(item.price),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                      if (item.sale ?? false)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(4)),
-                          child: const Text(
-                            'On Sale',
-                            style: TextStyle(color: Colors.white, fontSize: 10),
-                          ),
-                        )
-                    ],
-                  ),
-                ))
-          ],
-        ),
-      );
-    } else {
-      return Card(
-        child: ListTile(
-          leading: Image.network(
-            item.images?.first ?? '',
-            width: 80,
-            height: 80,
-            fit: BoxFit.cover,
-          ),
-          title: Text(item.pName ?? ''),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Brand: ${item.brand ?? ''}'),
-              Text(
-                  'Price: ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(item.price)}'),
-              if (item.sale ?? false)
-                const Text(
-                  'on Sale',
-                  style: TextStyle(color: Colors.red),
-                )
-            ],
-          ),
-          trailing: IconButton(
-              onPressed: () => removeFavorite(item.productId!),
-              icon: const Icon(
-                Icons.favorite,
-                color: Colors.red,
-              )),
-        ),
-      );
-    }
   }
 }

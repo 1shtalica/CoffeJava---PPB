@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 // import 'package:flutter/material.dart';
+import 'package:e_nusantara/screens/product_details.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -22,32 +24,33 @@ class favoriteService {
     }
   }
 
-  Future<List<Product>> fetchFavorites() async {
+  Future<List<dynamic>> fetchFavorites() async {
     String? token = await getValidToken();
 
     if (token == null) {
       throw Exception('Token tidak valid');
     }
 
-    final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
-      'Authorization': 'Bearer $token',
-    });
-
-    print("responsenya adalah ${res.body}");
-
     try {
+      final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
+        'Authorization': 'Bearer $token',
+      });
+
+      print("responsenya adalah ${res.body}");
+
       if (res.statusCode == 200) {
         if (res.body.isEmpty) {
           return [];
         }
-        List<dynamic> jsonData = jsonDecode(res.body);
-        return jsonData.map((json) => Product.fromJson(json)).toList();
+
+        final List<dynamic> decodedData = jsonDecode(res.body);
+        return decodedData;
       } else {
-        print('Failed to load favorites, status code: ${res.statusCode}');
         throw Exception('Failed to load favorites');
       }
-    } catch (err) {
-      throw Exception('Failed to load favorites: $err');
+    } catch (e) {
+      print('Error fetching favorites: $e');
+      throw Exception('Failed to load favorites: $e');
     }
   }
 
