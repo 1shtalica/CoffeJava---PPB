@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:e_nusantara/screens/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ShippingDetailsScreen extends StatefulWidget {
   @override
@@ -9,6 +11,7 @@ class ShippingDetailsScreen extends StatefulWidget {
 }
 
 class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
+  final String? baseUrl = dotenv.env['BASE_URL'];
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
   final _countryController = TextEditingController();
@@ -16,6 +19,8 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
   final _courierController = TextEditingController();
 
   Future<void> _submitShippingDetails() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     final shippingDetails = {
       'address': _addressController.text,
       'city': _cityController.text,
@@ -27,11 +32,11 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2/api/v1/shipping'),
+        Uri.parse('$baseUrl/shipping'),
         headers: {
           'Authorization':
               //TODO:set bearrer to use env
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM1ZjI1ZTNmLTQ0MmMtNGY1NC1iNjdlLTY5NmIyOTFiMjY0ZiIsIm5hbWUiOiJhIiwiZW1haWwiOiJhQGdtYWlsLmNvbSIsInByb2ZpbGVJbWFnZSI6bnVsbCwidGFuZ2dhbExhaGlyIjoiMjAyMi0wMi0wMVQxNzowMDowMC4wMDBaIiwiaWF0IjoxNzM0MDg1ODUyLCJleHAiOjE3MzUzODE4NTJ9.GpPcrnP19aU_ASTvHIyEjdWD7TYDrkb2hBa_-vHaleA',
+              'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(shippingDetails),

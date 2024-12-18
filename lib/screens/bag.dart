@@ -8,6 +8,10 @@ import 'package:flutter_popup_menu_button/menu_direction.dart';
 import 'package:flutter_popup_menu_button/menu_icon.dart';
 import 'package:flutter_popup_menu_button/menu_item.dart';
 import 'package:flutter_popup_menu_button/popup_menu_button.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BagWidget extends StatefulWidget {
   const BagWidget({super.key});
@@ -17,7 +21,50 @@ class BagWidget extends StatefulWidget {
 }
 
 class _BagScreen extends State<BagWidget> {
-  List<BagModels> bagList = BagModels.getItems();
+  final String? baseUrl = dotenv.env['BASE_URL'];
+  List<BagModels> bagList = [];
+
+  Future<List<BagModels>> fetchCartData() async {
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+
+    String? accessToken = await storage.read(key: 'accessToken');
+
+    if (accessToken == null) {
+      throw Exception('No access token found');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/checkout'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> cartItems = data['cart_items'];
+      return cartItems.map((item) => BagModels.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load cart data');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadCartData();
+  }
+
+  Future<void> loadCartData() async {
+    try {
+      final fetchBagList = await fetchCartData();
+      setState(() {
+        bagList = fetchBagList;
+      });
+    } catch (e) {
+      print('Error fetching cart data $e');
+    }
+  }
 
   void updateQuantity(int index, bool isAdd) {
     if (isAdd) {
@@ -36,7 +83,7 @@ class _BagScreen extends State<BagWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List<PromoModels> promoList = PromoModels.getItems();
+    // List<PromoModels> promoList = PromoModels.getItems();
 
     return Scaffold(
       appBar: AppBar(
@@ -367,14 +414,14 @@ class _BagScreen extends State<BagWidget> {
             MaterialPageRoute(builder: (context) => ShippingDetailsScreen()));
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xffDDA86B), // Background color
-        foregroundColor: Colors.white, // Text color,
-        elevation: 5, // Shadow elevation
-        shadowColor: Colors.grey.withOpacity(0.2), // Shadow color
+        backgroundColor: const Color(0xffDDA86B),
+        foregroundColor: Colors.white,
+        elevation: 5,
+        shadowColor: Colors.grey.withOpacity(0.2),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(40), // Rounded corners
+          borderRadius: BorderRadius.circular(40),
         ),
-        minimumSize: Size(double.infinity, 60), // Width and height
+        minimumSize: Size(double.infinity, 60),
       ),
       child: const Text(
         'CHECK OUT',

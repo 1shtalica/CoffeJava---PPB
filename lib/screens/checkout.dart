@@ -72,7 +72,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  Widget _buildPaymentOption(String title, IconData icon, String type) {
+  Widget buildPaymentOption(String title, IconData icon, String type) {
     bool isSelected = paymentType == type;
 
     return Card(
@@ -152,8 +152,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
             const SizedBox(height: 8),
             Column(
               children: [
-                _buildPaymentOption('Credit Card', Icons.credit_card, 'ovo'),
-                _buildPaymentOption(
+                buildPaymentOption('Credit Card', Icons.credit_card, 'ovo'),
+                buildPaymentOption(
                     'Bank Virtual Account', Icons.account_balance, 'bca_va'),
               ],
             ),
