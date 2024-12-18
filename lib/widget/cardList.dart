@@ -74,6 +74,7 @@ class _CardListState extends State<CardList> {
         );
       },
       child: Container(
+       
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -87,20 +88,28 @@ class _CardListState extends State<CardList> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          
+          
+         
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
+              
               child: Container(
-                width: 120,
+               
+                width: 130,
                 height: 100,
                 decoration: BoxDecoration(
+                   color: Colors.amber,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
+                    
                   ),
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: NetworkImage(widget.image),
+                    
                   ),
                 ),
               ),
@@ -108,9 +117,12 @@ class _CardListState extends State<CardList> {
             Container(
               color: Colors.transparent,
               width: 120,
-              child: Text(widget.title,
-                  style: const TextStyle(fontSize: 12),
-                  overflow: TextOverflow.fade),
+              child: Text(
+                widget.title,
+                style: const TextStyle(fontSize: 12),
+                maxLines: 1,
+                overflow: TextOverflow.fade,
+              ),
             ),
             Text(
               NumberFormat.simpleCurrency(
