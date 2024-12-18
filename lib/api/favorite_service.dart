@@ -62,7 +62,7 @@ class favoriteService {
     }
     try {
       final res = await http.post(
-        Uri.parse('$baseUrl/favorites'),
+        Uri.parse('http://192.168.18.14:3000/favorites'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -70,7 +70,8 @@ class favoriteService {
         body: jsonEncode({'productId': productId}),
       );
 
-      if (res.statusCode == 201) {
+      if (res.statusCode == 200) {
+        print(res.body);
         return true;
       } else {
         print('Failed to add favorite, status code: ${res.statusCode}');
@@ -92,7 +93,7 @@ class favoriteService {
 
     try {
       final res = await http.delete(
-        Uri.parse('$baseUrl/favorites'),
+        Uri.parse('http://192.168.18.14:3000/favorites'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ class favoriteService {
       throw Exception('Token tidak valid. Silakan login ulang.');
     }
 
-    final url = Uri.parse('$baseUrl/favorites');
+    final url = Uri.parse('http://192.168.18.14:3000/favorites');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
