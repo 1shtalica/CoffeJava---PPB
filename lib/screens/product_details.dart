@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/product_models.dart';
 import 'package:e_nusantara/provider/FavoriteProvider.dart';
+import 'package:e_nusantara/screens/home.dart';
 
 import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/screens/sign_up.dart';
@@ -267,7 +268,10 @@ class _ProductDetailsState extends State<product_details> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             sizeChartProvider.selectSize(-1);
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeWidget()),
+            );
           },
         ),
         actions: [

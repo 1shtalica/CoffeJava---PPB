@@ -134,7 +134,7 @@ class _OrdersState extends State<Orders> {
                               orderId: order['order_id'],
                               createdAt: order['createdAt'],
                               quantity: order['ordersItem'][0]['quantity'],
-                              totalPrice: order['ordersItem'][0]['total_price'],
+                              totalPrice: (order['ordersItem'][0]['total_price'] as num).toInt(),
                               courier: order['shipping']['courier'],
                             );
                           },
@@ -189,7 +189,7 @@ class OrderCard extends StatelessWidget {
   final String orderId;
   final String createdAt;
   final int quantity;
-  final double totalPrice;
+  final int totalPrice;
   final String courier;
 
   const OrderCard({

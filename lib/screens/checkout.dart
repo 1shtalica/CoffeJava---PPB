@@ -15,9 +15,12 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends State<CheckoutPage> {
   String paymentType = '';
+  
 
   Future<void> _processPayment(
+    
       BuildContext context, int shippingId, String paymentType) async {
+        print("payment typenya adalah ${paymentType}");
     try {
       final response = await PaymentService().fetchSnapToken(
         shippingId: shippingId,
@@ -203,6 +206,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         );
                         return;
                       }
+                      print(paymentType);
 
                       await _processPayment(
                           context, widget.shippingId, paymentType);
