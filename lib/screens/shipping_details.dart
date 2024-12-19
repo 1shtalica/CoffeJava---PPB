@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:e_nusantara/screens/shipping_address.dart';
 
 class ShippingDetailsScreen extends StatefulWidget {
   @override
@@ -34,9 +35,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
       final response = await http.post(
         Uri.parse('$baseUrl/shipping'),
         headers: {
-          'Authorization':
-              //TODO:set bearrer to use env
-              'Bearer $accessToken',
+          'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(shippingDetails),
@@ -59,6 +58,15 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
         content: Text(error.toString()),
       ));
     }
+  }
+
+  void _navigateToShippingAddressPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ShippingAddressPage(),
+      ),
+    );
   }
 
   @override
@@ -123,19 +131,39 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _submitShippingDetails,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xffDDA86B),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _submitShippingDetails,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xffDDA86B),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    child: const Text(
+                      'Simpan',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'Simpan',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    child: Text('Pilih Alamat'),
+                    onPressed: _navigateToShippingAddressPage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
