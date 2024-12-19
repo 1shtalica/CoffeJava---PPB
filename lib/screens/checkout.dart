@@ -133,7 +133,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Delivery Method Section
+            // delivery method
             const Text('Delivery method',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -146,7 +146,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ],
             ),
             const SizedBox(height: 16),
-            // Payment Method Section
+            //payment method
             const Text('Payment Method',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -159,7 +159,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
             const Spacer(),
 
-            // Order Summary Section
+            //order summary
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -191,6 +191,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
+
+                //submit button
                 ElevatedButton(
                   onPressed: () async {
                     try {
@@ -202,7 +204,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         return;
                       }
 
-                      await _processPayment(context, widget.shippingId, 'ovo');
+                      await _processPayment(
+                          context, widget.shippingId, paymentType);
                     } catch (e) {
                       print('Error: $e');
                       ScaffoldMessenger.of(context).showSnackBar(

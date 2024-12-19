@@ -6,7 +6,7 @@ class BagModels {
   final String color;
   final String size;
   int quantity;
-  final int price;
+  final double price;
   final String image;
 
   BagModels({
