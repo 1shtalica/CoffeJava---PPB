@@ -108,9 +108,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final pickedImage = await ImagePicker().pickImage(
         source: source,
-        maxWidth: 800, // Batasi lebar gambar
-        maxHeight: 800, // Batasi tinggi gambar
-        imageQuality: 80, // Kompresi gambar (0-100)
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 80,
       );
 
       if (pickedImage != null) {

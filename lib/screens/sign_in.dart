@@ -26,14 +26,12 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = true;
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-   
 
     storage = FlutterSecureStorage();
 
     _checkTokenAndNavigate();
-    
 
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
@@ -60,14 +58,12 @@ class _SignInPageState extends State<SignInPage> {
     });
     bool isLogin = await _authService.checkToken();
     print(isLogin);
-    if(!isLogin){
-      
+    if (!isLogin) {
       setState(() {
         print("masuk");
-        isLoading =  false;
+        isLoading = false;
         return;
       });
-      
     }
 
     print("test sesions");
@@ -78,7 +74,7 @@ class _SignInPageState extends State<SignInPage> {
     FlutterNativeSplash.remove();
     if (token != null) {
       print("masuk2");
-      
+
       setState(() {
         isLoading = false;
       });

@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/product_models.dart';
 import 'package:e_nusantara/provider/FavoriteProvider.dart';
-import 'package:e_nusantara/screens/favoriteScreen.dart';
+import 'package:e_nusantara/screens/home.dart';
+
 import 'package:e_nusantara/screens/sign_in.dart';
 import 'package:e_nusantara/screens/sign_up.dart';
 import 'package:e_nusantara/widget/cardList.dart';
@@ -55,7 +56,7 @@ class _ProductDetailsState extends State<product_details> {
   final AuthService _authService = AuthService();
 
   Future<bool> addToCart(int sizeIndex) async {
-     _checklogin.checkAndNavigate(context);
+    _checklogin.checkAndNavigate(context);
     String? token = await storage.read(key: 'accessToken');
     final String? baseUrl = dotenv.env['BASE_URL'];
     final url = Uri.parse('${baseUrl}/checkout');
@@ -77,15 +78,17 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> addFavotite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     _checklogin.checkAndNavigate(context);
     if (!isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final url = Uri.parse('$baseUrl/favorites');
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
+      print(widget.productId);
       final body = json.encode({
         'productId': widget.productId,
       });
@@ -95,7 +98,7 @@ class _ProductDetailsState extends State<product_details> {
         if (response.statusCode == 200) {
           print('Product added to favorites!');
         } else {
-          print('Failed to add to favorites: ${response.statusCode}');
+          print('Failed to add to favorites: ${response.body}');
         }
       } catch (e) {
         print('Error: $e');
@@ -106,11 +109,12 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> deleteFavotite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     _checklogin.checkAndNavigate(context);
     if (isAddedFavorite) {
       final storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'accessToken');
-      final url = Uri.parse('http://192.168.18.14:3000/favorites');
+      final url = Uri.parse('$baseUrl/favorites');
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -124,7 +128,7 @@ class _ProductDetailsState extends State<product_details> {
         if (response.statusCode == 200) {
           print('Product delete from favorites!');
         } else {
-          print('Failed to delete favorites: ${response.statusCode}');
+          print('Failed to delete favorites: ${response.body}');
         }
       } catch (e) {
         print('Error: $e');
@@ -135,9 +139,10 @@ class _ProductDetailsState extends State<product_details> {
   }
 
   Future<void> chekckIsFavorite() async {
+    final String? baseUrl = dotenv.env['BASE_URL'];
     final storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'accessToken');
-    final url = Uri.parse('http://192.168.18.14:3000/favorites');
+    final url = Uri.parse('$baseUrl/favorites');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -236,10 +241,9 @@ class _ProductDetailsState extends State<product_details> {
   @override
   Widget build(BuildContext context) {
     final sizeChartProvider = Provider.of<SizeChartProvider>(context);
-    final favoriteProvider = Provider.of<Favoriteprovider>(context);
+
     int ratingLength = _ratings.length;
-    bool isFavorite =
-        favoriteProvider.favorites.any((item) => item.title == widget.title);
+
     double totalRating = _ratings.fold(0, (sum, rating) => sum + rating.value);
 
     double averageRating = ratingLength > 0 ? totalRating / ratingLength : 0;
@@ -264,7 +268,10 @@ class _ProductDetailsState extends State<product_details> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             sizeChartProvider.selectSize(-1);
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeWidget()),
+            );
           },
         ),
         actions: [

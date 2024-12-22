@@ -6,6 +6,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:e_nusantara/notifications/notification_controller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../api/auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileWidget extends StatefulWidget {
@@ -49,9 +50,9 @@ class _ProfileScreen extends State<ProfileWidget> {
     // Ambil token yang tersimpan dari localStorage
     String? token = await storage.read(key: 'refreshToken');
     print(token);
-
+    final String? baseUrl = dotenv.env['BASE_URL'];
     // Endpoint API logout
-    String url = "http://192.168.18.14:3000/api/v1/logout";
+    String url = "$baseUrl/logout";
 
     // Header dengan Authorization
     Map<String, String> headers = {

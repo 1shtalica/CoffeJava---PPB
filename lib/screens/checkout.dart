@@ -21,6 +21,7 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   Map<String, dynamic>? shippingDetails;
   String paymentType = '';
+  
 
   @override
   void initState() {
@@ -57,7 +58,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _processPayment(
+    
       BuildContext context, int shippingId, String paymentType) async {
+        print("payment typenya adalah ${paymentType}");
     try {
       final response = await PaymentService().fetchSnapToken(
         shippingId: shippingId,
@@ -165,15 +168,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-<<<<<<< Updated upstream
-        child: shippingDetails == null // Check if shippingDetails is null
-            ? Center(
-                child:
-                    CircularProgressIndicator()) // Show a loading spinner while fetching data
-=======
+
         child: shippingDetails == null
             ? Center(child: CircularProgressIndicator())
->>>>>>> Stashed changes
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -222,6 +219,90 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ),
                   ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Shipping address',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // delivery method
+            const Text('Delivery method',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDeliveryOption('FedEx', '2-3 days', '125\$'),
+                _buildDeliveryOption('UPS', '2-3 days', '10\$'),
+                _buildDeliveryOption('Sicepat', '2-3 days', '15\$'),
+              ],
+            ),
+            const SizedBox(height: 16),
+            //payment method
+            const Text('Payment Method',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Column(
+              children: [
+                buildPaymentOption('Credit Card', Icons.credit_card, 'ovo'),
+                buildPaymentOption(
+                    'Bank Virtual Account', Icons.account_balance, 'bca_va'),
+              ],
+            ),
+            const Spacer(),
+
+            //order summary
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text('Order:', style: TextStyle(fontSize: 16)),
+                    Text('112\$', style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text('Delivery:', style: TextStyle(fontSize: 16)),
+                    Text('15\$', style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text('Summary:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('127\$',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                //submit button
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      if (paymentType.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Please select a payment method')),
+                        );
+                        return;
+                      }
+                      print(paymentType);
 
                   Card(
                     elevation: 3,
