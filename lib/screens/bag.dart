@@ -76,6 +76,9 @@ class _BagScreen extends State<BagWidget> {
         bagList[index].decreaseQuantity();
         if (bagList[index].quantity == 0) {
           bagList[index].deleteItem(bagList);
+          if (bagList.isEmpty) {
+            print('Bag is empty');
+          }
         }
       });
     }

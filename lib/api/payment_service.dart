@@ -17,8 +17,9 @@ class PaymentService {
       throw Exception('Access token is missing');
     }
 
-    print("shipping id nya adalah: ${shippingId}");
-    print("payment typenya adalah ${paymentType}");
+
+    print("shipping id: ${shippingId}");
+    print("payment typenya: ${paymentType}");
 
     final response = await http.post(
       Uri.parse("$baseUrl/transaction"),
