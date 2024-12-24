@@ -17,7 +17,6 @@ class PaymentService {
       throw Exception('Access token is missing');
     }
 
-
     print("shipping id: ${shippingId}");
     print("payment typenya: ${paymentType}");
 
