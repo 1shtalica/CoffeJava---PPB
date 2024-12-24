@@ -9,7 +9,7 @@ class BagModels {
   final String color;
   final String size;
   int quantity;
-  final double price;
+  final int price;
   final String image;
 
   BagModels({
@@ -30,7 +30,7 @@ class BagModels {
       color: json['product']['color'] ?? "None",
       size: json['size'],
       quantity: json['quantity'],
-      price: json['total_price'],
+      price: (json['total_price'] as num).toInt(),
       image: "assets/image/Women-01.jpg",
     );
   }

@@ -90,7 +90,6 @@ class _TabbarState extends State<Tabbar> with SingleTickerProviderStateMixin {
                         Text("Sub categories: ${subCategorY}"),
                         const SizedBox(height: 5),
                         Text("Spesific categories: ${specificSubCategory}"),
-                       
                       ],
                     ),
                   ),

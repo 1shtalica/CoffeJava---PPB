@@ -511,6 +511,7 @@ class _ShopScreen extends State<ShopWidget> {
       onItemSearch: (product, query) {
         return product.location!.toLowerCase().contains(query.toLowerCase());
       },
+      enableOnlySingleSelection: true,
       onApplyButtonClick: (list) {
         setState(() {
           selectedProduct = List.from(list!);

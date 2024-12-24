@@ -129,6 +129,7 @@ class _BagScreen extends State<BagWidget> {
   }
 
   Container ListofItems(List<BagModels> bagList) {
+   
     return Container(
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.only(top: 10, bottom: 5),
