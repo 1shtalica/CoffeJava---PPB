@@ -165,15 +165,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-<<<<<<< Updated upstream
-        child: shippingDetails == null // Check if shippingDetails is null
-            ? Center(
-                child:
-                    CircularProgressIndicator()) // Show a loading spinner while fetching data
-=======
         child: shippingDetails == null
             ? Center(child: CircularProgressIndicator())
->>>>>>> Stashed changes
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
