@@ -12,8 +12,10 @@ import 'dart:convert';
 
 class CheckoutPage extends StatefulWidget {
   final int shippingId;
+  final int total;
 
-  const CheckoutPage({super.key, required this.shippingId});
+  const CheckoutPage(
+      {super.key, required this.shippingId, required this.total});
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -22,7 +24,10 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   Map<String, dynamic>? shippingDetails;
   String paymentType = '';
+  int deliveryCost = 0;
+  String selectedDeliveryMethod = '';
   final Checklogin _checklogin = new Checklogin();
+
 
   @override
   void initState() {
@@ -234,9 +239,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildDeliveryOption('FedEx', '2-3 days', '125\$'),
-                      _buildDeliveryOption('UPS', '2-3 days', '10\$'),
-                      _buildDeliveryOption('Sicepat', '2-3 days', '15\$'),
+                      _buildDeliveryOption('FedEx', '2-3 days', 125),
+                      _buildDeliveryOption('UPS', '2-3 days', 10),
+                      _buildDeliveryOption('Sicepat', '2-3 days', 15),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -275,27 +280,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text('Order:', style: TextStyle(fontSize: 16)),
-                          Text('112\$', style: TextStyle(fontSize: 16)),
+                          Text('Rp${widget.total}',
+                              style: TextStyle(fontSize: 16)),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text('Delivery:', style: TextStyle(fontSize: 16)),
-                          Text('15\$', style: TextStyle(fontSize: 16)),
+                          Text('Rp$deliveryCost',
+                              style: TextStyle(fontSize: 16)),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text('Summary:',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('127\$',
+                          Text('Rp${widget.total + deliveryCost}',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
@@ -350,29 +357,46 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildDeliveryOption(String title, String subtitle, String price) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: SizedBox(
-        width: 100,
-        height: 100,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(title,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(subtitle,
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 4),
-            Text(price,
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-          ],
+  Widget _buildDeliveryOption(String title, String subtitle, int cost) {
+    bool isSelected = selectedDeliveryMethod == title;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedDeliveryMethod = title;
+          deliveryCost = cost;
+        });
+      },
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        color: isSelected ? Colors.green : Colors.white,
+        child: SizedBox(
+          width: 100,
+          height: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : Colors.black)),
+              const SizedBox(height: 4),
+              Text(subtitle,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: isSelected ? Colors.white70 : Colors.grey)),
+              const SizedBox(height: 4),
+              Text('\$${cost.toString()}',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : Colors.black)),
+            ],
+          ),
         ),
       ),
     );
