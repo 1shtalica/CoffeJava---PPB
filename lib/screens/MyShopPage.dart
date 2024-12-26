@@ -146,16 +146,17 @@ class _MyShopWidgetState extends State<MyShopWidget> {
         pService.fetchAllSubcategories(),
         pService.fetchAllSpecificSubcategories(),
       ]);
-
-      setState(() {
-        listCategory = results[0] as List<Category>;
-        listSubcategory = results[1] as List<SubCategory>;
-        listSpecificSubCategory = results[2] as List<SpecificSubCategory>;
-        print('Categories: ${results[0]}');
-        print('Subcategories: ${results[1]}');
-        print('Specific Subcategories: ${results[2]}');
-        isLoading = false;
-      });
+      if (this.mounted) {
+        setState(() {
+          listCategory = results[0] as List<Category>;
+          listSubcategory = results[1] as List<SubCategory>;
+          listSpecificSubCategory = results[2] as List<SpecificSubCategory>;
+          print('Categories: ${results[0]}');
+          print('Subcategories: ${results[1]}');
+          print('Specific Subcategories: ${results[2]}');
+          isLoading = false;
+        });
+      }
     } catch (e) {
       print("Error fetching data: $e");
       setState(() {
@@ -188,11 +189,13 @@ class _MyShopWidgetState extends State<MyShopWidget> {
         specificSubcategoryId: filterSpecificSubCategory,
       );
 
-      setState(() {
-        products.addAll(result['products']);
-        pagination = result['pagination'];
-        isLoading = false;
-      });
+      if (this.mounted) {
+        setState(() {
+          products.addAll(result['products']);
+          pagination = result['pagination'];
+          isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         isLoading = false;

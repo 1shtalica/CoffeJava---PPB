@@ -30,7 +30,7 @@ class CardList extends StatefulWidget {
 class _CardListState extends State<CardList> {
   Future<void> addFavorite(BuildContext context, bool isFavorite) async {
     favoriteService service = favoriteService();
-    bool isFavorite = await service.isCheckFavorite(widget.product_id);
+    bool isFavorite = await service.isCheckFavorite(widget.product_id, context);
 
     // final product = Product(
     //     productId: widget.product_id,
@@ -48,12 +48,12 @@ class _CardListState extends State<CardList> {
     //     price: widget.price.toDouble());
 
     if (isFavorite) {
-      await service.deleteFavorites(widget.product_id);
+      await service.deleteFavorites(widget.product_id, context);
       setState(() {
         isFavorite = !isFavorite;
       });
     } else {
-      await service.addFavorites(widget.product_id);
+      await service.addFavorites(widget.product_id, context);
       if (this.mounted) {
         setState(() {
           isFavorite = !isFavorite;
@@ -135,7 +135,8 @@ class _CardListState extends State<CardList> {
                   color: Colors.amber,
                 ),
                 FutureBuilder<bool>(
-                  future: favoriteService().isCheckFavorite(widget.product_id),
+                  future: favoriteService()
+                      .isCheckFavorite(widget.product_id, context),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();

@@ -22,15 +22,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   void initState() {
     super.initState();
      _checklogin.checkAndNavigate(context);
-    _favoritesFuture = _favoriteService.fetchFavorites();
+    _favoritesFuture = _favoriteService.fetchFavorites(context);
   }
 
   void deleteFavorite(int productId) async {
      _checklogin.checkAndNavigate(context);
-    bool isSuccess = await _favoriteService.deleteFavorites(productId);
+    bool isSuccess = await _favoriteService.deleteFavorites(productId, context);
     if (isSuccess) {
       setState(() {
-        _favoritesFuture = _favoriteService.fetchFavorites();
+        _favoritesFuture = _favoriteService.fetchFavorites(context);
       });
     }
   }

@@ -24,10 +24,9 @@ class BagWidget extends StatefulWidget {
 class _BagScreen extends State<BagWidget> {
   final String? baseUrl = dotenv.env['BASE_URL'];
   List<BagModels> bagList = [];
-   final Checklogin _checklogin = new Checklogin();
+  final Checklogin _checklogin = new Checklogin();
 
   Future<List<BagModels>> fetchCartData() async {
-    
     final FlutterSecureStorage storage = FlutterSecureStorage();
 
     String? accessToken = await storage.read(key: 'accessToken');
@@ -62,9 +61,11 @@ class _BagScreen extends State<BagWidget> {
     _checklogin.checkAndNavigate(context);
     try {
       final fetchBagList = await fetchCartData();
-      setState(() {
-        bagList = fetchBagList;
-      });
+      if (this.mounted) {
+        setState(() {
+          bagList = fetchBagList;
+        });
+      }
     } catch (e) {
       print('Error fetching cart data $e');
     }
@@ -419,7 +420,6 @@ class _BagScreen extends State<BagWidget> {
   }
 
   ElevatedButton CheckoutButton() {
-    
     return ElevatedButton(
       onPressed: () {
         _checklogin.checkAndNavigate(context);

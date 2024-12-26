@@ -15,9 +15,10 @@ class favoriteService {
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final AuthService _authService = AuthService();
 
-  Future<List<dynamic>> fetchFavorites() async {
+  Future<List<dynamic>> fetchFavorites(BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
-
+    final Checklogin _checklogin = new Checklogin();
+    _checklogin.checkAndNavigate(context);
     try {
       final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
         'Authorization': 'Bearer $token',
@@ -41,7 +42,7 @@ class favoriteService {
     }
   }
 
-  Future<bool> addFavorites(int productId) async {
+  Future<bool> addFavorites(int productId, BuildContext context) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'accessToken');
     print(token);
@@ -69,7 +70,7 @@ class favoriteService {
     }
   }
 
-  Future<bool> deleteFavorites(int productId) async {
+  Future<bool> deleteFavorites(int productId, BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
 
     try {
@@ -94,7 +95,7 @@ class favoriteService {
     }
   }
 
-  Future<bool> isCheckFavorite(int productId) async {
+  Future<bool> isCheckFavorite(int productId, BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
 
     if (token == null) {
