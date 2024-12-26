@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:flutter/material.dart';
 import 'shipping_details.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,7 @@ class ShippingAddressPage extends StatefulWidget {
 class _ShippingAddressPageState extends State<ShippingAddressPage> {
   final String? baseUrl = dotenv.env['BASE_URL'];
   List<Map<String, dynamic>> addresses = [];
+  final Checklogin _checklogin = new Checklogin();
 
   //selected address index
   int? selectedIndex;
@@ -30,6 +32,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
   }
 
   Future<void> fetchShippingAddress() async {
+     _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
     try {
@@ -147,9 +150,11 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
               width: 200,
               height: 60,
               child: ElevatedButton(
+                
                 onPressed: selectedShippingId == null
                     ? null
                     : () {
+                       _checklogin.checkAndNavigate(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -181,6 +186,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+           _checklogin.checkAndNavigate(context);
           Navigator.push(
             context,
             MaterialPageRoute(

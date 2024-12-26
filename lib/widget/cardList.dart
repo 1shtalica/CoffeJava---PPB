@@ -1,5 +1,6 @@
 import 'dart:math';
 // import 'package:e_nusantara/models/product_models.dart';
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:intl/intl.dart';
 import 'package:e_nusantara/screens/product_details.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _CardListState extends State<CardList> {
   Future<void> addFavorite(BuildContext context, bool isFavorite) async {
     favoriteService service = favoriteService();
     bool isFavorite = await service.isCheckFavorite(widget.product_id);
+
     // final product = Product(
     //     productId: widget.product_id,
     //     pName: widget.title,
@@ -52,9 +54,11 @@ class _CardListState extends State<CardList> {
       });
     } else {
       await service.addFavorites(widget.product_id);
-      setState(() {
-        isFavorite = !isFavorite;
-      });
+      if (this.mounted) {
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      }
     }
   }
 
@@ -74,7 +78,6 @@ class _CardListState extends State<CardList> {
         );
       },
       child: Container(
-       
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -88,28 +91,21 @@ class _CardListState extends State<CardList> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          
-          
-         
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              
               child: Container(
-               
                 width: 130,
                 height: 100,
                 decoration: BoxDecoration(
-                   color: Colors.amber,
+                  color: Colors.amber,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
-                    
                   ),
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: NetworkImage(widget.image),
-                    
                   ),
                 ),
               ),
@@ -121,7 +117,7 @@ class _CardListState extends State<CardList> {
                 widget.title,
                 style: const TextStyle(fontSize: 12),
                 maxLines: 1,
-               overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Text(
@@ -147,6 +143,8 @@ class _CardListState extends State<CardList> {
                       final isFavorite = snapshot.data ?? false;
                       return IconButton(
                           onPressed: () async {
+                            final Checklogin _checklogin = new Checklogin();
+                            _checklogin.checkAndNavigate(context);
                             await addFavorite(context, isFavorite);
                             (context as Element).markNeedsBuild();
                           },

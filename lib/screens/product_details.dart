@@ -210,32 +210,36 @@ class _ProductDetailsState extends State<product_details> {
   @override
   void initState() {
     super.initState();
-
-    _initializeProductDetails();
+    Checklogin().checkAndNavigate(context).then((_) {
+      if (mounted) {
+        _initializeProductDetails();
+      }
+    });
   }
 
   Future<void> _initializeProductDetails() async {
-    _checklogin.checkAndNavigate(context);
     ProductService productService = ProductService();
 
     Product? fetchedProduct = await fetchProductDetails(widget.productId);
     final result = await productService.fetchAllProducts(
         limit: 25, categoryId: fetchedProduct!.categories![0].categoryId);
     chekckIsFavorite();
+    productDetail = fetchedProduct;
 
-    setState(() {
-      productDetail = fetchedProduct;
+    _ratings = productDetail!.ratings ?? [];
+    products = result['products'];
 
-      _ratings = productDetail!.ratings ?? [];
-      products = result['products'];
+    print(products.length);
 
-      print(products.length);
+    if (productDetail != null) {
+      sampleImages = productDetail!.images!;
+    }
 
-      if (productDetail != null) {
-        sampleImages = productDetail!.images!;
-      }
-      isLoading = false;
-    });
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -491,131 +495,139 @@ class _ProductDetailsState extends State<product_details> {
                 )
               ],
             ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(25.0)),
-                    ),
-                    builder: (BuildContext context) {
-                      return SizedBox(
-                        height: 180,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              child: SizeChart(
-                                stock: productDetail!.stock ?? [],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFD08835),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              width: 380,
-                              height: 50,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFD08835),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
+      bottomNavigationBar: isLoading == false
+          ? Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0)),
+                          ),
+                          builder: (BuildContext context) {
+                            return SizedBox(
+                              height: 180,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16),
+                                    child: SizeChart(
+                                      stock: productDetail!.stock ?? [],
+                                    ),
                                   ),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
-                                ),
-                                onPressed: () async {
-                                  if (sizeChartProvider.selectedIndex == -1) {
-                                    showTopSnackBar(
-                                      Overlay.of(context),
-                                      const CustomSnackBar.error(
-                                        message:
-                                            "you have to selected the product size first",
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFD08835),
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    width: 380,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFFD08835),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16),
                                       ),
-                                    );
-                                  } else {
-                                    bool sussces = await addToCart(
-                                        sizeChartProvider.selectedIndex);
+                                      onPressed: () async {
+                                        if (sizeChartProvider.selectedIndex ==
+                                            -1) {
+                                          showTopSnackBar(
+                                            Overlay.of(context),
+                                            const CustomSnackBar.error(
+                                              message:
+                                                  "you have to selected the product size first",
+                                            ),
+                                          );
+                                        } else {
+                                          bool sussces = await addToCart(
+                                              sizeChartProvider.selectedIndex);
 
-                                    if (sussces) {
-                                      showTopSnackBar(
-                                        Overlay.of(context),
-                                        const CustomSnackBar.success(
-                                          message:
-                                              "you have successfully added a product",
-                                        ),
-                                      );
-                                    } else {
-                                      showTopSnackBar(
-                                        Overlay.of(context),
-                                        const CustomSnackBar.info(
-                                          message:
-                                              "you already added this product. please go to shop page to edit quantity",
-                                        ),
-                                      );
-                                    }
+                                          if (sussces) {
+                                            showTopSnackBar(
+                                              Overlay.of(context),
+                                              const CustomSnackBar.success(
+                                                message:
+                                                    "you have successfully added a product",
+                                              ),
+                                            );
+                                          } else {
+                                            showTopSnackBar(
+                                              Overlay.of(context),
+                                              const CustomSnackBar.info(
+                                                message:
+                                                    "you already added this product. please go to shop page to edit quantity",
+                                              ),
+                                            );
+                                          }
 
-                                    sizeChartProvider.selectSize(-1);
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text(
-                                  "ADD TO CART",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                          sizeChartProvider.selectSize(-1);
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      child: const Text(
+                                        "ADD TO CART",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
+                            );
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD08835),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
                         ),
-                      );
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        "ADD TO CART",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      print('kondisi item ${isAddedFavorite}');
+                      if (isAddedFavorite == false) {
+                        addFavotite();
+                      } else {
+                        print("test");
+                        deleteFavotite();
+                      }
                     },
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD08835),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+                    icon: isAddedFavorite
+                        ? const Icon(Icons.favorite, color: Colors.red)
+                        : const Icon(Icons.favorite_border),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  "ADD TO CART",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
               ),
+            )
+          : Container(
+              height: 1,
+              width: 1,
             ),
-            IconButton(
-              onPressed: () {
-                print('kondisi item ${isAddedFavorite}');
-                if (isAddedFavorite == false) {
-                  addFavotite();
-                } else {
-                  print("test");
-                  deleteFavotite();
-                }
-              },
-              icon: isAddedFavorite
-                  ? const Icon(Icons.favorite, color: Colors.red)
-                  : const Icon(Icons.favorite_border),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
