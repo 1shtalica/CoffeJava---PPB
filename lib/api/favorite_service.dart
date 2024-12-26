@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 // import 'package:flutter/material.dart';
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/screens/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,22 +15,8 @@ class favoriteService {
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final AuthService _authService = AuthService();
 
-  Future<String?> getValidToken() async {
-    bool isTokenValid = await _authService.checkToken();
-
-    if (isTokenValid) {
-      return await storage.read(key: 'accessToken');
-    } else {
-      return null;
-    }
-  }
-
   Future<List<dynamic>> fetchFavorites() async {
-    String? token = await getValidToken();
-
-    if (token == null) {
-      throw Exception('Token tidak valid');
-    }
+    String? token = await storage.read(key: 'accessToken');
 
     try {
       final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
@@ -55,11 +42,10 @@ class favoriteService {
   }
 
   Future<bool> addFavorites(int productId) async {
-    String? token = await getValidToken();
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    String? token = await storage.read(key: 'accessToken');
+    print(token);
 
-    if (token == null) {
-      throw Exception('Token tidak valid');
-    }
     try {
       final res = await http.post(
         Uri.parse('$baseUrl/favorites'),
@@ -84,11 +70,7 @@ class favoriteService {
   }
 
   Future<bool> deleteFavorites(int productId) async {
-    String? token = await getValidToken();
-
-    if (token == null) {
-      throw Exception('Token tidak valid');
-    }
+    String? token = await storage.read(key: 'accessToken');
 
     try {
       final res = await http.delete(
@@ -113,7 +95,7 @@ class favoriteService {
   }
 
   Future<bool> isCheckFavorite(int productId) async {
-    String? token = await getValidToken();
+    String? token = await storage.read(key: 'accessToken');
 
     if (token == null) {
       throw Exception('Token tidak valid. Silakan login ulang.');

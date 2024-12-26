@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/bag_models.dart';
 import 'package:e_nusantara/models/promo_models.dart';
 import 'package:e_nusantara/screens/checkout.dart';
@@ -23,8 +24,10 @@ class BagWidget extends StatefulWidget {
 class _BagScreen extends State<BagWidget> {
   final String? baseUrl = dotenv.env['BASE_URL'];
   List<BagModels> bagList = [];
+   final Checklogin _checklogin = new Checklogin();
 
   Future<List<BagModels>> fetchCartData() async {
+    
     final FlutterSecureStorage storage = FlutterSecureStorage();
 
     String? accessToken = await storage.read(key: 'accessToken');
@@ -56,6 +59,7 @@ class _BagScreen extends State<BagWidget> {
   }
 
   Future<void> loadCartData() async {
+    _checklogin.checkAndNavigate(context);
     try {
       final fetchBagList = await fetchCartData();
       setState(() {
@@ -67,15 +71,19 @@ class _BagScreen extends State<BagWidget> {
   }
 
   void updateQuantity(int index, bool isAdd) {
+    _checklogin.checkAndNavigate(context);
     if (isAdd) {
       setState(() {
         bagList[index].addQuantity();
+        bagList[index].quantity++;
       });
     } else {
       setState(() {
         bagList[index].decreaseQuantity();
+        bagList[index].quantity--;
         if (bagList[index].quantity == 0) {
           bagList[index].deleteItem(bagList);
+          bagList.removeAt(index);
           if (bagList.isEmpty) {
             print('Bag is empty');
           }
@@ -129,7 +137,6 @@ class _BagScreen extends State<BagWidget> {
   }
 
   Container ListofItems(List<BagModels> bagList) {
-   
     return Container(
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -411,6 +418,7 @@ class _BagScreen extends State<BagWidget> {
   }
 
   ElevatedButton CheckoutButton() {
+    
     return ElevatedButton(
       onPressed: () {
         Navigator.push(

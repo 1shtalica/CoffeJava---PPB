@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/screens/orders.dart';
 import 'package:e_nusantara/screens/setting.dart';
 import 'package:e_nusantara/screens/sign_in.dart';
@@ -22,6 +23,7 @@ class _ProfileScreen extends State<ProfileWidget> {
   String email = "";
   String profileImage = "";
   String id = "";
+  final Checklogin _checklogin = new Checklogin();
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class _ProfileScreen extends State<ProfileWidget> {
       await storage.delete(key: 'accessToken');
       await storage.delete(key: 'refreshToken');
 
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => const SignInPage(title: "sign in")));
@@ -84,6 +86,7 @@ class _ProfileScreen extends State<ProfileWidget> {
   }
 
   Future<void> _initializeProfile() async {
+     _checklogin.checkAndNavigate(context);
     try {
       final result = await _authService.decodeProfile(context);
       setState(() {
@@ -199,6 +202,7 @@ class _ProfileScreen extends State<ProfileWidget> {
                           if (item['title'] == 'Sign Out') {
                             showSignOutDialog();
                           } else {
+                            _checklogin.checkAndNavigate(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
