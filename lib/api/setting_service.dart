@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:e_nusantara/api/checkLogin.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ResetPasswordService {
   final String? baseUrl = dotenv.env['BASE_URL'];
+  final Checklogin _checklogin = new Checklogin();
 
   Future<bool> resetPassword(
       String userId, String oldPassword, String newPassword) async {

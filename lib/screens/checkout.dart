@@ -28,7 +28,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String selectedDeliveryMethod = '';
   final Checklogin _checklogin = new Checklogin();
 
-
   @override
   void initState() {
     super.initState();
@@ -36,25 +35,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> fetchShippingDetails() async {
-    _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
-    String? accessToken = await storage.read(key: 'accessToken');
+
     final String? baseUrl = dotenv.env['BASE_URL'];
 
     try {
+      if (this.mounted) {
+        await _checklogin.checkAndNavigate(context);
+      }
+      String? accessToken = await storage.read(key: 'accessToken');
       final response = await http.get(
         Uri.parse('$baseUrl/shipping/${widget.shippingId}'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         setState(() {
           shippingDetails = jsonDecode(response.body);
         });
-      } else {
-        throw Exception('Failed to fetch shipping details');
       }
     } catch (error) {
       print('Error fetching shipping details: $error');

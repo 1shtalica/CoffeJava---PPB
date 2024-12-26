@@ -197,6 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     try {
+      await _checklogin.checkAndNavigate(context);
       final token = await storage.read(key: 'accessToken');
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -206,7 +207,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       print(token);
-      _checklogin.checkAndNavigate(context);
 
       // Kirim update profile
       final success = await ResetPasswordService().updateUserProfile(
@@ -439,7 +439,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     } else if (newPassword != confirmPassword) {
       _showErrorDialog("Passwords do not match.");
     } else {
-     _checklogin.checkAndNavigate(context);
+      _checklogin.checkAndNavigate(context);
       final resetPasswordService = ResetPasswordService();
       bool success = await resetPasswordService.resetPassword(
           id, oldPassword, newPassword);

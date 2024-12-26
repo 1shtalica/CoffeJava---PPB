@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import '../api/auth_service.dart';
 import '../models/product_models.dart';
 
@@ -16,9 +17,29 @@ class favoriteService {
   final AuthService _authService = AuthService();
 
   Future<List<dynamic>> fetchFavorites(BuildContext context) async {
-    String? token = await storage.read(key: 'accessToken');
     final Checklogin _checklogin = new Checklogin();
-    _checklogin.checkAndNavigate(context);
+    final refreshToken = await storage.read(key: 'refreshToken');
+    String? token = await storage.read(key: 'accessToken');
+    bool isExpired = JwtDecoder.isExpired(token!);
+    print("apakah sudah: ${isExpired}");
+    if (isExpired) {
+      print("sudah expired");
+      await _checklogin.checkAndNavigate(context);
+    }
+
+    final url = Uri.parse('${baseUrl}/token');
+    final headers = {
+      'Authorization': 'Bearer $refreshToken',
+      'Content-Type': 'application/json',
+    };
+    final response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      final newToken = responseBody['accessToken'];
+      storage.write(key: "accessToken", value: newToken);
+      print("get new token");
+    }
+    token = await storage.read(key: 'accessToken');
     try {
       final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
         'Authorization': 'Bearer $token',
@@ -42,11 +63,27 @@ class favoriteService {
     }
   }
 
+  Future<void> getnewToken() async {
+    final refreshToken = await storage.read(key: 'refreshToken');
+    final url = Uri.parse('${baseUrl}/token');
+    final headers = {
+      'Authorization': 'Bearer $refreshToken',
+      'Content-Type': 'application/json',
+    };
+    final response = await http.get(url, headers: headers);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      final newToken = responseBody['accessToken'];
+      storage.write(key: "accessToken", value: newToken);
+      print("get new token");
+    }
+  }
+
   Future<bool> addFavorites(int productId, BuildContext context) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'accessToken');
     print(token);
-
+    getnewToken();
     try {
       final res = await http.post(
         Uri.parse('$baseUrl/favorites'),
@@ -72,7 +109,7 @@ class favoriteService {
 
   Future<bool> deleteFavorites(int productId, BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
-
+    getnewToken();
     try {
       final res = await http.delete(
         Uri.parse('$baseUrl/favorites'),
@@ -98,10 +135,7 @@ class favoriteService {
   Future<bool> isCheckFavorite(int productId, BuildContext context) async {
     String? token = await storage.read(key: 'accessToken');
 
-    if (token == null) {
-      throw Exception('Token tidak valid. Silakan login ulang.');
-    }
-
+    getnewToken();
     final url = Uri.parse('$baseUrl/favorites');
     final headers = {
       'Authorization': 'Bearer $token',
