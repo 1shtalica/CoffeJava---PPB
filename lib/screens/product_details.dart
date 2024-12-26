@@ -329,7 +329,7 @@ class _ProductDetailsState extends State<product_details> {
                             locale: 'id_ID',
                             name: 'Rp',
                           )
-                              .format((productDetail?.price.round())! * 1000)
+                              .format((productDetail?.price.round())! )
                               .toString(),
                           style: TextStyle(
                             fontSize: 24,

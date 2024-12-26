@@ -124,7 +124,7 @@ class _CardListState extends State<CardList> {
               NumberFormat.simpleCurrency(
                 locale: 'id_ID',
                 name: 'Rp',
-              ).format((widget.price.round()) * 1000).toString(),
+              ).format((widget.price.round())).toString(),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Row(
