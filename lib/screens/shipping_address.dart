@@ -37,6 +37,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
         Uri.parse('$baseUrl/shipping'),
         headers: {
           'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
         },
       );
 
@@ -56,10 +57,11 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
               .toList();
         });
       } else {
-        throw Exception('Failed to fetch shipping addresses');
+        print(response.body);
       }
     } catch (error) {
       print('Error fetching shipping adddress $error');
+      print(baseUrl);
     }
   }
 

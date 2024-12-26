@@ -38,6 +38,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         Uri.parse('$baseUrl/shipping/${widget.shippingId}'),
         headers: {
           'Authorization': 'Bearer $accessToken',
+          
         },
       );
 
@@ -302,6 +303,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       //submit button
                       ElevatedButton(
                         onPressed: () async {
+                          print(paymentType);
                           try {
                             if (paymentType.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
