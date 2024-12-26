@@ -10,7 +10,9 @@ import 'package:e_nusantara/screens/shipping_details.dart';
 int? selectedShippingId;
 
 class ShippingAddressPage extends StatefulWidget {
-  const ShippingAddressPage({super.key});
+  final int total;
+
+  const ShippingAddressPage({super.key, required this.total});
 
   @override
   State<ShippingAddressPage> createState() => _ShippingAddressPageState();
@@ -153,6 +155,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
                           MaterialPageRoute(
                             builder: (context) => CheckoutPage(
                               shippingId: selectedShippingId!,
+                              total: widget.total,
                             ),
                           ),
                         );
@@ -182,7 +185,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ShippingDetailsScreen(),
+              builder: (context) => ShippingDetailsScreen(total: widget.total),
             ),
           ).then((_) {
             fetchShippingAddress();

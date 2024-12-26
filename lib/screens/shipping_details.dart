@@ -7,6 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:e_nusantara/screens/shipping_address.dart';
 
 class ShippingDetailsScreen extends StatefulWidget {
+  final int total;
+
+  const ShippingDetailsScreen({super.key, required this.total});
+
   @override
   _ShippingDetailsScreenState createState() => _ShippingDetailsScreenState();
 }
@@ -47,7 +51,10 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CheckoutPage(shippingId: shippingId),
+            builder: (context) => CheckoutPage(
+              shippingId: shippingId,
+              total: widget.total,
+            ),
           ),
         );
       } else {
@@ -64,7 +71,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ShippingAddressPage(),
+        builder: (context) => ShippingAddressPage(total: widget.total),
       ),
     );
   }

@@ -179,11 +179,15 @@ class _BagScreen extends State<BagWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 8),
-                          Text(bagList[index].name,
-                              style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black)),
+                          Text(
+                            bagList[index].name,
+                            style: const TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                           const SizedBox(
                             height: 3,
                             width: 200,
@@ -245,12 +249,12 @@ class _BagScreen extends State<BagWidget> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 20),
+                              SizedBox(width: 20),
                               Text(bagList[index].quantity.toString(),
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
-                              const SizedBox(width: 20),
+                              SizedBox(width: 20),
 
                               Container(
                                 height: 40,
@@ -285,17 +289,11 @@ class _BagScreen extends State<BagWidget> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      ('${bagList[index].price * bagList[index].quantity}'),
+                                      ('Rp${bagList[index].price * bagList[index].quantity}'),
                                       style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w800),
                                     ),
-                                    const Text(
-                                      '\$',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800),
-                                    )
                                   ],
                                 ),
                               ),
@@ -375,9 +373,10 @@ class _BagScreen extends State<BagWidget> {
     );
   }
 
+  int total = 0;
   Container TotalamountContainer(List<BagModels> bagList) {
     //total amount
-    double total = 0;
+
     for (int i = 0; i < bagList.length; i++) {
       total = bagList[i].price * bagList[i].quantity + total;
     }
@@ -400,7 +399,7 @@ class _BagScreen extends State<BagWidget> {
 
           //price adds according to bag
           Text(
-            '${total.toString()}\$',
+            'Rp${total.toString()}',
             style: const TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 20,
@@ -414,8 +413,10 @@ class _BagScreen extends State<BagWidget> {
   ElevatedButton CheckoutButton() {
     return ElevatedButton(
       onPressed: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ShippingDetailsScreen()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ShippingDetailsScreen(total: total)));
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xffDDA86B),
@@ -439,7 +440,7 @@ class _BagScreen extends State<BagWidget> {
 
   Container MybagText() {
     return Container(
-      margin: const EdgeInsets.only(top: 30),
+      margin: const EdgeInsets.only(top: 30, left: 10),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
