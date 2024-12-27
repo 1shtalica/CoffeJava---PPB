@@ -83,7 +83,6 @@ class _BagScreen extends State<BagWidget> {
         bagList[index].decreaseQuantity();
         bagList[index].quantity--;
         if (bagList[index].quantity == 0) {
-          bagList[index].deleteItem(bagList);
           bagList.removeAt(index);
           if (bagList.isEmpty) {
             print('Bag is empty');
@@ -101,12 +100,6 @@ class _BagScreen extends State<BagWidget> {
       appBar: AppBar(
         backgroundColor: const Color(0xffF9F9F9),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.black, size: 30),
-            onPressed: () {},
-          ),
-        ],
       ),
 
       //main column
@@ -149,7 +142,7 @@ class _BagScreen extends State<BagWidget> {
         itemBuilder: (context, index) {
           return Container(
             margin: const EdgeInsets.only(left: 20, right: 20),
-            height: 130,
+            height: 150,
             decoration: BoxDecoration(
               color: const Color(0xffFFFFFF),
               borderRadius: BorderRadius.circular(8),
@@ -246,7 +239,7 @@ class _BagScreen extends State<BagWidget> {
                                     ]),
                                 child: Center(
                                   child: IconButton(
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.remove,
                                       color: Color(0xff9B9B9B),
                                     ),
@@ -258,10 +251,15 @@ class _BagScreen extends State<BagWidget> {
                                 ),
                               ),
                               SizedBox(width: 20),
-                              Text(bagList[index].quantity.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700)),
+                              //quantity text
+                              SizedBox(
+                                width: 20,
+                                child: Text(bagList[index].quantity.toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700)),
+                              ),
                               SizedBox(width: 20),
 
                               Container(
@@ -292,22 +290,21 @@ class _BagScreen extends State<BagWidget> {
                                 ),
                               ),
                               //total item price
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      ('Rp${bagList[index].price * bagList[index].quantity}'),
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800),
-                                    ),
-                                  ],
-                                ),
-                              ),
                               //3 dots thingy
                               const SizedBox(width: 10),
                             ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: 10, left: 10, right: 10, bottom: 8),
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Text(
+                                'Price:             Rp${bagList[index].price * bagList[index].quantity}',
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w800),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -384,6 +381,7 @@ class _BagScreen extends State<BagWidget> {
   int total = 0;
   Container TotalamountContainer(List<BagModels> bagList) {
     //total amount
+    total = 0;
 
     for (int i = 0; i < bagList.length; i++) {
       total = bagList[i].price * bagList[i].quantity + total;
@@ -408,7 +406,7 @@ class _BagScreen extends State<BagWidget> {
           //price adds according to bag
           Text(
             'Rp${total.toString()}',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
