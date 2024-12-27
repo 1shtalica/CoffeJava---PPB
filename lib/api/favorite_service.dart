@@ -15,30 +15,13 @@ class favoriteService {
   final String? baseUrl = dotenv.env['BASE_URL'];
   final FlutterSecureStorage storage = FlutterSecureStorage();
   final AuthService _authService = AuthService();
+  final Checklogin _checklogin = new Checklogin();
 
   Future<List<dynamic>> fetchFavorites(BuildContext context) async {
-    final Checklogin _checklogin = new Checklogin();
-    final refreshToken = await storage.read(key: 'refreshToken');
-    String? token = await storage.read(key: 'accessToken');
-    bool isExpired = JwtDecoder.isExpired(token!);
-    print("apakah sudah: ${isExpired}");
-    if (isExpired) {
-      print("sudah expired");
-      await _checklogin.checkAndNavigate(context);
-    }
+    await _checklogin.checkAndNavigate(context);
 
-    final url = Uri.parse('${baseUrl}/token');
-    final headers = {
-      'Authorization': 'Bearer $refreshToken',
-      'Content-Type': 'application/json',
-    };
-    final response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseBody = json.decode(response.body);
-      final newToken = responseBody['accessToken'];
-      storage.write(key: "accessToken", value: newToken);
-      print("get new token");
-    }
+    String? token = await storage.read(key: 'accessToken');
+
     token = await storage.read(key: 'accessToken');
     try {
       final res = await http.get(Uri.parse('$baseUrl/favorites'), headers: {
@@ -63,27 +46,28 @@ class favoriteService {
     }
   }
 
-  Future<void> getnewToken() async {
-    final refreshToken = await storage.read(key: 'refreshToken');
-    final url = Uri.parse('${baseUrl}/token');
-    final headers = {
-      'Authorization': 'Bearer $refreshToken',
-      'Content-Type': 'application/json',
-    };
-    final response = await http.get(url, headers: headers);
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseBody = json.decode(response.body);
-      final newToken = responseBody['accessToken'];
-      storage.write(key: "accessToken", value: newToken);
-      print("get new token");
-    }
-  }
+  // Future<void> getnewToken() async {
+  //   final refreshToken = await storage.read(key: 'refreshToken');
+  //   final url = Uri.parse('${baseUrl}/token');
+  //   final headers = {
+  //     'Authorization': 'Bearer $refreshToken',
+  //     'Content-Type': 'application/json',
+  //   };
+  //   final response = await http.get(url, headers: headers);
+  //   if (response.statusCode == 200) {
+  //     final Map<String, dynamic> responseBody = json.decode(response.body);
+  //     final newToken = responseBody['accessToken'];
+  //     storage.write(key: "accessToken", value: newToken);
+  //     print("get new token");
+  //   }
+  // }
 
   Future<bool> addFavorites(int productId, BuildContext context) async {
+    _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'accessToken');
     print(token);
-    getnewToken();
+
     try {
       final res = await http.post(
         Uri.parse('$baseUrl/favorites'),
@@ -108,8 +92,9 @@ class favoriteService {
   }
 
   Future<bool> deleteFavorites(int productId, BuildContext context) async {
+    _checklogin.checkAndNavigate(context);
     String? token = await storage.read(key: 'accessToken');
-    getnewToken();
+
     try {
       final res = await http.delete(
         Uri.parse('$baseUrl/favorites'),
@@ -133,9 +118,9 @@ class favoriteService {
   }
 
   Future<bool> isCheckFavorite(int productId, BuildContext context) async {
+    _checklogin.checkAndNavigate(context);
     String? token = await storage.read(key: 'accessToken');
 
-    getnewToken();
     final url = Uri.parse('$baseUrl/favorites');
     final headers = {
       'Authorization': 'Bearer $token',

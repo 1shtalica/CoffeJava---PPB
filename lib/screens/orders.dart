@@ -21,7 +21,6 @@ class _OrdersState extends State<Orders> {
   final AuthService _authService = AuthService();
   String id = "";
 
-
   @override
   void initState() {
     super.initState();
@@ -37,7 +36,6 @@ class _OrdersState extends State<Orders> {
   }
 
   Future<void> fetchOrders() async {
-   
     final String? baseUrl = dotenv.env['BASE_URL'];
     final String apiUrl = '$baseUrl/order/$id';
     final token = await storage.read(key: 'accessToken');
@@ -67,7 +65,7 @@ class _OrdersState extends State<Orders> {
           });
         }
       } else {
-        throw Exception('Failed to load orders');
+        print(response.body);
       }
     } catch (e) {
       setState(() {
@@ -137,7 +135,9 @@ class _OrdersState extends State<Orders> {
                               orderId: order['order_id'],
                               createdAt: order['createdAt'],
                               quantity: order['ordersItem'][0]['quantity'],
-                              totalPrice: (order['ordersItem'][0]['total_price'] as num).toInt(),
+                              totalPrice:
+                                  (order['ordersItem'][0]['total_price'] as num)
+                                      .toInt(),
                               courier: order['shipping']['courier'],
                             );
                           },

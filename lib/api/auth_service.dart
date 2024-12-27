@@ -181,7 +181,12 @@ class AuthService {
 
       return false;
     }
-    isExpired = JwtDecoder.isExpired(accessToken);
+
+    DateTime expirationDate = JwtDecoder.getExpirationDate(accessToken);
+    DateTime adjustedExpirationDate =
+        expirationDate.subtract(Duration(seconds: 5));
+    isExpired = DateTime.now().isAtSameMomentAs(adjustedExpirationDate) ||
+        DateTime.now().isAfter(adjustedExpirationDate);
     print("expired ${isExpired}");
     if (isExpired) {
       final url = Uri.parse('${baseUrl}/token');
