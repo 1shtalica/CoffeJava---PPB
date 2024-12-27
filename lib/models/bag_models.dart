@@ -96,7 +96,7 @@ class BagModels {
 
       if (response.statusCode == 200) {
         //remove local if successfull in server
-        bagList.remove(this);
+        bagList.removeWhere((item) => item.id == this.id);
       } else {
         print('Failed to delete item from server ${response.body}');
       }
