@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import '../api/auth_service.dart';
@@ -16,6 +17,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final Checklogin _checklogin = new Checklogin();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,6 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? selectedGender;
   DateTime? selectedDate;
   File? _profileImage;
+  final Checklogin _checklogin = new Checklogin();
 
   @override
   void initState() {
@@ -98,6 +101,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _initializeProfile() async {
+    _checklogin.checkAndNavigate(context);
+
     final result = await _authService.decodeProfile(context);
     setState(() {
       id = result['id'];
@@ -171,6 +176,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final userId = id;
     final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
+    final Checklogin _checklogin = new Checklogin();
 
     if (fullName.isEmpty ||
         email.isEmpty ||
@@ -200,6 +206,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       print(token);
+      _checklogin.checkAndNavigate(context);
 
       // Kirim update profile
       final success = await ResetPasswordService().updateUserProfile(
@@ -390,6 +397,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   final AuthService _authService = AuthService();
   String id = "";
+  final Checklogin _checklogin = new Checklogin();
 
   @override
   void initState() {
@@ -398,6 +406,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   void _initializeProfile() async {
+    _checklogin.checkAndNavigate(context);
     final result = await _authService.decodeProfile(context);
     setState(() {
       id = result['id'];
@@ -430,6 +439,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     } else if (newPassword != confirmPassword) {
       _showErrorDialog("Passwords do not match.");
     } else {
+     _checklogin.checkAndNavigate(context);
       final resetPasswordService = ResetPasswordService();
       bool success = await resetPasswordService.resetPassword(
           id, oldPassword, newPassword);

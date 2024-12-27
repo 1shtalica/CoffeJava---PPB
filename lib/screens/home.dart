@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/models/pagination_models.dart';
 import 'package:e_nusantara/screens/bag.dart';
 import 'package:e_nusantara/screens/categories.dart';
@@ -24,6 +25,7 @@ class _HomeWidget extends State<HomeWidget> {
   bool isLoading = true;
   List<fixProduct.Product> products = [];
   late Pagination pagination;
+  final Checklogin _checklogin = new Checklogin();
 
   void onItem(int index) {
     setState(() {
@@ -36,6 +38,7 @@ class _HomeWidget extends State<HomeWidget> {
   @override
   void initState() {
     super.initState();
+     _checklogin.checkAndNavigate(context);
     _initializeProducts();
     if (isLoading == false) {
       print(pagination.currentPage);
@@ -43,6 +46,7 @@ class _HomeWidget extends State<HomeWidget> {
   }
 
   Future<void> _initializeProducts() async {
+       
     final ProductService productService = ProductService();
     try {
       isLoading = true;
@@ -57,9 +61,7 @@ class _HomeWidget extends State<HomeWidget> {
         isLoading = false; // Menandakan bahwa loading selesai
       });
     } catch (e) {
-      setState(() {
-        isLoading = false; // Menghentikan loading jika terjadi error
-      });
+      
       print("Error loading products: $e");
     }
   }

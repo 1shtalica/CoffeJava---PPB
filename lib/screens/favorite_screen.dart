@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../api/favorite_service.dart';
@@ -15,14 +16,17 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   late Future<List<dynamic>> _favoritesFuture;
   final favoriteService _favoriteService = favoriteService();
   bool isGridView = true;
+    final Checklogin _checklogin = new Checklogin();
 
   @override
   void initState() {
     super.initState();
+     _checklogin.checkAndNavigate(context);
     _favoritesFuture = _favoriteService.fetchFavorites();
   }
 
   void deleteFavorite(int productId) async {
+     _checklogin.checkAndNavigate(context);
     bool isSuccess = await _favoriteService.deleteFavorites(productId);
     if (isSuccess) {
       setState(() {
@@ -32,6 +36,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   }
 
   Widget buildFavoriteItem(dynamic item, bool isGridView) {
+     _checklogin.checkAndNavigate(context);
     return isGridView ? _buildGridItem(item) : _buildListItem(item);
   }
 
@@ -225,6 +230,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       body: FutureBuilder<List<dynamic>>(
         future: _favoritesFuture, // Gunakan future yang sudah diinisialisasi
         builder: (context, snapshot) {
+           _checklogin.checkAndNavigate(context);
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {

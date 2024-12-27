@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 
 class Checklogin {
   Future<void> checkAndNavigate(BuildContext context) async {
+    print("masuk ke check token");
     final AuthService _authService = AuthService();
     bool isLogin = await _authService.checkToken();
     if (!isLogin) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('your session is expired. please login again to enter the application')),
+      );
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(

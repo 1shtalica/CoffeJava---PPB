@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:e_nusantara/screens/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ class ShippingDetailsScreen extends StatefulWidget {
 }
 
 class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
+  final Checklogin _checklogin = new Checklogin();
   final String? baseUrl = dotenv.env['BASE_URL'];
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
@@ -24,6 +26,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
   final _courierController = TextEditingController();
 
   Future<void> _submitShippingDetails() async {
+     _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
     final shippingDetails = {
@@ -68,6 +71,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
   }
 
   void _navigateToShippingAddressPage() {
+     _checklogin.checkAndNavigate(context);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -142,6 +146,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
+                    
                     onPressed: _submitShippingDetails,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffDDA86B),

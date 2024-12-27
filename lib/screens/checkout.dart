@@ -1,3 +1,4 @@
+import 'package:e_nusantara/api/checkLogin.dart';
 import 'package:flutter/material.dart';
 import 'shipping_address.dart';
 import '../api/payment_service.dart';
@@ -25,6 +26,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String paymentType = '';
   int deliveryCost = 0;
   String selectedDeliveryMethod = '';
+  final Checklogin _checklogin = new Checklogin();
+
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> fetchShippingDetails() async {
+    _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
     final String? baseUrl = dotenv.env['BASE_URL'];
@@ -308,6 +312,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       //submit button
                       ElevatedButton(
                         onPressed: () async {
+                          _checklogin.checkAndNavigate(context);
+                          print(paymentType);
                           try {
                             if (paymentType.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(

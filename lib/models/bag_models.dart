@@ -36,6 +36,7 @@ class BagModels {
   }
 
   Future<void> updateQuantity(int newqty) async {
+     print("quantity baru adalah ${newqty}");
     final url = Uri.parse("$baseUrl/checkout/update");
     try {
       final storage = FlutterSecureStorage();
@@ -57,6 +58,7 @@ class BagModels {
       );
 
       if (response.statusCode == 200) {
+        print("quantity saat selesai fetch adalah ${newqty}");
         quantity = newqty;
       } else {
         print('Failed to update quantity on server: ${response.body}');
@@ -67,6 +69,7 @@ class BagModels {
   }
 
   void addQuantity() async {
+    print("quantity saat ini adalah ${quantity}");
     await updateQuantity(quantity + 1);
   }
 
