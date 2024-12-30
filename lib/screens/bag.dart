@@ -330,29 +330,6 @@ class _BagScreen extends State<BagWidget> {
                     children: [
                       FlutterPopupMenuItem(
                         closeOnItemClick: true,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Color(0xff9B9B9B),
-                                width: 1.0,
-                              ),
-                            ),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              "Add to favorites",
-                              textAlign: TextAlign.center,
-                            ),
-                            titleAlignment: ListTileTitleAlignment.center,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ),
-                      FlutterPopupMenuItem(
-                        closeOnItemClick: true,
                         child: ListTile(
                           title: Text(
                             "Delete from the list",
@@ -361,7 +338,7 @@ class _BagScreen extends State<BagWidget> {
                           titleAlignment: ListTileTitleAlignment.center,
                           onTap: () {
                             setState(() {
-                              bagList[index].deleteItem(bagList);
+                              bagList.removeAt(index);
                             });
                             Navigator.of(context).pop();
                           },
