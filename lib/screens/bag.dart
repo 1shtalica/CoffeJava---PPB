@@ -24,10 +24,9 @@ class BagWidget extends StatefulWidget {
 class _BagScreen extends State<BagWidget> {
   final String? baseUrl = dotenv.env['BASE_URL'];
   List<BagModels> bagList = [];
-   final Checklogin _checklogin = new Checklogin();
+  final Checklogin _checklogin = new Checklogin();
 
   Future<List<BagModels>> fetchCartData() async {
-    
     final FlutterSecureStorage storage = FlutterSecureStorage();
 
     String? accessToken = await storage.read(key: 'accessToken');
@@ -329,29 +328,6 @@ class _BagScreen extends State<BagWidget> {
                     children: [
                       FlutterPopupMenuItem(
                         closeOnItemClick: true,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Color(0xff9B9B9B),
-                                width: 1.0,
-                              ),
-                            ),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              "Add to favorites",
-                              textAlign: TextAlign.center,
-                            ),
-                            titleAlignment: ListTileTitleAlignment.center,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                      ),
-                      FlutterPopupMenuItem(
-                        closeOnItemClick: true,
                         child: ListTile(
                           title: Text(
                             "Delete from the list",
@@ -360,7 +336,7 @@ class _BagScreen extends State<BagWidget> {
                           titleAlignment: ListTileTitleAlignment.center,
                           onTap: () {
                             setState(() {
-                              bagList[index].deleteItem(bagList);
+                              bagList.removeAt(index);
                             });
                             Navigator.of(context).pop();
                           },
@@ -416,7 +392,6 @@ class _BagScreen extends State<BagWidget> {
   }
 
   ElevatedButton CheckoutButton() {
-    
     return ElevatedButton(
       onPressed: () {
         Navigator.push(
