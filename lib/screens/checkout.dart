@@ -214,10 +214,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               'Country: ${shippingDetails!['country']}',
                               style: const TextStyle(fontSize: 13),
                             ),
-                            Text(
-                              'Cost: ${shippingDetails!['cost']}',
-                              style: const TextStyle(fontSize: 13),
-                            ),
                           ],
                         ),
                       ),
@@ -230,20 +226,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // delivery method
-                  const Text('Delivery method',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildDeliveryOption('FedEx', '2-3 days', 125),
-                      _buildDeliveryOption('UPS', '2-3 days', 10),
-                      _buildDeliveryOption('Sicepat', '2-3 days', 15),
-                    ],
-                  ),
+                  // const SizedBox(height: 16),
+                  // // delivery method
+                  // const Text('Delivery method',
+                  //     style:
+                  //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  // const SizedBox(height: 8),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     _buildDeliveryOption('FedEx', '2-3 days', 125),
+                  //     _buildDeliveryOption('UPS', '2-3 days', 10),
+                  //     _buildDeliveryOption('Sicepat', '2-3 days', 15),
+                  //   ],
+                  // ),
                   const SizedBox(height: 16),
                   //payment method
                   const Text('Payment Method',
@@ -252,7 +248,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   const SizedBox(height: 8),
 
                   SizedBox(
-                    height: 200,
+                    height: 300,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -278,23 +274,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Order:', style: TextStyle(fontSize: 16)),
-                          Text('Rp${widget.total}',
-                              style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Delivery:', style: TextStyle(fontSize: 16)),
-                          Text('Rp$deliveryCost',
-                              style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text('Order:', style: TextStyle(fontSize: 16)),
+                      //     Text('Rp${widget.total}',
+                      //         style: TextStyle(fontSize: 16)),
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 8),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text('Delivery:', style: TextStyle(fontSize: 16)),
+                      //     Text('Rp$deliveryCost',
+                      //         style: TextStyle(fontSize: 16)),
+                      //   ],
+                      // ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,7 +298,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text('Summary:',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text('Rp${widget.total + deliveryCost}',
+                          Text('Rp${widget.total}',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
                         ],

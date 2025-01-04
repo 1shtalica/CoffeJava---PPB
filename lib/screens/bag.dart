@@ -167,9 +167,11 @@ class _BagScreen extends State<BagWidget> {
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(8),
                             bottomLeft: Radius.circular(8)),
-                        child: Image.asset(
+                        child: Image.network(
                           bagList[index].image,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Icon(Icons.error),
                         ),
                       ),
                     ),
@@ -358,11 +360,10 @@ class _BagScreen extends State<BagWidget> {
   int total = 0;
   Container TotalamountContainer(List<BagModels> bagList) {
     //total amount
-    total = 0;
-
-    for (int i = 0; i < bagList.length; i++) {
-      total = bagList[i].price * bagList[i].quantity + total;
-    }
+    total = bagList.fold(
+      0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
 
     return Container(
       height: 20,
