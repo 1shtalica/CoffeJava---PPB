@@ -24,19 +24,21 @@ class BagModels {
   final String? baseUrl = dotenv.env['BASE_URL'];
 
   factory BagModels.fromJson(Map<String, dynamic> json) {
+    String imageUrl = json['product']['images'][0]['image_url'];
+
     return BagModels(
       id: json['cart_item_id'],
       name: json['product']['pName'],
       color: json['product']['color'] ?? "None",
       size: json['size'],
       quantity: json['quantity'],
-      price: (json['total_price'] as num).toInt(),
-      image: "assets/image/Women-01.jpg",
+      price: (json['product']['price'] as num).toInt(),
+      image: imageUrl,
     );
   }
 
   Future<void> updateQuantity(int newqty) async {
-     print("quantity baru adalah ${newqty}");
+    print("quantity baru adalah ${newqty}");
     final url = Uri.parse("$baseUrl/checkout/update");
     try {
       final storage = FlutterSecureStorage();
