@@ -119,6 +119,7 @@ class AuthService {
       String? name = decodedToken['name'];
       String? email = decodedToken['email'];
       String? profileImage = decodedToken['profileImage'];
+      String? tanggalLahir = decodedToken['tanggalLahir'];
       // String? profileImage = decodedToken['profileImage'];
       //   const profileImage = User.profileImage;
       // const tanggalLahir = User.tanggalLahir;
@@ -127,7 +128,8 @@ class AuthService {
         "id": id,
         "name": name,
         "email": email,
-        "profileImage": profileImage
+        "profileImage": profileImage,
+        "tanggalLahir": tanggalLahir
       };
     }
     Navigator.pushReplacement(
