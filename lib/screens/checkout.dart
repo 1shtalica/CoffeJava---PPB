@@ -254,16 +254,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         children: [
                           buildPaymentOption(
                               'Credit Card', Icons.credit_card, 'credit_card'),
+                          buildPaymentOption(
+                              'Qris', Icons.qr_code, 'other_qris'),
+                          buildPaymentOption(
+                              'Gopay', Icons.motorcycle, 'gopay'),
                           buildPaymentOption('Bank Transfer BCA',
                               Icons.account_balance, 'bca_va'),
-                          buildPaymentOption('Bank Transfer Bni',
+                          buildPaymentOption('Bank Transfer BNI',
                               Icons.account_balance, 'bni_va'),
-                          buildPaymentOption('Bank Transfer Cimb',
+                          buildPaymentOption('Bank Transfer CIMB',
                               Icons.account_balance, 'cimb_va'),
-                          buildPaymentOption('Bank Transfer Mandiri',
-                              Icons.account_balance, 'mandiri_va'),
-                          buildPaymentOption('Bank Transfer Danamon',
-                              Icons.account_balance, 'danamon_va'),
+                          buildPaymentOption('Mandiri Bill Payment',
+                              Icons.account_balance, 'echannel'),
                         ],
                       ),
                     ),
