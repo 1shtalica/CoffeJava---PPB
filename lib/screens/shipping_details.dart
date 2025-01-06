@@ -24,9 +24,15 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
   final _countryController = TextEditingController();
   final _postalController = TextEditingController();
   final _courierController = TextEditingController();
+  final _form = GlobalKey<FormState>();
 
   Future<void> _submitShippingDetails() async {
-     _checklogin.checkAndNavigate(context);
+    final isValid = _form.currentState?.validate() ?? false;
+    if (!isValid) {
+      return;
+    }
+
+    _checklogin.checkAndNavigate(context);
     final FlutterSecureStorage storage = FlutterSecureStorage();
     String? accessToken = await storage.read(key: 'accessToken');
     final shippingDetails = {
@@ -71,7 +77,7 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
   }
 
   void _navigateToShippingAddressPage() {
-     _checklogin.checkAndNavigate(context);
+    _checklogin.checkAndNavigate(context);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -98,86 +104,114 @@ class _ShippingDetailsScreenState extends State<ShippingDetailsScreen> {
         ),
         centerTitle: true,
       ),
+      //alamat inputs
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            TextField(
-              controller: _addressController,
-              decoration: const InputDecoration(
-                labelText: 'Alamat Lengkap',
-                border: OutlineInputBorder(),
+        child: Form(
+          key: _form,
+          child: ListView(
+            children: [
+              TextFormField(
+                controller: _addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Alamat Lengkap',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Alamat lengkap harus diisi';
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _cityController,
-              decoration: const InputDecoration(
-                labelText: 'Kota',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _cityController,
+                decoration: const InputDecoration(
+                  labelText: 'Kota',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Kota harus diisi';
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _countryController,
-              decoration: const InputDecoration(
-                labelText: 'Negara',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _countryController,
+                decoration: const InputDecoration(
+                  labelText: 'Negara',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Negara harus diisi';
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _postalController,
-              decoration: const InputDecoration(
-                labelText: 'Kode Pos',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _postalController,
+                decoration: const InputDecoration(
+                  labelText: 'Kode Pos',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Kode Pos harus diisi';
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _courierController,
-              decoration: const InputDecoration(
-                labelText: 'Kurir',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _courierController,
+                decoration: const InputDecoration(
+                  labelText: 'Kurir',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Kurir harus diisi';
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    
-                    onPressed: _submitShippingDetails,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xffDDA86B),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _submitShippingDetails,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffDDA86B),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      child: const Text(
+                        'Simpan',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
-                    child: const Text(
-                      'Simpan',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    child: Text('Pilih Alamat'),
-                    onPressed: _navigateToShippingAddressPage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Pilih Alamat'),
+                      onPressed: _navigateToShippingAddressPage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

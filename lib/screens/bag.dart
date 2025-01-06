@@ -77,16 +77,20 @@ class _BagScreen extends State<BagWidget> {
         bagList[index].quantity++;
       });
     } else {
-      setState(() {
-        bagList[index].decreaseQuantity();
-        bagList[index].quantity--;
-        if (bagList[index].quantity == 0) {
-          bagList.removeAt(index);
-          if (bagList.isEmpty) {
-            print('Bag is empty');
+      if (bagList[index].quantity > 1) {
+        setState(() {
+          bagList[index].decreaseQuantity();
+          bagList[index].quantity--;
+          if (bagList[index].quantity == 0) {
+            bagList[index].deleteItem(bagList);
+            if (bagList.isEmpty) {
+              print('Bag is empty');
+            }
           }
-        }
-      });
+        });
+      } else {
+        print('Quantity cannot go below 1');
+      }
     }
   }
 
@@ -134,224 +138,256 @@ class _BagScreen extends State<BagWidget> {
       padding: const EdgeInsets.only(top: 10, bottom: 5),
       height: 400,
       width: double.infinity,
-      child: ListView.separated(
-        separatorBuilder: (context, index) => const SizedBox(height: 25),
-        itemCount: bagList.length,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(left: 20, right: 20),
-            height: 150,
-            decoration: BoxDecoration(
-              color: const Color(0xffFFFFFF),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    //image
-                    SizedBox(
-                      width: 150,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8)),
-                        child: Image.network(
-                          bagList[index].image,
-                          fit: BoxFit.fill,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Icon(Icons.error),
-                        ),
-                      ),
+      child: bagList.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "You don’t have any items!",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    const SizedBox(width: 5),
-                    //details
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Please add new items first",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              separatorBuilder: (context, index) => const SizedBox(height: 25),
+              itemCount: bagList.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: const Color(0xffFFFFFF),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(height: 8),
-                          Text(
-                            bagList[index].name,
-                            style: const TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                          //image
+                          SizedBox(
+                            width: 150,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomLeft: Radius.circular(8)),
+                              child: Image.network(
+                                bagList[index].image,
+                                fit: BoxFit.fill,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.error),
+                              ),
+                            ),
                           ),
-                          const SizedBox(
-                            height: 3,
-                            width: 200,
-                          ),
-                          Row(
-                            children: [
-                              const Text(
-                                "Color: ",
-                                style: TextStyle(color: Color(0xff9B9B9B)),
-                              ),
-                              Text(
-                                bagList[index].color,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                              const SizedBox(width: 20),
-                              const Text(
-                                "Size: ",
-                                style: TextStyle(color: Color(0xff9B9B9B)),
-                              ),
-                              Text(
-                                bagList[index].size,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          //quantity
-                          Row(
-                            children: [
-                              //plus and minus button
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(900),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 2,
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]),
-                                child: Center(
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.remove,
-                                      color: Color(0xff9B9B9B),
-                                    ),
-                                    onPressed: () {
-                                      //TODO: maybe use inkwell for an effect
-                                      updateQuantity(index, false);
-                                    },
-                                  ),
+                          const SizedBox(width: 5),
+                          //details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 8),
+                                Text(
+                                  bagList[index].name,
+                                  style: const TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.black),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
-                              ),
-                              SizedBox(width: 20),
-                              //quantity text
-                              SizedBox(
-                                width: 20,
-                                child: Text(bagList[index].quantity.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700)),
-                              ),
-                              SizedBox(width: 20),
-
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(900),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 2),
+                                const SizedBox(
+                                  height: 3,
+                                  width: 200,
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "Color: ",
+                                      style:
+                                          TextStyle(color: Color(0xff9B9B9B)),
+                                    ),
+                                    Text(
+                                      bagList[index].color,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                    ),
+                                    const SizedBox(width: 20),
+                                    const Text(
+                                      "Size: ",
+                                      style:
+                                          TextStyle(color: Color(0xff9B9B9B)),
+                                    ),
+                                    Text(
+                                      bagList[index].size,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
                                     ),
                                   ],
                                 ),
-                                child: Center(
-                                  child: IconButton(
-                                      icon: const Icon(
-                                        Icons.add,
-                                        color: Color(0xff9B9B9B),
+                                const SizedBox(height: 20),
+                                //quantity
+                                Row(
+                                  children: [
+                                    //plus and minus button
+                                    Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(900),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.2),
+                                              spreadRadius: 2,
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ]),
+                                      child: Center(
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.remove,
+                                            color: Color(0xff9B9B9B),
+                                          ),
+                                          onPressed: () {
+                                            //TODO: maybe use inkwell for an effect
+                                            updateQuantity(index, false);
+                                          },
+                                        ),
                                       ),
-                                      onPressed: () {
-                                        //TODO: maybe use inkwell for an effect
-                                        updateQuantity(index, true);
-                                      }),
+                                    ),
+                                    SizedBox(width: 20),
+                                    //quantity text
+                                    SizedBox(
+                                      width: 20,
+                                      child: Text(
+                                          bagList[index].quantity.toString(),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700)),
+                                    ),
+                                    SizedBox(width: 20),
+
+                                    Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(900),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: IconButton(
+                                            icon: const Icon(
+                                              Icons.add,
+                                              color: Color(0xff9B9B9B),
+                                            ),
+                                            onPressed: () {
+                                              //TODO: maybe use inkwell for an effect
+                                              updateQuantity(index, true);
+                                            }),
+                                      ),
+                                    ),
+                                    //total item price
+                                    //3 dots thingy
+                                    const SizedBox(width: 10),
+                                  ],
                                 ),
-                              ),
-                              //total item price
-                              //3 dots thingy
-                              const SizedBox(width: 10),
-                            ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 10, left: 10, right: 10, bottom: 8),
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: Text(
-                                'Price:             Rp${bagList[index].price * bagList[index].quantity}',
-                                style: TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.w800),
-                              ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 10, left: 10, right: 10, bottom: 8),
+                                  child: Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Text(
+                                      'Price:             Rp${bagList[index].price * bagList[index].quantity}',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  top: 9,
-                  right: 0,
-                  child: FlutterPopupMenuButton(
-                    direction: MenuDirection.left,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    popupMenuSize: const Size(200, 100),
-                    child: FlutterPopupMenuIcon(
-                      key: GlobalKey(),
-                      child: const Icon(Icons.more_vert),
-                    ),
-                    children: [
-                      FlutterPopupMenuItem(
-                        closeOnItemClick: true,
-                        child: ListTile(
-                          title: Text(
-                            "Delete from the list",
-                            textAlign: TextAlign.center,
+                      Positioned(
+                        top: 9,
+                        right: 0,
+                        child: FlutterPopupMenuButton(
+                          direction: MenuDirection.left,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
                           ),
-                          titleAlignment: ListTileTitleAlignment.center,
-                          onTap: () {
-                            setState(() {
-                              bagList.removeAt(index);
-                            });
-                            Navigator.of(context).pop();
-                          },
+                          popupMenuSize: const Size(200, 100),
+                          child: FlutterPopupMenuIcon(
+                            key: GlobalKey(),
+                            child: const Icon(Icons.more_vert),
+                          ),
+                          children: [
+                            FlutterPopupMenuItem(
+                              closeOnItemClick: true,
+                              child: ListTile(
+                                title: Text(
+                                  "Delete from the list",
+                                  textAlign: TextAlign.center,
+                                ),
+                                titleAlignment: ListTileTitleAlignment.center,
+                                onTap: () {
+                                  setState(() {
+                                    bagList[index].deleteItem(bagList);
+                                    bagList.removeAt(index);
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 
@@ -394,14 +430,19 @@ class _BagScreen extends State<BagWidget> {
 
   ElevatedButton CheckoutButton() {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ShippingDetailsScreen(total: total)));
-      },
+      onPressed: bagList.isEmpty
+          ? null
+          : () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ShippingDetailsScreen(total: total),
+                ),
+              );
+            },
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xffDDA86B),
+        backgroundColor:
+            bagList.isEmpty ? Colors.grey : const Color(0xffDDA86B),
         foregroundColor: Colors.white,
         elevation: 5,
         shadowColor: Colors.grey.withOpacity(0.2),
