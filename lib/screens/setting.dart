@@ -8,6 +8,7 @@ import '../api/setting_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -89,6 +90,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final AuthService _authService = AuthService();
 
   String id = "";
+  String name = "";
+  String email = "";
+  String profileImage = "";
+  String tanggalLahir = "";
   String? selectedGender;
   DateTime? selectedDate;
   File? _profileImage;
@@ -106,6 +111,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final result = await _authService.decodeProfile(context);
     setState(() {
       id = result['id'];
+      profileImage = result['profileImage'] ?? ""; // Gambar profil
+      name = result['name'] ?? ""; // Nama dengan fallback
+      email = result['email'] ?? "";
+      tanggalLahir = result['tanggalLahir'] ?? "";
     });
   }
 
@@ -161,7 +170,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      initialDate: selectedDate ?? DateTime.parse(tanggalLahir),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -256,9 +265,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: CircleAvatar(
         radius: 50,
         backgroundColor: Colors.grey.shade300,
-        backgroundImage:
-            _profileImage != null ? FileImage(_profileImage!) : null,
-        child: _profileImage == null
+        backgroundImage: _profileImage != null
+            ? FileImage(_profileImage!)
+            : NetworkImage(profileImage),
+        child: profileImage == ""
             ? const Icon(Icons.person, size: 50, color: Colors.white)
             : null,
       ),
@@ -268,8 +278,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    required String title,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    if (controller.text.isEmpty && title != "") {
+      controller.text = title;
+    }
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -308,8 +322,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: TextField(
           decoration: InputDecoration(
             labelText: selectedDate != null
-                ? "${selectedDate!.toLocal()}".split(' ')[0]
-                : 'Select Birth Date',
+                ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                : (tanggalLahir.isNotEmpty
+                    ? DateFormat('yyyy-MM-dd')
+                        .format(DateTime.parse(tanggalLahir).toLocal())
+                    : "Pilih Tanggal"),
             border: const OutlineInputBorder(),
             suffixIcon: const Icon(Icons.calendar_today),
           ),
@@ -343,11 +360,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _buildAvatar(),
               const SizedBox(height: 16),
               _buildTextField(
+                title: name,
                 controller: fullNameController,
                 label: 'Full Name',
               ),
               const SizedBox(height: 16),
               _buildTextField(
+                title: email,
                 controller: emailController,
                 label: 'Email',
                 keyboardType: TextInputType.emailAddress,
