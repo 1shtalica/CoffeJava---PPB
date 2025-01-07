@@ -52,12 +52,32 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _register() async {
-    String name = _nameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    String confirmPassword = _confirmPasswordController.text;
-    String gender = _selectedGender;
-    String birthDate = _birthDateController.text;
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+    String gender = _selectedGender.trim();
+    String birthDate = _birthDateController.text.trim();
+
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty ||
+        gender.isEmpty ||
+        birthDate.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("All fields are required.")),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Password and confirm password do not match.")),
+      );
+      return;
+    }
 
     bool success = await _registerService.register(
       name,
@@ -163,7 +183,7 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedGender,
-                items: <String>['Male', 'Female', 'Other'].map((String value) {
+                items: <String>['Male', 'Female'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),

@@ -51,11 +51,33 @@ class _OrdersState extends State<Orders> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("Response data: $data");
 
         if (data != null && data is List) {
+          List<dynamic> updatedOrders = [];
+          for (var order in data) {
+            final productId = order['ordersItem'][0]['product_id'];
+            final productResponse = await http.get(
+              Uri.parse('$baseUrl/product/$productId'),
+              headers: {'Content-Type': 'application/json'},
+            );
+
+            if (productResponse.statusCode == 200) {
+              final productData = json.decode(productResponse.body);
+              order['productName'] = productData['data']['pName'];
+            } else {
+              order['productName'] = 'Unknown Product';
+            }
+            updatedOrders.add(order);
+          }
+
+          // Sort orders by createdAt (descending order)
+          updatedOrders.sort((a, b) {
+            return DateTime.parse(b['createdAt'])
+                .compareTo(DateTime.parse(a['createdAt']));
+          });
+
           setState(() {
-            orders = data;
+            orders = updatedOrders;
             isLoading = false;
           });
         } else {
@@ -139,6 +161,7 @@ class _OrdersState extends State<Orders> {
                                   (order['ordersItem'][0]['total_price'] as num)
                                       .toInt(),
                               courier: order['shipping']['courier'],
+                              productName: order['productName'],
                             );
                           },
                         ),
@@ -194,6 +217,7 @@ class OrderCard extends StatelessWidget {
   final int quantity;
   final int totalPrice;
   final String courier;
+  final String productName;
 
   const OrderCard({
     super.key,
@@ -203,6 +227,7 @@ class OrderCard extends StatelessWidget {
     required this.quantity,
     required this.totalPrice,
     required this.courier,
+    required this.productName,
   });
 
   @override
@@ -236,6 +261,8 @@ class OrderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            Text('Product: $productName'),
+            const SizedBox(height: 4),
             Text('Courier: $courier'),
             const SizedBox(height: 4),
             Text('Quantity: $quantity'),
@@ -244,7 +271,7 @@ class OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total Amount: ${totalPrice.toStringAsFixed(2)}\$',
+                  'Total Amount: Rp.${totalPrice.toString()}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -259,19 +286,6 @@ class OrderCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton(
-                onPressed: () {},
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Details'),
-              ),
             ),
           ],
         ),
