@@ -86,7 +86,7 @@ class _ProfileScreen extends State<ProfileWidget> {
   }
 
   Future<void> _initializeProfile() async {
-     _checklogin.checkAndNavigate(context);
+    _checklogin.checkAndNavigate(context);
     try {
       final result = await _authService.decodeProfile(context);
       setState(() {
@@ -128,7 +128,7 @@ class _ProfileScreen extends State<ProfileWidget> {
   final List<Map<String, String>> menuItems = [
     {
       'title': 'My orders',
-      'subtitle': 'Already have 12 orders',
+      'subtitle': 'You orders',
     },
     {
       'title': 'Settings',
@@ -148,12 +148,6 @@ class _ProfileScreen extends State<ProfileWidget> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: RefreshIndicator(
         onRefresh: _refreshScreen,
